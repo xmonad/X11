@@ -1,10 +1,13 @@
 # -----------------------------------------------------------------------------
-# $Id: Makefile,v 1.16 2004/03/07 01:04:23 ross Exp $
+# $Id: Makefile,v 1.17 2004/11/23 12:35:18 ross Exp $
 
 TOP = ..
 include $(TOP)/mk/boilerplate.mk
+-include config.mk
 
 # -----------------------------------------------------------------------------
+
+ifeq "$(X11_BUILD_PACKAGE)" "yes"
 
 SUBDIRS = cbits doc include
 
@@ -23,10 +26,7 @@ SRC_HSC2HS_OPTS += -Iinclude $(X_CFLAGS)
 
 SRC_HADDOCK_OPTS += -t "X11 Libraries ($(PACKAGE) package)"
 
-# yeuch, have to get X_CFLAGS & X_LIBS in through CPP to package.conf.in
-comma = ,
-PACKAGE_CPP_OPTS += -DX_CFLAGS='$(patsubst %,$(comma)"%", $(X_CFLAGS))'
-PACKAGE_CPP_OPTS += -DX_LIBS='$(patsubst %,  $(comma)"%", $(X_LIBS))'
+endif
 
 # -----------------------------------------------------------------------------
 

@@ -1,3 +1,5 @@
+#include "HsX11Config.h"
+
 Package {
 	name		= "X11",
 	auto		= True,
