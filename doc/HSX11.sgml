@@ -1,0 +1,178 @@
+<!DOCTYPE BOOK PUBLIC "-//OASIS//DTD DocBook V3.1//EN" [
+<!entity  the-index SYSTEM "genindex.sgml">
+]>
+
+<book id="HSX11">
+  <bookinfo>
+    <date>2003-5-22</date>
+    <title>HSX11 Guide</title>
+    <author>
+      <firstname>Alastair</firstname>
+      <surname>Reid</surname>
+    </author>
+    <address><email>alastair@reid-consulting-uk.ltd.uk</email></address>
+    <copyright>
+      <year>1997-2003</year>
+      <holder>Alastair Reid</holder>
+    </copyright>
+    <abstract>
+      <para>This document describes HSX11, the Haskell binding to X11,
+	version 1.00.</para>
+    </abstract>
+  </bookinfo>
+
+  <!-- Table of contents -->
+  <toc></toc>
+  
+<!-- Introduction --------------------------------------------------------- -->
+
+  <chapter id="introduction">
+    <title>Introduction</title>
+
+  <para> <literal/HSX11/ is a Haskell binding to the popular
+  <literal/X11/ library.
+
+  <para>The library aims to provide a direct translation of the X
+  binding into Haskell so the most important pieces of documentation
+  you should read are the <literal/X11/ documents which can be
+  obtained from the <ULink
+  url="http://www.xfree86.org/support.html">XFree86 website</ULink>.
+  Let me say that again because it is very important.  Get hold of this
+  documentation and read it: it tells you almost everything you need
+  to know to use this library.
+
+  </chapter>
+
+  <chapter id="changes">
+    <title>Changes from X11 documentation</title>
+
+  <para>In making a Haskell binding to a C library, there are certain
+  necessary and/or desirable changes in the interface.
+
+  These can be divided into systematic changes which are applied
+  uniformly throughout the library and ad-hoc changes which are
+  applied to particular parts of the interface.
+
+  <Sect1 id="systematic-changes"><Title>Systematic Changes</Title>
+
+  <VariableList>
+
+  <VarListEntry><term/Naming Conventions/
+  <ListItem>
+  <Para>
+  In translating the library, we had to change names to conform with
+  Haskell's lexical syntax: function names and names of constants must
+  start with a lowercase letter; type names must start with an
+  uppercase letter.
+  </para>
+  <para>
+  In addition, we chose to take advantage of Haskell's module system
+  to allow us to drop common prefixes (<literal/X/, <literal/XA_/,
+  etc.) attached to X11 identifiers.  For example, we translate some C
+  functions, constants and types as follows:
+<InformalTable>
+<TGroup cols="2">
+<ColSpec Colname="one" Align="Left" Colsep="0">
+<ColSpec Colname="two" Align="Left" Colsep="0">
+<TBody>
+
+<Row>
+<Entry>C Name</Entry>
+<Entry>Haskell Name</Entry>
+</Row>
+
+<Row>
+<Entry><function/XWindowEvent/</Entry>
+<Entry><function/windowEvent/</Entry>
+</Row>
+
+<Row>
+<Entry><function/XCheckWindowEvent/</Entry>
+<Entry><function/checkWindowEvent/</Entry>
+</Row>
+
+<Row>
+<Entry><function/QueuedAlready/</Entry>
+<Entry><function/queuedAlready/</Entry>
+</Row>
+
+<Row>
+<Entry><function/XA_WM_ICON_NAME/</Entry>
+<Entry><function/wM_ICON_NAME/</Entry>
+</Row>
+
+<Row>
+<Entry><function/XA_WM_ICON_SIZE/</Entry>
+<Entry><function/wM_ICON_SIZE/</Entry>
+</Row>
+
+</TBody>
+
+</TGroup>
+</InformalTable>
+
+
+  </Para>
+  </ListItem>
+  </VarListEntry>
+
+  <VarListEntry><term/Types/
+  <ListItem>
+  <Para>
+  Haskell ...
+  </Para>
+  </ListItem>
+  </VarListEntry>
+
+  <VarListEntry><term/Exception Handling/
+  <ListItem>
+  <Para>
+  Haskell ...
+  </Para>
+  </ListItem>
+  </VarListEntry>
+
+
+  </VariableList>
+
+  </sect1>
+
+  <Sect1 id="adhoc-changes"><Title>Ad hoc Changes</Title>
+
+  <para>
+  Finally, we chose to make some changes in the interface to better
+  conform with idiomatic Haskell style or to allow a typesafe interface.
+
+  <VariableList>
+
+  <VarListEntry><term/1/
+  <ListItem>
+  <Para>
+  one...
+  </Para>
+  </ListItem>
+  </VarListEntry>
+
+  <VarListEntry><term/2/
+  <ListItem>
+  <Para>
+  two...
+  </Para>
+  </ListItem>
+  </VarListEntry>
+
+
+  </VariableList>
+
+  </sect1>
+
+  </chapter>
+
+  <chapter id="example">
+    <title>Example</title>
+
+  </chapter>
+
+  &the-index
+
+</book>
