@@ -10,6 +10,9 @@ description:	A Haskell binding to the X11 library.
 	documentation of these calls, refer to "The Xlib Programming
 	Manual", available online at <http://tronche.com/gui/x/xlib/>.
 exposed-modules:
+	Graphics.X11,
+	Graphics.X11.Types,
+	Graphics.X11.Xlib,
 	Graphics.X11.Xlib.Atom,
 	Graphics.X11.Xlib.Color,
 	Graphics.X11.Xlib.Context,
@@ -20,13 +23,11 @@ exposed-modules:
 	Graphics.X11.Xlib.Region,
 	Graphics.X11.Xlib.Screen,
 	Graphics.X11.Xlib.Types,
-	Graphics.X11.Xlib.Window,
-	Graphics.X11.Types,
-	Graphics.X11.Xlib,
-	Graphics.X11
+	Graphics.X11.Xlib.Window
 c-sources:
 	cbits/fdset.c,
 	cbits/auxiliaries.c
+extensions:	ForeignFunctionInterface
 extra-libs:	"X11"
 includes:	"HsXlib.h"
 build-depends:	base
