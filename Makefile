@@ -1,5 +1,5 @@
 # -----------------------------------------------------------------------------
-# $Id: Makefile,v 1.14 2003/06/26 12:36:36 reid Exp $
+# $Id: Makefile,v 1.15 2004/02/16 18:01:25 ross Exp $
 
 TOP = .
 include $(TOP)/mk/boilerplate.mk
@@ -13,12 +13,13 @@ ALL_DIRS = \
 	Graphics/X11/Xlib
 
 PACKAGE = X11
-PACKAGE_DEPS = greencard haskell98
+PACKAGE_DEPS = 
 
 SRC_CC_OPTS += -Iinclude -I.
 
 SRC_HC_OPTS += -cpp -fglasgow-exts -fffi
 SRC_HC_OPTS += -Iinclude
+SRC_HSC2HS_OPTS += -Iinclude
 
 SRC_HADDOCK_OPTS += -t "X11 Libraries (${PACKAGE} package)"
 

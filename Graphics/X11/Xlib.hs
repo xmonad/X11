@@ -8,7 +8,7 @@
 -- Stability   :  provisional
 -- Portability :  portable
 --
--- A collection of GreenCard declarations for interfacing with Xlib.
+-- A collection of FFI declarations for interfacing with Xlib.
 --
 -----------------------------------------------------------------------------
 
@@ -43,11 +43,7 @@ import Graphics.X11.Xlib.Atom
 import Graphics.X11.Xlib.Region
 import Graphics.X11.Xlib.Misc
 
-import Foreign.GreenCard
-
-%#include "HsXlib.h"
-
-%prefix X
+import Foreign.Marshal.Alloc( free )
 
 ----------------------------------------------------------------
 -- End
