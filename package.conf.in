@@ -1,13 +1,13 @@
 Package {
-	name		= "X11",
+	name		= PACKAGE,
 	import_dirs	= [ "${pkglibdir}/imports" ],
 	source_dirs	= [],
 	library_dirs	= [ "${pkglibdir}" ],
-	hs_libraries	= [ "HSX11" ],
+	hs_libraries	= [ LIBRARY ],
 	extra_libraries	= [ "HSX11_cbits", "X11" ],
 	include_dirs	= [],
-	c_includes	= [ "HsX11.h" ],
-	package_deps	= [ "haskell98", "HSgreencard" ],
+	c_includes	= [ ],
+	package_deps	= [ PACKAGE_DEPS ],
 	extra_ghc_opts	= [],
 	extra_cc_opts	= [ "" X_CFLAGS ],
 	extra_ld_opts	= [ "" X_LIBS ]

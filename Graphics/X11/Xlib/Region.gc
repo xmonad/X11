@@ -20,8 +20,8 @@ module Graphics.X11.Xlib.Region(
         rectangleIn,
         rectanglePart,
 
---         createRegion,
---         polygonRegion,
+        createRegion,
+        polygonRegion,
         intersectRegion,
         subtractRegion,
         unionRectWithRegion,
@@ -73,12 +73,12 @@ type RectInRegionResult = Int
 -- Creating regions
 ----------------------------------------------------------------
 
--- -- an empty region 
--- -- (often used as "out argument" to binary operators which return regions)
--- %fun XCreateRegion :: IO Region
--- 
--- %fun XPolygonRegion :: ListPoint -> FillRule -> IO Region
--- %call (listPoint arg1 arg2) (fillRule arg3)
+-- an empty region 
+-- (often used as "out argument" to binary operators which return regions)
+%fun XCreateRegion :: IO Region
+
+%fun XPolygonRegion :: ListPoint -> FillRule -> IO Region
+%call (listPoint arg1 arg2) (fillRule arg3)
 
 ----------------------------------------------------------------
 -- Combining Regions

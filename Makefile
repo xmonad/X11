@@ -1,5 +1,5 @@
 # -----------------------------------------------------------------------------
-# $Id: Makefile,v 1.10 2003/05/27 16:21:41 reid Exp $
+# $Id: Makefile,v 1.11 2003/05/29 14:44:31 reid Exp $
 
 TOP = .
 include $(TOP)/mk/boilerplate.mk
@@ -12,7 +12,7 @@ ALL_DIRS = \
 	Graphics/X11 \
 	Graphics/X11/Xlib
 
-PACKAGE = X11
+PACKAGE = HSX11
 PACKAGE_DEPS = haskell98 HSgreencard
 
 SRC_CC_OPTS += -Wall -Iinclude -I.
@@ -27,6 +27,9 @@ SRC_HADDOCK_OPTS += -t "X11 Libraries (${PACKAGE} package)"
 comma = ,
 PACKAGE_CPP_OPTS += -DX_CFLAGS='$(patsubst %,$(comma)"%",$(X_CFLAGS))'
 PACKAGE_CPP_OPTS += -DX_LIBS='$(patsubst %,$(comma)"%",$(X_LIBS))'
+PACKAGE_CPP_OPTS += -DPACKAGE=\"${PACKAGE}\"
+PACKAGE_CPP_OPTS += -DPACKAGE_DEPS='$(patsubst %,"%"$(comma),$(PACKAGE_DEPS)) "haskell98"'
+PACKAGE_CPP_OPTS += -DLIBRARY=\"HS$(PACKAGE)\"
 
 # -----------------------------------------------------------------------------
 
