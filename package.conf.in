@@ -1,30 +1,57 @@
 #include "HsX11Config.h"
 
-Package {
-	name		= "X11",
-	auto		= True,
+name:		PACKAGE
+version:	VERSION
+license:	BSD3
+maintainer:	libraries@haskell.org
+exposed:	True
+
+exposed-modules:
+	Graphics.X11.Xlib.Atom,
+	Graphics.X11.Xlib.Color,
+	Graphics.X11.Xlib.Context,
+	Graphics.X11.Xlib.Display,
+	Graphics.X11.Xlib.Event,
+	Graphics.X11.Xlib.Font,
+	Graphics.X11.Xlib.Misc,
+	Graphics.X11.Xlib.Region,
+	Graphics.X11.Xlib.Screen,
+	Graphics.X11.Xlib.Types,
+	Graphics.X11.Xlib.Window,
+	Graphics.X11.Types,
+	Graphics.X11.Xlib,
+	Graphics.X11
+
+hidden-modules:
+
 #ifdef INSTALLING
-	import_dirs	= [ "$libdir/imports" ],
+import-dirs:	"$libdir/imports"
 #else
-	import_dirs	= [ "$libdir/libraries/X11" ],
+import-dirs:	"$libdir/libraries/X11"
 #endif
-	source_dirs	= [],
+
 #ifdef INSTALLING
-	library_dirs	= [ "$libdir" ],
+library-dirs:	"$libdir"
 #else
-	library_dirs	= [ "$libdir/libraries/X11",
-			    "$libdir/libraries/X11/cbits" ],
+library-dirs:	"$libdir/libraries/X11"
 #endif
-	hs_libraries	= [ "HSX11" ],
-	extra_libraries	= [ "HSX11_cbits", "X11" ],
+
+hs-libraries:   "HSX11"
+extra-libs:	"HSX11_cbits", "X11"
+
 #ifdef INSTALLING
-	include_dirs	= [],
+include-dirs:
 #else
-	include_dirs	= [ "$libdir/libraries/X11/include" ],
+include-dirs: "$libdir/libraries/X11/include"
 #endif
-	c_includes	= [ "HsXlib.h" ],
-	package_deps	= [ "base" ],
-	extra_ghc_opts	= [],
-	extra_cc_opts	= [ X_CFLAGS ],
-	extra_ld_opts	= [ X_LIBS ]
-}
+
+includes:	"HsXlib.h"
+depends:	base
+extra-hugs-opts:
+
+extra-cc-opts:	X_CFLAGS
+extra-ld-opts:  X_LIBS
+framework-dirs:
+extra-frameworks:
+haddock-interfaces:
+haddock-html:

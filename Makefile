@@ -1,5 +1,5 @@
 # -----------------------------------------------------------------------------
-# $Id: Makefile,v 1.17 2004/11/23 12:35:18 ross Exp $
+# $Id: Makefile,v 1.18 2004/11/26 16:22:09 simonmar Exp $
 
 TOP = ..
 include $(TOP)/mk/boilerplate.mk
@@ -16,6 +16,7 @@ ALL_DIRS = \
 	Graphics/X11/Xlib
 
 PACKAGE = X11
+VERSION = 1.0
 PACKAGE_DEPS = base
 
 SRC_CC_OPTS += -Iinclude $(X_CFLAGS)
