@@ -1,0 +1,15 @@
+We are pleased to announce a new release of the Haskell binding for
+X11 which provides a binding to most of Xlib. The library is
+distributed as open source.
+
+The library can be downloaded from: http://www.haskell.org/packages/.
+You will need GreenCard 3.00 and GHC 6.0 to build the library.
+Installation instructions are in x11/Install.
+Bug reports should be sent to X11@reid-consulting-uk.ltd.uk
+
+Enjoy!
+
+--
+Alastair Reid   
+alastair@reid-consulting-uk.ltd.uk  
+http://www.reid-consulting-uk.ltd.uk/alastair/

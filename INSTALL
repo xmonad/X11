@@ -1,0 +1,10 @@
+# install ghc >= 6.0
+# install greencard >= 3.00
+tar zxvf x11-1.00.tar.gz
+cd x11-1.00
+./configure --with-greencard
+cd libraries/X11
+make boot
+make all
+make install  # may require su root
+
