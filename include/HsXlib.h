@@ -1,5 +1,5 @@
 /* -----------------------------------------------------------------------------
- * $Id: HsXlib.h,v 1.1 2003/04/03 23:44:04 reid Exp $
+ * $Id: HsXlib.h,v 1.2 2003/05/08 16:00:20 ross Exp $
  *
  * Definitions for package `lang' which are visible in Haskell land.
  *
@@ -7,6 +7,8 @@
 
 #ifndef HSXLIB_H
 #define HSXLIB_H
+
+#include <stdlib.h>
 
 #include <X11/X.h>
 #include <X11/X.h>
