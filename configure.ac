@@ -6,7 +6,7 @@ AC_CONFIG_SRCDIR([include/HsXlib.h])
 AC_CONFIG_HEADERS([include/HsX11Config.h])
 
 # Check for X11 include paths and libraries
-AC_PATH_XTRA()
+AC_PATH_XTRA
 
 # Build the package if we found X11 stuff
 if test "$no_x" = yes; then
