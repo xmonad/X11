@@ -1,6 +1,6 @@
 -- @configure_input@
 -- System-dependent values used by HugsSetup.hs
-
+--
 build-package: @BUILD_PACKAGE_BOOL@
 cc-options: -Iinclude @X_CFLAGS@
 ld-options: @X_LIBS@
