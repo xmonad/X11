@@ -1,10 +1,9 @@
-#include "config.h"
+#include "mk/config.h"
 
 Package {
 	name		= "X11",
-	auto		= True,
 #ifdef INSTALLING
-	import_dirs	= [ "$libdir/imports" ],
+	import_dirs	= [ "$libdir/imports/X11" ],
 #else
 	import_dirs	= [ "$libdir/libraries/X11" ],
 #endif
