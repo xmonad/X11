@@ -66,7 +66,7 @@ import Foreign
 
 #include "HsXlib.h"
 
-{-# CBITS fdset.c #-}
+{-# CFILES cbits/fdset.c #-}
 
 ----------------------------------------------------------------
 -- Events

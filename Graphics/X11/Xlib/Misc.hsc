@@ -432,7 +432,7 @@ foreign import ccall unsafe "HsXlib.h XDisplayName"
 -- % 	  return 0;
 -- % }
 
-{-# CBITS auxiliaries.c #-}
+{-# CFILES cbits/auxiliaries.c #-}
 
 newtype XErrorEvent = XErrorEvent (Ptr XErrorEvent)
 
