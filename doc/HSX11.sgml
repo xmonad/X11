@@ -185,13 +185,6 @@
      <Entry><function/(Pixel,Word16, Word16, Word16, Word8)/</Entry>
      </Row>
      
-     <Row>
-     <Entry><function//</Entry>
-     <Entry><function//</Entry>
-     <Entry><function//</Entry>
-     </Row>
-     
-     
      </TBody>
      
      </TGroup>
@@ -215,7 +208,47 @@
   <VarListEntry><term/Exception Handling/
   <ListItem>
   <Para>
-  Haskell ...
+  We consistently raise exceptions when a function returns an error
+  code.  In practice, this only affects the following functions
+  because most Xlib functions do not return error codes.
+<ProgramListing>
+allocColor
+allocNamedColor
+fetchBuffer
+fetchBytes
+fontFromGC
+getGeometry
+getIconName
+iconifyWindow
+loadQueryFont
+lookupColor
+openDisplay
+parseColor
+queryBestCursor
+queryBestSize 
+queryBestStipple
+queryBestTile
+rotateBuffers
+selectInput
+storeBuffer
+storeBytes
+withdrawWindow
+</ProgramListing>
+  The Xlib library reports most errors by invoking a user-provided
+  error handler.  The function
+<ProgramListing>
+setDefaultErrorHandler :: IO ()
+</ProgramListing>
+installs this error handler.
+<ProgramListing>
+int defaultErrorHandler(Display *d, XErrorEvent *ev)
+{
+    char buffer[1000];
+    XGetErrorText(d,ev->error_code,buffer,1000);
+    printf("Error: %s\n", buffer);
+    return 0;
+}
+</ProgramListing>
   </Para>
   </ListItem>
   </VarListEntry>
@@ -223,7 +256,8 @@
   </VariableList>
 
   <Para>
-  For example, the C function with type:
+  As an example of how these rules are applied in generating a
+  function type, the C function with type:
 <ProgramListing>
 XDrawPoints(Display *display,
             Drawable d,
@@ -255,18 +289,44 @@ drawPoints :: Display
 
   <VariableList>
 
-  <VarListEntry><term/1/
+  <VarListEntry><term/waitForEvent/
   <ListItem>
   <Para>
-  one...
+The function
+<ProgramListing>
+waitForEvent :: Display -> Word32 -> IO Bool
+</ProgramListing>
+reads an event with a timeout (in microseconds).
+%
+It is sometimes useful in conjunction with this function:
+<ProgramListing>
+gettimeofday_in_milliseconds :: IO Integer
+</ProgramListing>
   </Para>
   </ListItem>
   </VarListEntry>
 
-  <VarListEntry><term/2/
+  <VarListEntry><term/WindowAttribute operations/
   <ListItem>
   <Para>
-  two...
+We provide the following operations on WindowsAttributes:
+<ProgramListing>
+set_background_pixmap :: XSetWindowAttributesPtr -> Pixmap -> IO ()
+set_background_pixel  :: XSetWindowAttributesPtr -> Pixel -> IO ()
+set_border_pixmap     :: XSetWindowAttributesPtr -> Pixmap -> IO ()
+set_border_pixel      :: XSetWindowAttributesPtr -> Pixel -> IO ()
+set_bit_gravity       :: XSetWindowAttributesPtr -> BitGravity -> IO ()
+set_win_gravity       :: XSetWindowAttributesPtr -> WindowGravity -> IO ()
+set_backing_store     :: XSetWindowAttributesPtr -> BackingStore -> IO ()
+set_backing_planes    :: XSetWindowAttributesPtr -> Pixel -> IO ()
+set_backing_pixel     :: XSetWindowAttributesPtr -> Pixel -> IO ()
+set_save_under        :: XSetWindowAttributesPtr -> Bool -> IO ()
+set_event_mask        :: XSetWindowAttributesPtr -> EventMask -> IO ()
+set_do_not_propagate_mask :: XSetWindowAttributesPtr -> EventMask -> IO ()
+set_override_redirect :: XSetWindowAttributesPtr -> Bool -> IO ()
+set_colormap          :: XSetWindowAttributesPtr -> Colormap -> IO ()
+set_cursor            :: XSetWindowAttributesPtr -> Cursor -> IO ()
+</ProgramListing>
   </Para>
   </ListItem>
   </VarListEntry>
@@ -275,11 +335,6 @@ drawPoints :: Display
   </VariableList>
 
   </sect1>
-
-  </chapter>
-
-  <chapter id="example">
-    <title>Example</title>
 
   </chapter>
 
