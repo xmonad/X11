@@ -45,7 +45,7 @@ import Graphics.X11.Xlib.Misc
 
 import Graphics.X11.StdDIS
 
-%#include "include/HsXlib.h"
+%#include "HsXlib.h"
 
 %prefix X
 

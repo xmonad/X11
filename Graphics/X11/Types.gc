@@ -732,7 +732,7 @@ module Graphics.X11.Types
 
 import Graphics.X11.StdDIS
 
-%#include "include/HsXlib.h"
+%#include "HsXlib.h"
 
 -- ToDo: use newtype
 type XID      = Word32

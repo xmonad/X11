@@ -22,7 +22,7 @@ import Graphics.X11.Types
 import Control.Monad( zipWithM_ )
 import Foreign(mallocBytes, Storable(..))
 
-%#include "include/HsXlib.h"
+%#include "HsXlib.h"
 
 %prefix X
 

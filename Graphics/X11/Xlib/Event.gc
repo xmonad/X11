@@ -64,7 +64,7 @@ import Graphics.X11.Xlib.Types
 
 import Foreign( castPtr )
 
-%#include "include/HsXlib.h"
+%#include "HsXlib.h"
 
 %prefix X
 

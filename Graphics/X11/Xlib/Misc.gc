@@ -137,7 +137,7 @@ import Graphics.X11.Xlib.Types
 import Graphics.X11.Xlib.Event
 import Graphics.X11.Xlib.Font
 
-%#include "include/HsXlib.h"
+%#include "HsXlib.h"
 
 %prefix X
 
@@ -297,6 +297,9 @@ import Graphics.X11.Xlib.Font
 -- % 	  return 0;
 -- % }
 
+#ifdef __HUGS__
+{-# CBITS auxiliaries.c #-}
+#endif
 
 %fun setDefaultErrorHandler :: IO ()
 %code XSetErrorHandler(defaultErrorHandler);

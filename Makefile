@@ -1,5 +1,5 @@
 # -----------------------------------------------------------------------------
-# $Id: Makefile,v 1.3 2003/04/04 14:55:01 reid Exp $
+# $Id: Makefile,v 1.4 2003/04/12 11:42:18 ross Exp $
 
 TOP = ..
 include $(TOP)/mk/boilerplate.mk
@@ -15,7 +15,7 @@ ALL_DIRS = \
 PACKAGE = X11
 PACKAGE_DEPS = base
 
-SRC_CC_OPTS += -Wall -I../include -I.
+SRC_CC_OPTS += -Wall -Iinclude -I.
 SRC_CC_OPTS += -I$(GHC_INCLUDE_DIR) -I$(GHC_RUNTIME_DIR)
 
 SRC_HC_OPTS += -Wall -fffi -cpp -fglasgow-exts
