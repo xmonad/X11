@@ -1,0 +1,275 @@
+-----------------------------------------------------------------------------
+-- |
+-- Module      :  Graphics.X11.Xlib.Types
+-- Copyright   :  (c) Alastair Reid, 1999-2003
+-- License     :  BSD-style (see the file libraries/base/LICENSE)
+-- 
+-- Maintainer  :  libraries@haskell.org
+-- Stability   :  provisional
+-- Portability :  portable
+--
+-- A collection of type declarations for interfacing with Xlib.
+--
+-----------------------------------------------------------------------------
+
+module Graphics.X11.Xlib.Types(
+        module Graphics.X11.Xlib.Types
+        ) where
+
+import Graphics.X11.StdDIS
+import Graphics.X11.Types
+
+import Control.Monad( zipWithM_ )
+import Foreign(mallocBytes, Storable(..))
+
+%#include "include/HsXlib.h"
+
+%prefix X
+
+----------------------------------------------------------------
+-- Types
+----------------------------------------------------------------
+
+type Pixel        = Word32
+type Position     = Int32
+type Dimension    = Word32
+type ScreenNumber = Word32
+type Byte         = Char
+type Buffer       = Int
+
+%dis pixel x = word32 x
+%dis position x = int32 x
+%dis dimension x = word32 x
+%dis screenNumber x = word32 x
+%dis byte x = char x
+%dis buffer x = int
+
+newtype Display    = Display    (Ptr Stub_Display)
+newtype Screen     = Screen     (Ptr Stub_Screen)
+newtype Visual     = Visual     (Ptr Stub_Visual)
+newtype FontStruct = FontStruct (Ptr Stub_FontStruct)
+
+data Stub_Display
+data Stub_Screen
+data Stub_Visual
+data Stub_FontStruct
+
+%dis display x    = Display    (ptr ({Display*}     x))
+%dis screen x     = Screen     (ptr ({Screen*}      x))
+%dis visual x     = Visual     (ptr ({Visual*}      x))
+%dis fontStruct x = FontStruct (ptr ({XFontStruct*} x))
+
+type GC = Ptr Stub_GC
+data Stub_GC
+%dis gC x = ptr x
+
+type Point = 
+  ( Position  -- x
+  , Position  -- y
+  )
+%dis point x = declare {XPoint} x in
+% ( position {(%x).x}
+% , position {(%x).y}
+% )
+
+type Segment = 
+ ( Position -- x1
+ , Position -- y1
+ , Position -- x2
+ , Position -- y2
+ )
+%dis segment x = declare {XSegment} x in
+% ( position {(%x).x1}
+% , position {(%x).y1}
+% , position {(%x).x2}
+% , position {(%x).y2}
+% )
+
+type Rectangle = 
+ ( Position  -- x
+ , Position  -- y
+ , Dimension -- width
+ , Dimension -- height
+ )
+%dis rectangle x = declare {XRectangle} x in
+% ( position  {(%x).x}
+% , position  {(%x).y}
+% , dimension {(%x).width}
+% , dimension {(%x).height}
+% )
+
+type Arc =
+ ( Position  
+ , Position  
+ , Dimension 
+ , Dimension 
+ , Int       
+ , Int       
+ )
+%dis arc x = declare {XArc} x in
+% ( position  {(%x).x}
+% , position  {(%x).y}
+% , dimension {(%x).width}
+% , dimension {(%x).height}
+% , int       {(%x).angle1}
+% , int       {(%x).angle2}
+% )
+
+type Color =
+ ( Pixel 
+ , Word16 
+ , Word16 
+ , Word16 
+ , Word8 
+ )
+%dis color x = declare {XColor} x in
+% ( pixel {(%x).pixel}
+% , word16 {(%x).red}
+% , word16 {(%x).green}
+% , word16 {(%x).blue}
+% , word8 {(%x).flags}
+% )
+
+-- We can't use the similarily named library functions for several reasons:
+-- 1) They deal with Ptrs instead of Ptr-Len pairs
+-- 2) They require instances of Storable but we apply these functions
+--    to type synonyms like 'Point = (Int,Int)' which cannot be
+--    instances.
+
+type Storable' a = 
+  ( a -> Int                    -- sizeOf
+  , Ptr a -> Int      -> IO a   -- peekElemOff
+  , Ptr a -> Int -> a -> IO ()  -- pokeElemOff
+  )
+
+newArray' :: Storable' a -> [a] -> IO (Ptr a, Int)
+newArray' (sz,_,wr) xs = do
+  p <- mallocBytes (sz undefined * l)
+  zipWithM_ (wr p) [0..] xs
+  return (p, l)
+ where
+  l = length xs
+
+peekArray' :: Storable' a -> (Ptr a, Int) -> IO [a]
+peekArray' (_,rd,_) (p,l)
+  | l <= 0    = return []
+  | otherwise = f (l-1) []
+ where
+  f 0 acc = do e <- rd p 0; return (e:acc)
+  f n acc = do e <- rd p n; f (n-1) (e:acc)
+
+-- don't forget to use %end free(arg?) in conjunction with these guys
+type ListPoint       	= [Point]
+%dis listPoint x l   	= << newArray' s_Point     / peekArray' s_Point     >> (ptr ({XPoint*} x))        (int l)
+type ListRectangle   	= [Rectangle]
+%dis listRectangle x l  = << newArray' s_Rectangle / peekArray' s_Rectangle >> (ptr ({XRectangle*} x))    (int l)
+type ListArc        	= [Arc]	     
+%dis listArc x l    	= << newArray' s_Arc       / peekArray' s_Arc       >> (ptr ({XArc*} x))          (int l)
+type ListSegment        = [Segment]  
+%dis listSegment x l    = << newArray' s_Segment   / peekArray' s_Segment   >> (ptr ({XSegment*} x))      (int l)
+type ListColor	     	= [Color]    
+%dis listColor	x l  	= << newArray' s_Color     / peekArray' s_Color     >> (ptr ({XColor*} x))        (int l)
+type ListPixel	     	= [Pixel]    
+%dis listPixel	x l  	= << newArray' s_Pixel     / peekArray' s_Pixel     >> (ptr ({unsigned long*} x)) (int l)
+type ListWindow	     	= [Window]   
+%dis listWindow	x l  	= << newArray' s_Window    / peekArray' s_Window    >> (ptr ({Window*} x))        (int l)
+-- AC, 1/9/2000: Try to define types and marshalling code for Atom lists:
+type ListAtom	     	= [Atom]
+%dis listAtom	x l  	= << newArray' s_Atom      / peekArray' s_Atom      >> (ptr ({Atom *} x))         (int l)
+
+s_Pixel :: Storable' Pixel
+s_Pixel  = (sizeOf, peekElemOff, pokeElemOff)
+
+s_Window :: Storable' Window
+s_Window = (sizeOf, peekElemOff, pokeElemOff)
+
+s_Atom :: Storable' Atom
+s_Atom   = (sizeOf, peekElemOff, pokeElemOff)
+
+s_Point :: Storable' Point
+s_Point = (const sizeOfPoint,readPoint,writePoint)
+
+%fun writePoint :: Ptr Point -> Int -> Point -> IO ()
+%call (ptr ({XPoint*} s)) (int i) (point {s[i]})
+%code
+
+%fun readPoint :: Ptr Point -> Int -> IO Point
+%call (ptr ({XPoint*} s)) (int i)
+%code
+%result (point {s[i]})
+
+%fun sizeOfPoint :: Int
+%code res1 = sizeof(XPoint)
+
+s_Rectangle :: Storable' Rectangle
+s_Rectangle = (const sizeOfRectangle, readRectangle, writeRectangle )
+
+%fun writeRectangle :: Ptr Rectangle -> Int -> Rectangle -> IO ()
+%call (ptr ({XRectangle*} s)) (int i) (rectangle {s[i]})
+%code
+
+%fun readRectangle :: Ptr Rectangle -> Int -> IO Rectangle
+%call (ptr ({XRectangle*} s)) (int i)
+%code
+%result (rectangle {s[i]})
+
+%fun sizeOfRectangle :: Int
+%code res1 = sizeof(XRectangle)
+
+
+s_Arc :: Storable' Arc
+s_Arc = (const sizeOfArc, readArc, writeArc )
+
+%fun writeArc :: Ptr Arc -> Int -> Arc -> IO ()
+%call (ptr ({XArc*} s)) (int i) (arc {s[i]})
+%code
+
+%fun readArc :: Ptr Arc -> Int -> IO Arc
+%call (ptr ({XArc*} s)) (int i)
+%code
+%result (arc {s[i]})
+
+%fun sizeOfArc :: Int
+%code res1 = sizeof(XArc)
+
+
+s_Segment :: Storable' Segment
+s_Segment = (const sizeOfSegment, readSegment, writeSegment )
+
+%fun writeSegment :: Ptr Segment -> Int -> Segment -> IO ()
+%call (ptr ({XSegment*} s)) (int i) (segment {s[i]})
+%code
+
+%fun readSegment :: Ptr Segment -> Int -> IO Segment
+%call (ptr ({XSegment*} s)) (int i)
+%code
+%result (segment {s[i]})
+
+%fun sizeOfSegment :: Int
+%code res1 = sizeof(XSegment)
+
+
+s_Color :: Storable' Color
+s_Color = (const sizeOfColor, readColor, writeColor )
+
+%fun writeColor :: Ptr Color -> Int -> Color -> IO ()
+%call (ptr ({XColor*} s)) (int i) (color {s[i]})
+%code
+
+%fun readColor :: Ptr Color -> Int -> IO Color
+%call (ptr ({XColor*} s)) (int i)
+%code
+%result (color {s[i]})
+
+%fun sizeOfColor :: Int
+%code res1 = sizeof(XColor)
+
+type XSetWindowAttributesPtr = Ptr Stub_SWA
+data Stub_SWA
+--  toXSetWindowAttributesPtr   :: Addr -> XSetWindowAttributesPtr,
+--  fromXSetWindowAttributesPtr :: XSetWindowAttributesPtr -> Ptr
+%dis xSetWindowAttributesPtr x = ptr ({XSetWindowAttributes*} x)
+
+----------------------------------------------------------------
+-- End
+----------------------------------------------------------------

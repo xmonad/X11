@@ -1,5 +1,5 @@
 # -----------------------------------------------------------------------------
-# $Id: Makefile,v 1.1 2003/04/03 23:44:01 reid Exp $
+# $Id: Makefile,v 1.2 2003/04/04 11:11:05 reid Exp $
 
 TOP = ..
 include $(TOP)/mk/boilerplate.mk
@@ -9,7 +9,8 @@ include $(TOP)/mk/boilerplate.mk
 # SUBDIRS = include
 
 ALL_DIRS = \
-	Graphics/X11
+	Graphics/X11 \
+	Graphics/X11/Xlib
 
 PACKAGE = X11
 PACKAGE_DEPS = base

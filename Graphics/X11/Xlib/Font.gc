@@ -1,0 +1,198 @@
+-----------------------------------------------------------------------------
+-- |
+-- Module      :  Graphics.X11.Xlib.Font
+-- Copyright   :  (c) Alastair Reid, 1999-2003
+-- License     :  BSD-style (see the file libraries/base/LICENSE)
+-- 
+-- Maintainer  :  libraries@haskell.org
+-- Stability   :  provisional
+-- Portability :  portable
+--
+-- A collection of GreenCard declarations for interfacing with Xlib Fonts.
+--
+-----------------------------------------------------------------------------
+
+module Graphics.X11.Xlib.Font(
+
+        Glyph,
+        queryFont,
+        fontFromGC,
+        loadQueryFont,
+        freeFont,
+        fontFromFontStruct,
+        ascentFromFontStruct,
+        descentFromFontStruct,
+        CharStruct,
+        textExtents,
+        textWidth,
+
+        ) where
+ 
+import Graphics.X11.StdDIS
+import Graphics.X11.Types
+import Graphics.X11.Xlib.Types
+
+%#include "include/HsXlib.h"
+
+%prefix X
+
+----------------------------------------------------------------
+-- Fonts
+----------------------------------------------------------------
+
+-- A glyph (or Char2b) is a 16 bit character identification.
+-- The top 8 bits are zero in many fonts.
+type Glyph = Word16
+%dis glyph x = word16 x
+
+-- Disnae exist: %fun LoadFont       :: Display -> String -> IO Font
+-- Disnae exist: %fun UnloadFont     :: Display -> Font -> IO ()
+
+-- Argument can be a Font or a GContext.
+-- But, if it's a GContext, the fontStruct will use the GContext as the 
+-- FontID - which will cause most things to break so it's probably
+-- safer using XGetGCValues to get a genuine font ID
+%fun XQueryFont     :: Display -> Font -> IO FontStruct
+
+-- Note that this _WILL NOT WORK_ unless you have explicitly set the font.
+-- I'm slowly but surely coming to the conclusion that Xlib is a pile of
+-- steaming shit.
+%fun FontFromGC :: Display -> GC -> IO Font
+%code
+%  XGCValues ret;
+%  Status err = XGetGCValues(arg1,arg2,GCFont,&ret);
+%fail {Success != err} { BadStatus(rc,FontFromGC) }
+%result (font {ret.font})
+
+%fun XLoadQueryFont :: Display -> String -> IO FontStruct
+%fail {res1==0} { NullPtr(XLoadQueryFont) }
+
+%fun XFreeFont      :: Display -> FontStruct -> IO ()
+-- %fun XSetFontPath  :: Display -> ListString  -> IO () using XSetFontPath(arg1,arg2,arg2_size)
+
+%fun fontFromFontStruct :: FontStruct -> Font
+%code res1 = arg1->fid
+%fun ascentFromFontStruct :: FontStruct -> Int32
+%code res1 = arg1->ascent
+%fun descentFromFontStruct :: FontStruct -> Int32
+%code res1 = arg1->descent
+
+-- %prim XGetFontPath :: Display -> IO ListString
+--Int r_size;
+--String* r = XGetFontPath(arg1,&r_size);
+-- %update(r);
+--XFreeFontPath(r);
+--return;
+
+-- %prim XListFonts :: Display -> String -> Int -> IO ListString
+--Int r_size;
+--String *r = XListFonts(arg1,arg2,arg3,&r_size);
+-- %update(r);
+--XFreeFontNames(r);
+--return;
+
+-- XListFontsWithInfo omitted (no support for FontStruct yet)
+
+-- XQueryTextExtents omitted (no support for CharStruct yet)
+-- XQueryTextExtents16 omitted (no support for CharStruct yet)
+
+-- We marshall this across right away because it's usually one-off info
+type CharStruct =
+ ( Int            -- lbearing (origin to left edge of raster)
+ , Int            -- rbearing (origin to right edge of raster)
+ , Int            -- width    (advance to next char's origin)
+ , Int            -- ascent   (baseline to top edge of raster)
+ , Int            -- descent  (baseline to bottom edge of raster)
+-- attributes omitted
+ )
+%dis charStruct x = declare {XCharStruct} x in
+% ( int {(%x).lbearing}	
+% , int {(%x).rbearing}	
+% , int {(%x).width}	
+% , int {(%x).ascent}	
+% , int {(%x).descent}	
+% )
+
+
+-- No need to put ths in the IO monad - this info is essentially constant
+%fun XTextExtents :: FontStruct -> String -> (FontDirection, Int32, Int32, CharStruct)
+%call (fontStruct f) (stringLen s s_len) 
+%code
+%  int         direction;
+%  int         font_ascent;
+%  int         font_descent;
+%  XCharStruct cs;
+%  int rc = XTextExtents(f,s,s_len,&direction,&font_ascent,&font_descent,&cs);
+%result ( fontDirection direction
+%       , int32 font_ascent
+%       , int32 font_descent
+%       , charStruct cs
+%       )
+
+-- No need to put ths in the IO monad - this info is essentially constant
+%fun XTextWidth :: FontStruct -> String -> Int32
+%call (fontStruct f) (stringLen s s_len) 
+%code res1 = XTextWidth(f,s,s_len)
+
+-- XTextExtents16 omitted
+-- XTextWidth16 omitted
+
+-- XGetFontProperty omitted
+-- XFreeFontInfo omitted
+-- XFreeFontNames omitted
+
+-- XCreateFontSet omitted (no documentation available)
+-- XFreeFontSet omitted (no documentation available)
+-- XFontsOfFontSet omitted (no documentation available)
+-- XBaseFontNameListOfFontSet omitted (no documentation available)
+-- XLocaleOfFontSet omitted (no documentation available)
+-- XExtentsOfFontSet omitted (no documentation available)
+
+-- XContextDependentDrawing omitted
+-- XDirectionalDependentDrawing omitted
+-- XContextualDrawing omitted
+
+-- XmbTextEscapement omitted
+-- XwcTextEscapement omitted
+-- XmbTextExtents omitted
+-- XwcTextExtents omitted
+-- XmbTextPerCharExtents omitted
+-- XwcTextPerCharExtents omitted
+-- XmbDrawText omitted
+-- XwcDrawText omitted
+-- XmbDrawString omitted
+-- XwcDrawString omitted
+-- XmbDrawImageString omitted
+-- XwcDrawImageString omitted
+
+-- XOpenIM omitted
+-- XCloseIM omitted
+-- XGetIMValues omitted
+-- XSetIMValues omitted
+-- DisplayOfIM omitted
+-- XLocaleOfIM omitted
+
+-- XCreateIC omitted
+-- XDestroyIC omitted
+-- XSetICFocus omitted
+-- XUnsetICFocus omitted
+-- XwcResetIC omitted
+-- XmbResetIC omitted
+-- XSetICValues omitted
+-- XGetICValues omitted
+-- XIMOfIC omitted
+
+-- XRegisterIMInstantiateCallback omitted
+-- XUnregisterIMInstantiateCallback omitted
+
+-- XInternalConnectionNumbers omitted
+-- XProcessInternalConnection omitted
+-- XAddConnectionWatch omitted
+-- XRemoveConnectionWatch omitted
+
+-- XmbLookupString omitted
+-- XwcLookupString omitted
+
+----------------------------------------------------------------
+-- End
+----------------------------------------------------------------

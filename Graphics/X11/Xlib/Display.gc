@@ -1,0 +1,122 @@
+-----------------------------------------------------------------------------
+-- |
+-- Module      :  Graphics.X11.Xlib.Display
+-- Copyright   :  (c) Alastair Reid, 1999-2003
+-- License     :  BSD-style (see the file libraries/base/LICENSE)
+-- 
+-- Maintainer  :  libraries@haskell.org
+-- Stability   :  provisional
+-- Portability :  portable
+--
+-- A collection of GreenCard declarations for interfacing with Xlib Displays.
+--
+-----------------------------------------------------------------------------
+
+module Graphics.X11.Xlib.Display(
+
+        allPlanes_aux,
+        blackPixel,
+        whitePixel,
+        connectionNumber,
+        defaultColormap,
+        defaultGC,
+        defaultDepth,
+        defaultScreen,
+        defaultScreenOfDisplay,
+        displayHeight,
+        displayHeightMM,
+        displayWidth,
+        displayWidthMM,
+        maxRequestSize,
+        displayMotionBufferSize,
+        resourceManagerString,
+        screenResourceString,
+        displayString,
+        imageByteOrder,
+        protocolRevision,
+        protocolVersion,
+        serverVendor,
+        screenCount,
+        defaultVisual,
+        displayCells,
+        displayPlanes,
+        screenOfDisplay,
+        defaultRootWindow,
+        rootWindow,
+        qLength,
+        noOp,
+        openDisplay,
+        closeDisplay,
+
+        ) where
+ 
+import Graphics.X11.StdDIS
+import Graphics.X11.Types
+import Graphics.X11.Xlib.Types
+
+%#include "include/HsXlib.h"
+
+%prefix X
+
+----------------------------------------------------------------
+-- Display
+----------------------------------------------------------------
+
+%fun AllPlanes_aux           :: Pixel
+%fun BlackPixel              :: Display -> ScreenNumber -> Pixel
+%fun WhitePixel              :: Display -> ScreenNumber -> Pixel
+
+-- This may vary from one execution to another but I believe it 
+-- is constant during any given execution and so it can be made PURE
+-- without breaking referential transparency.
+--
+-- Note: underneath the opaque name, it turns out that this
+-- is the file descriptor.  You need to know this if you want to
+-- use select.
+%fun ConnectionNumber        :: Display -> Int
+
+%fun DefaultColormap         :: Display -> ScreenNumber -> Colormap
+
+-- %fun XListDepths :: Display -> ScreenNumber -> ListInt using res1 = XListDepths(arg1,arg2,&res1_size)
+
+%fun DefaultGC               :: Display -> ScreenNumber -> GC
+%fun DefaultDepth            :: Display -> ScreenNumber -> Int
+%fun DefaultScreen           :: Display -> ScreenNumber
+%fun DefaultScreenOfDisplay  :: Display -> Screen
+%fun DisplayHeight           :: Display -> ScreenNumber -> Int
+%fun DisplayHeightMM         :: Display -> ScreenNumber -> Int
+%fun DisplayWidth            :: Display -> ScreenNumber -> Int
+%fun DisplayWidthMM          :: Display -> ScreenNumber -> Int
+%fun XMaxRequestSize         :: Display -> Int
+%fun XDisplayMotionBufferSize:: Display -> Int
+--Disnae exist in X11R5 %fun XExtendedMaxRequestSize :: Display -> Int
+%fun XResourceManagerString  :: Display -> String
+%fun XScreenResourceString   :: Screen   -> String
+%fun DisplayString           :: Display -> String
+%fun ImageByteOrder          :: Display -> Int   
+%fun ProtocolRevision        :: Display -> Int   
+%fun ProtocolVersion         :: Display -> Int
+%fun ServerVendor            :: Display -> String
+--Disnae exist: %fun XServerRelease          :: Display -> Int    
+%fun ScreenCount             :: Display -> Int    
+%fun DefaultVisual           :: Display -> ScreenNumber -> Visual
+%fun DisplayCells            :: Display -> ScreenNumber -> Int
+%fun DisplayPlanes           :: Display -> ScreenNumber -> Int
+%fun ScreenOfDisplay         :: Display -> ScreenNumber -> Screen
+%fun DefaultRootWindow       :: Display -> Window
+
+-- The following are believed to be order dependent
+
+%fun XRootWindow    	     :: Display -> ScreenNumber -> IO Window
+%fun XQLength       	     :: Display -> IO Int
+     		    	     
+%fun XNoOp          	     :: Display -> IO ()
+
+%fun XOpenDisplay :: String -> IO Display
+%fail {res1 == 0} { NullPtr(XOpenDisplay) }
+
+%fun XCloseDisplay           :: Display -> IO ()
+
+----------------------------------------------------------------
+-- End
+----------------------------------------------------------------
