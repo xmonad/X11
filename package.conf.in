@@ -53,5 +53,6 @@ extra-cc-opts:	X_CFLAGS
 extra-ld-opts:  X_LIBS
 framework-dirs:
 extra-frameworks:
+
 haddock-interfaces:
 haddock-html:

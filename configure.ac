@@ -18,12 +18,15 @@ AC_SUBST([X11_BUILD_PACKAGE])
 
 # Define CPP variables used in package.conf.in
 if test "$X11_BUILD_PACKAGE" = yes; then
-  x_cflags=`echo '' $X_CFLAGS | sed -e 's/-[[^ ]]*/,"&"/g' -e 's/^ *,//'`
-  x_libs=`echo '' $X_LIBS | sed -e 's/-[[^ ]]*/,"&"/g' -e 's/^ *,//'`
-  AC_DEFINE_UNQUOTED(X_CFLAGS, $x_cflags,
-	[C flags for X11, as a list of string literals.])
-  AC_DEFINE_UNQUOTED(X_LIBS, $x_libs,
-	[Library flags for X11, as a list of string literals.])
+
+  AC_DEFINE_UNQUOTED(X_CFLAGS,
+    [`echo '' $X_CFLAGS | sed -e 's/-[[^ ]]*/,"&"/g' -e 's/^ *,//'`],
+    [C flags for X11, as a list of string literals.])
+
+  AC_DEFINE_UNQUOTED(X_LIBS,
+    [`echo '' $X_LIBS | sed -e 's/-[[^ ]]*/,"&"/g' -e 's/^ *,//'`],
+    [Library flags for X11, as a list of string literals.])
+
 fi
 
 AC_CONFIG_FILES([config.mk])
