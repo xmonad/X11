@@ -19,7 +19,7 @@ module Graphics.X11.Xlib.Event(
         queuedAfterReading,
         XEvent,
         XEventPtr,
-        allocXEvent,
+        allocaXEvent,
         get_EventType,
         get_Window,
         XKeyEvent,
@@ -93,8 +93,8 @@ type   QueuedMode   = Int
 newtype XEvent = XEvent XEventPtr
 type XEventPtr = Ptr XEvent
 
-allocXEvent :: IO XEventPtr
-allocXEvent = mallocBytes #{size XEvent}
+allocaXEvent :: (XEventPtr -> IO a) -> IO a
+allocaXEvent = allocaBytes #{size XEvent}
 
 get_EventType :: XEventPtr -> IO EventType
 get_EventType = #{peek XEvent,type}

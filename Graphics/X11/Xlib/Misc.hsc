@@ -106,7 +106,7 @@ module Graphics.X11.Xlib.Misc(
         setWMProtocols,
 
 	-- * Set window attributes
-        allocXSetWindowAttributes,
+        allocaXSetWindowAttributes,
         set_background_pixmap,
         set_background_pixel,
         set_border_pixmap,
@@ -915,8 +915,8 @@ foreign import ccall unsafe "HsXlib.h XSetWMProtocols"
 
 -- ToDo: generate this kind of stuff automatically.
 
-allocXSetWindowAttributes :: IO (Ptr XSetWindowAttributes)
-allocXSetWindowAttributes = mallocBytes #{size XSetWindowAttributes}
+allocaXSetWindowAttributes :: (Ptr XSetWindowAttributes -> IO a) -> IO a
+allocaXSetWindowAttributes = allocaBytes #{size XSetWindowAttributes}
 
 ---------------- Access to individual fields ----------------
 
