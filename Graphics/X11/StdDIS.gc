@@ -38,15 +38,20 @@ module Graphics.X11.StdDIS
         ) where
 
 
-import Int( Int8, Int16, Int32, Int64 )
-import Word( Word8, Word16, Word32, Word64 )
 import System.IO.Unsafe( unsafePerformIO )
-import Foreign ( StablePtr, newStablePtr, deRefStablePtr, freeStablePtr,
-                 ForeignPtr, newForeignPtr, withForeignPtr,
-                 Ptr, FunPtr
-	       )
-import CString
-import MarshalAlloc( malloc, free )
+import Foreign( 
+        StablePtr, newStablePtr, deRefStablePtr, freeStablePtr,
+        ForeignPtr, newForeignPtr, withForeignPtr,
+        Ptr, FunPtr,
+        Int8, Int16, Int32, Int64,
+        Word8, Word16, Word32, Word64,
+        malloc, free
+	)
+import Foreign.C.String(
+        CString, 
+        newCString, newCStringLen,
+        peekCString, peekCStringLen 
+        )
 
 %dis char x             = %%Char   ({HsChar}   x)
 %dis int x              = %%Int    ({HsInt}    x)
