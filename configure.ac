@@ -1,4 +1,4 @@
-AC_INIT([Haskell X11 package], [1.0], [libraries@haskell.org], [X11])
+AC_INIT([Haskell X11 package], [1.1], [libraries@haskell.org], [X11])
 
 # Safety check: Ensure that we are in the correct source directory.
 AC_CONFIG_SRCDIR([include/HsXlib.h])
