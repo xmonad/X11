@@ -1,5 +1,5 @@
 # -----------------------------------------------------------------------------
-# $Id: Makefile,v 1.8 2003/05/22 14:16:41 reid Exp $
+# $Id: Makefile,v 1.9 2003/05/23 10:06:24 simonmar Exp $
 
 TOP = .
 include $(TOP)/mk/boilerplate.mk
@@ -17,8 +17,9 @@ PACKAGE_DEPS = base lang
 
 SRC_CC_OPTS += -Wall -Iinclude -I.
 
-SRC_HC_OPTS += -Wall -cpp -fglasgow-exts
-SRC_HC_OPTS += -fffi -package greencard
+SRC_HC_OPTS += -Wall -cpp -fglasgow-exts -fffi
+SRC_HC_OPTS += -Iinclude
+SRC_HC_OPTS += -package greencard
 
 SRC_HADDOCK_OPTS += -t "X11 Libraries (${PACKAGE} package)"
 
