@@ -11,10 +11,13 @@ AC_PATH_XTRA
 # Build the package if we found X11 stuff
 if test "$no_x" = yes; then
   X11_BUILD_PACKAGE=no
+  BUILD_PACKAGE_BOOL=False
 else
   X11_BUILD_PACKAGE=yes
+  BUILD_PACKAGE_BOOL=True
 fi
 AC_SUBST([X11_BUILD_PACKAGE])
+AC_SUBST([BUILD_PACKAGE_BOOL])
 
 # Define CPP variables used in package.conf.in
 if test "$X11_BUILD_PACKAGE" = yes; then
@@ -29,5 +32,5 @@ if test "$X11_BUILD_PACKAGE" = yes; then
 
 fi
 
-AC_CONFIG_FILES([config.mk])
+AC_CONFIG_FILES([config.mk Setup.buildinfo])
 AC_OUTPUT
