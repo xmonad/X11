@@ -1499,7 +1499,7 @@ type   SubWindowMode	= Int
 
 -- -- SetClipRectangles ordering
 -- type   Ordering        = Int
--- #{enum Ordering,
+-- {enum Ordering,
 -- , unsorted		= Unsorted
 -- , ySorted		= YSorted
 -- , yXSorted		= YXSorted

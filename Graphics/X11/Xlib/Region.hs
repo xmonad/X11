@@ -56,9 +56,10 @@ withRegion (Region r) = withForeignPtr r
 type RectInRegionResult = Int
 
 -- Return values from XRectInRegion()
-rectangleOut  = 0 :: RectInRegionResult
-rectangleIn   = 1 :: RectInRegionResult
-rectanglePart = 2 :: RectInRegionResult
+rectangleOut, rectangleIn, rectanglePart :: RectInRegionResult
+rectangleOut  = 0
+rectangleIn   = 1
+rectanglePart = 2
 
 ----------------------------------------------------------------
 -- Creating regions

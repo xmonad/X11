@@ -685,7 +685,8 @@ stringToKeysym str = unsafePerformIO $
 foreign import ccall unsafe "HsXlib.h XStringToKeysym"
 	xStringToKeysym  :: CString -> IO KeySym
 
-noSymbol = #{const NoSymbol} :: KeySym
+noSymbol :: KeySym
+noSymbol = #{const NoSymbol}
 
 newtype XComposeStatus = XComposeStatus (Ptr XComposeStatus)
 
