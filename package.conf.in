@@ -14,7 +14,7 @@ Package {
 			    "$libdir/libraries/X11/cbits" ],
 #endif
 	hs_libraries	= [ "HSX11" ],
-	extra_libraries	= [ "HSX11_cbits" ],
+	extra_libraries	= [ "HSX11_cbits", "X11" ],
 #ifdef INSTALLING
 	include_dirs	= [],
 #else
