@@ -1,5 +1,5 @@
 # -----------------------------------------------------------------------------
-# $Id: Makefile,v 1.5 2003/04/27 21:49:48 reid Exp $
+# $Id: Makefile,v 1.6 2003/05/17 00:53:51 ross Exp $
 
 TOP = ..
 include $(TOP)/mk/boilerplate.mk
@@ -23,7 +23,7 @@ GC_OPTS += --target=ffi
 
 SRC_HADDOCK_OPTS += -t "X11 Libraries (X11 package)"
 
-# yeuch, have to get X_CFLAGS & X_LIBS in through CPP to X11.conf.in
+# yeuch, have to get X_CFLAGS & X_LIBS in through CPP to package.conf.in
 comma = ,
 PACKAGE_CPP_OPTS += -DX_CFLAGS='$(patsubst %,$(comma)"%",$(X_CFLAGS))'
 PACKAGE_CPP_OPTS += -DX_LIBS='$(patsubst %,$(comma)"%",$(X_LIBS))'
