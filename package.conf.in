@@ -1,14 +1,27 @@
 Package {
-	name		= PACKAGE,
+	name		= "X11",
 	auto		= True,
-	import_dirs	= [ LIBDIR"/imports" ],
+#ifdef INSTALLING
+	import_dirs	= [ "$libdir/imports" ],
+#else
+	import_dirs	= [ "$libdir/libraries/X11" ],
+#endif
 	source_dirs	= [],
-	library_dirs	= [ LIBDIR ],
-	hs_libraries	= [ LIBRARY ],
-	extra_libraries	= [ "HSX11_cbits", "X11" ],
+#ifdef INSTALLING
+	library_dirs	= [ "$libdir" ],
+#else
+	library_dirs	= [ "$libdir/libraries/X11",
+			    "$libdir/libraries/X11/cbits" ],
+#endif
+	hs_libraries	= [ "HSX11" ],
+	extra_libraries	= [ "HSX11_cbits" ],
+#ifdef INSTALLING
 	include_dirs	= [],
-	c_includes	= [ ],
-	package_deps	= [ PACKAGE_DEPS ],
+#else
+	include_dirs	= [ "$libdir/libraries/X11/include" ],
+#endif
+	c_includes	= [ "HsXlib.h" ],
+	package_deps	= [ "base" ],
 	extra_ghc_opts	= [],
 	extra_cc_opts	= [ X_CFLAGS ],
 	extra_ld_opts	= [ X_LIBS ]
