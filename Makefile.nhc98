@@ -4,18 +4,18 @@ EXTRA_H_FLAGS = -package base
 
 SRCS	= \
 	Graphics/X11.hs \
-	Graphics/X11/Types.hs \
+	Graphics/X11/Types.hsc \
 	Graphics/X11/Xlib.hs \
-	Graphics/X11/Xlib/Atom.hs \
+	Graphics/X11/Xlib/Atom.hsc \
 	Graphics/X11/Xlib/Color.hs \
 	Graphics/X11/Xlib/Context.hs \
 	Graphics/X11/Xlib/Display.hs \
-	Graphics/X11/Xlib/Event.hs \
-	Graphics/X11/Xlib/Font.hs \
-	Graphics/X11/Xlib/Misc.hs \
+	Graphics/X11/Xlib/Event.hsc \
+	Graphics/X11/Xlib/Font.hsc \
+	Graphics/X11/Xlib/Misc.hsc \
 	Graphics/X11/Xlib/Region.hs \
 	Graphics/X11/Xlib/Screen.hs \
-	Graphics/X11/Xlib/Types.hs \
+	Graphics/X11/Xlib/Types.hsc \
 	Graphics/X11/Xlib/Window.hs \
 	fdset.c \
 	auxiliaries.c
