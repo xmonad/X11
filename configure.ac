@@ -39,5 +39,5 @@ if test "$X11_BUILD_PACKAGE" = yes; then
 
 fi
 
-AC_CONFIG_FILES([config.mk Setup.buildinfo])
+AC_CONFIG_FILES([config.mk X11.buildinfo])
 AC_OUTPUT
