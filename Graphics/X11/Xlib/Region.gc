@@ -64,7 +64,7 @@ type RectInRegionResult = Int
 % , RectanglePart
 % ]
  
--- regions deallocation is handled by the GC (ForeignObj magic)
+-- regions deallocation is handled by the GC (ForeignPtr magic)
 -- so we don't provide XDestroyRegion explicitly
 -- no idea what the int is for
 -- %fun XDestroyRegion :: Region -> IO Int
