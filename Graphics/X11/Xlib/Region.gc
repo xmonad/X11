@@ -1,6 +1,6 @@
 -----------------------------------------------------------------------------
 -- |
--- Module      :  Graphics.X11.Xlib
+-- Module      :  Graphics.X11.Xlib.Region
 -- Copyright   :  (c) Alastair Reid, 1999-2003
 -- License     :  BSD-style (see the file libraries/base/LICENSE)
 -- 

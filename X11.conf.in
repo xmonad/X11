@@ -12,10 +12,11 @@ Package {
 #ifdef INSTALLING
 	library_dirs	= [ "$libdir" ],
 #else
-	library_dirs	= [ "$libdir/libraries/X11" ],
+	library_dirs	= [ "$libdir/libraries/X11"
+                          , "$libdir/libraries/X11/cbits" ],
 #endif
 	hs_libraries	= [ "HSX11" ],
-	extra_libraries	= [ "HSX11_cbits" ],
+	extra_libraries	= [ "HSX11_cbits", "X11" ],
 #ifdef INSTALLING
 	include_dirs	= [],
 #else
@@ -24,6 +25,6 @@ Package {
 	c_includes	= [ "HsX11.h" ],
 	package_deps	= [ "base" ],
 	extra_ghc_opts	= [],
-	extra_cc_opts	= [ "" X11_CFLAGS ],
-	extra_ld_opts	= [ "" X11_LIBS ]
+	extra_cc_opts	= [ "" X_CFLAGS ],
+	extra_ld_opts	= [ "" X_LIBS ]
 }

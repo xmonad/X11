@@ -24,6 +24,7 @@ module Graphics.X11.Xlib.Event(
         get_Window,
         XKeyEvent,
         XKeyEventPtr,
+        asKeyEvent,
         XButtonEvent,
         get_KeyEvent,
         get_ButtonEvent,
@@ -60,6 +61,8 @@ module Graphics.X11.Xlib.Event(
 import Graphics.X11.StdDIS
 import Graphics.X11.Types
 import Graphics.X11.Xlib.Types
+
+import Foreign( castPtr )
 
 %#include "include/HsXlib.h"
 
@@ -140,6 +143,9 @@ type XKeyEvent =
 type XKeyEventPtr   = Ptr Stub_KeyEventPtr
 data Stub_KeyEventPtr
 %dis xKeyEventPtr x = ptr ({XKeyEvent*} x)
+
+asKeyEvent :: XEventPtr -> XKeyEventPtr
+asKeyEvent = castPtr
 
 type XButtonEvent = 
  ( Window    --	root window that the event occured on 
