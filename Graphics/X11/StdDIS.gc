@@ -1,0 +1,138 @@
+-----------------------------------------------------------------------------
+-- |
+-- Module      :  Graphics.X11.StdDIS
+-- Copyright   :  (c) Thomas Nordin and Alastair Reid, 1997-2003
+-- License     :  BSD-style (see the file libraries/base/LICENSE)
+-- 
+-- Maintainer  :  libraries@haskell.org
+-- Stability   :  provisional
+-- Portability :  portable
+--
+-- Generic GreenCard support code.
+--
+-----------------------------------------------------------------------------
+
+module Graphics.X11.StdDIS
+        ( StablePtr
+        , ForeignPtr
+        , Ptr
+        , FunPtr
+        , Int8, Int16, Int32, Int64
+        , Word8, Word16, Word32, Word64
+        , unsafePerformIO
+        , MbString
+        , marshall_bool_,      unmarshall_bool_
+        , marshall_string_,    unmarshall_string_
+        , marshall_stringLen_, unmarshall_stringLen_
+        , newStablePtr, deRefStablePtr, freeStablePtr
+        , newForeignPtr, withForeignPtr
+        , malloc, free
+
+	   -- re-exporting base Prelude types
+	   -- (useful when generating source that
+	   --  import StdDIS qualified.)
+	, Float
+	, Double
+	, Int
+	, Char
+        ) where
+
+
+import Int( Int8, Int16, Int32, Int64 )
+import Word( Word8, Word16, Word32, Word64 )
+import System.IO.Unsafe( unsafePerformIO )
+import Foreign ( StablePtr, newStablePtr, deRefStablePtr, freeStablePtr,
+                 ForeignPtr, newForeignPtr, withForeignPtr,
+                 Ptr, FunPtr
+	       )
+import CString
+import MarshalAlloc( malloc, free )
+
+%dis char x             = %%Char   ({HsChar}   x)
+%dis int x              = %%Int    ({HsInt}    x)
+%dis float x            = %%Float  ({HsFloat}  x)
+%dis double x           = %%Double ({HsDouble} x)
+%dis ptr x              = %%Ptr    ({HsPtr}    x)
+%dis funPtr x           = %%FunPtr ({HsFunPtr} x)
+
+%dis int8 x             = %%Int8   ({HsInt8}   x)
+%dis int16 x            = %%Int16  ({HsInt16}  x)
+%dis int32 x            = %%Int32  ({HsInt32}  x)
+
+%dis word8 x            = %%Word8  ({HsWord8}  x)
+%dis word16 x           = %%Word16 ({HsWord16} x)
+%dis word32 x           = %%Word32 ({HsWord32} x)
+
+%dis maybeT z x         = %Maybe z x
+%dis maybe x            = maybeT {0} x
+
+%dis bool x             = bool_ (int x)
+
+marshall_bool_ :: Bool -> IO Int
+marshall_bool_ True  = return 1
+marshall_bool_ False = return 0
+
+unmarshall_bool_ :: Int -> IO Bool
+unmarshall_bool_ 0 = return False
+unmarshall_bool_ _ = return True
+
+-- Ignore "IO" part of result type
+%dis iO x = x
+
+----------------------------------------------------------------
+-- Strings
+----------------------------------------------------------------
+
+%dis string x      = string_    (ptr ({char *} x))
+%dis stringLen x l = stringLen_ (ptr ({char *} x)) (int l)
+
+type MbString      = Maybe String
+%dis mbString x    = maybeT {nullPtr} (string x)
+
+marshall_string_ :: [Char] -> IO CString
+marshall_string_ = newCString
+
+marshall_stringLen_ :: [Char] -> IO (CString, Int)
+marshall_stringLen_ = newCStringLen
+
+unmarshall_string_ :: CString -> IO String
+unmarshall_string_ = peekCString
+
+unmarshall_stringLen_ :: CString -> Int -> IO String
+unmarshall_stringLen_ ptr l = peekCStringLen (ptr, l)
+
+----------------------------------------------------------------
+-- Stable pointers
+----------------------------------------------------------------
+
+--
+-- Use "stable" to create a stable pointer
+-- 
+-- Use "stablePtr" to manipulate (previously constructed) stable pointers 
+-- in Haskell.
+--
+%dis stable x = 
+%   declare {HsStablePtr} x in 
+%   << newStablePtr / deRefStablePtr / %%StablePtr >> x
+
+%dis stablePtr x = (%%StablePtr ({HsStablePtr} x))
+
+----------------------------------------------------------------
+-- Foreign pointers
+----------------------------------------------------------------
+
+--
+-- Use "foreignP" to create a stable pointer
+-- 
+-- Use "foreignPtr" to manipulate (previously constructed) foreign pointers 
+-- in Haskell.
+--
+%dis foreign x = 
+%   declare {HsForeignPtr} x in 
+%   << newForeignPtr / withForeignPtr / %%ForeignPtr >> x
+
+%dis foreignPtr x = %%ForeignPtr ({HsForeignPtr} x)
+
+----------------------------------------------------------------
+-- End of StdDIS
+----------------------------------------------------------------

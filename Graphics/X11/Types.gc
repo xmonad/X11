@@ -1,0 +1,939 @@
+-----------------------------------------------------------------------------
+-- |
+-- Module      :  Graphics.X11.Types
+-- Copyright   :  (c) Alastair Reid, 1999-2003
+-- License     :  BSD-style (see the file libraries/base/LICENSE)
+-- 
+-- Maintainer  :  libraries@haskell.org
+-- Stability   :  provisional
+-- Portability :  portable
+--
+-- A collection of type declarations for interfacing with X11.
+--
+-----------------------------------------------------------------------------
+
+module Graphics.X11.Types
+	( module Graphics.X11.Types
+	) where
+
+import Graphics.X11.StdDIS
+
+%#include "include/HsXlib.h"
+
+-- ToDo: use newtype
+type XID      = Word32
+type Mask     = Word32
+type Atom     = Word32
+type VisualID = Word32
+type Time     = Word32
+
+%dis xID      x = word32 ({XID}      x)
+%dis mask     x = word32 ({unsigned int} x)
+%dis atom     x = word32 ({Atom}     x)
+%dis visualID x = word32 ({VisualID} x)
+%dis time     x = word32 ({Time}     x)
+
+-- end platform dependency
+
+type Window   = XID
+type Drawable = XID
+type Font     = XID
+type Pixmap   = XID
+type Cursor   = XID
+type Colormap = XID
+type GContext = XID
+type KeySym   = XID
+
+%dis window   x = xID x
+%dis drawable x = xID x
+%dis font     x = xID x
+%dis pixmap   x = xID x
+%dis cursor   x = xID x
+%dis colormap x = xID x
+%dis gContext x = xID x
+%dis keySym   x = xID x
+
+type KeyCode = Char
+%dis keyCode x = char ({KeyCode} x)
+
+%const KeySym
+% [ XK_VoidSymbol	-- void symbol 
+%
+% -- TTY Functions, cleverly chosen to map to ascii, for convenience of
+% -- programming, but could have been arbitrary (at the cost of lookup
+% -- tables in client code.
+%
+% , XK_BackSpace        -- back space, back char 
+% , XK_Tab                      
+% , XK_Linefeed         -- Linefeed, LF 
+% , XK_Clear            
+% , XK_Return           -- Return, enter 
+% , XK_Pause            -- Pause, hold 
+% , XK_Scroll_Lock              
+% , XK_Sys_Req          
+% , XK_Escape           
+% , XK_Delete           -- Delete, rubout 
+%
+% -- International & multi-key character composition 
+% , XK_Multi_key              -- Multi-key character compose 
+% -- , XK_Codeinput           -- Not defined for SunOS.
+% -- , XK_SingleCandidate     -- Not defined for SunOS.
+% -- , XK_MultipleCandidate   -- Not defined for SunOS.
+% -- , XK_PreviousCandidate   -- Not defined for SunOS.
+% ]
+
+-- Cursor control & motion
+%const KeySym
+% [ XK_Home                 
+% , XK_Left                   -- Move left, left arrow 
+% , XK_Up                     -- Move up, up arrow 
+% , XK_Right                  -- Move right, right arrow 
+% , XK_Down                   -- Move down, down arrow 
+% , XK_Prior                  -- Prior, previous 
+% , XK_Page_Up              
+% , XK_Next                   -- Next 
+% , XK_Page_Down            
+% , XK_End                    -- EOL 
+% , XK_Begin                  -- BOL 
+%			    
+% , XK_Select                 -- Select, mark 
+% , XK_Print                
+% , XK_Execute                -- Execute, run, do 
+% , XK_Insert                 -- Insert, insert here 
+% , XK_Undo                   -- Undo, oops 
+% , XK_Redo                   -- redo, again 
+% , XK_Menu                 
+% , XK_Find                   -- Find, search 
+% , XK_Cancel                 -- Cancel, stop, abort, exit 
+% , XK_Help                   -- Help 
+% , XK_Break                
+% , XK_Mode_switch            -- Character set switch 
+% , XK_script_switch          -- Alias for mode_switch 
+% , XK_Num_Lock             
+% ]
+ 
+-- Keypad Functions, keypad numbers cleverly chosen to map to ascii
+%const KeySym
+% [ XK_KP_Space               -- space 
+% , XK_KP_Tab               
+% , XK_KP_Enter               -- enter 
+% , XK_KP_F1                  -- PF1, KP_A, ... 
+% , XK_KP_F2                
+% , XK_KP_F3                
+% , XK_KP_F4                
+% , XK_KP_Home              
+% , XK_KP_Left              
+% , XK_KP_Up                
+% , XK_KP_Right             
+% , XK_KP_Down              
+% , XK_KP_Prior             
+% , XK_KP_Page_Up           
+% , XK_KP_Next              
+% , XK_KP_Page_Down         
+% , XK_KP_End               
+% , XK_KP_Begin             
+% , XK_KP_Insert            
+% , XK_KP_Delete            
+% , XK_KP_Equal               -- equals 
+% , XK_KP_Multiply          
+% , XK_KP_Add               
+% , XK_KP_Separator           -- separator, often comma 
+% , XK_KP_Subtract          
+% , XK_KP_Decimal           
+% , XK_KP_Divide            
+%			    
+% , XK_KP_0                 
+% , XK_KP_1                 
+% , XK_KP_2                 
+% , XK_KP_3                 
+% , XK_KP_4                 
+% , XK_KP_5                 
+% , XK_KP_6                 
+% , XK_KP_7                 
+% , XK_KP_8                 
+% , XK_KP_9                 
+%			    
+% , XK_F1                   
+% , XK_F2                   
+% , XK_F3                   
+% , XK_F4                   
+% , XK_F5                   
+% , XK_F6                   
+% , XK_F7                   
+% , XK_F8                   
+% , XK_F9                   
+% , XK_F10                  
+% , XK_F11                  
+% , XK_L1                   
+% , XK_F12                  
+% , XK_L2                   
+% , XK_F13                  
+% , XK_L3                   
+% , XK_F14                  
+% , XK_L4                   
+% , XK_F15                  
+% , XK_L5                   
+% , XK_F16                  
+% , XK_L6                   
+% , XK_F17                  
+% , XK_L7                   
+% , XK_F18                  
+% , XK_L8                   
+% , XK_F19                  
+% , XK_L9                   
+% , XK_F20                  
+% , XK_L10                  
+% , XK_F21                  
+% , XK_R1                   
+% , XK_F22                  
+% , XK_R2                   
+% , XK_F23                  
+% , XK_R3                   
+% , XK_F24                  
+% , XK_R4                   
+% , XK_F25                  
+% , XK_R5                   
+% , XK_F26                  
+% , XK_R6                   
+% , XK_F27                  
+% , XK_R7                   
+% , XK_F28                  
+% , XK_R8                   
+% , XK_F29                  
+% , XK_R9                   
+% , XK_F30                  
+% , XK_R10                  
+% , XK_F31                  
+% , XK_R11                  
+% , XK_F32                  
+% , XK_R12                  
+% , XK_F33                  
+% , XK_R13                  
+% , XK_F34                  
+% , XK_R14                  
+% , XK_F35                  
+% , XK_R15                  
+% ]
+			    
+%const KeySym
+% [ XK_Shift_L                -- Left shift 
+% , XK_Shift_R                -- Right shift 
+% , XK_Control_L              -- Left control 
+% , XK_Control_R              -- Right control 
+% , XK_Caps_Lock              -- Caps lock 
+% , XK_Shift_Lock             -- Shift lock 
+%			    
+% , XK_Meta_L                 -- Left meta 
+% , XK_Meta_R                 -- Right meta 
+% , XK_Alt_L                  -- Left alt 
+% , XK_Alt_R                  -- Right alt 
+% , XK_Super_L                -- Left super 
+% , XK_Super_R                -- Right super 
+% , XK_Hyper_L                -- Left hyper 
+% , XK_Hyper_R                -- Right hyper 
+% ]
+
+%const KeySym
+% [ XK_space               
+% , XK_exclam              
+% , XK_quotedbl            
+% , XK_numbersign          
+% , XK_dollar              
+% , XK_percent             
+% , XK_ampersand           
+% , XK_apostrophe          
+% , XK_quoteright              -- deprecated 
+% , XK_parenleft           
+% , XK_parenright          
+% , XK_asterisk            
+% , XK_plus                
+% , XK_comma               
+% , XK_minus               
+% , XK_period              
+% , XK_slash               
+% , XK_0                   
+% , XK_1                   
+% , XK_2                   
+% , XK_3                   
+% , XK_4                   
+% , XK_5                   
+% , XK_6                   
+% , XK_7                   
+% , XK_8                   
+% , XK_9                   
+% , XK_colon               
+% , XK_semicolon           
+% , XK_less                
+% , XK_equal               
+% , XK_greater             
+% , XK_question            
+% , XK_at                  
+% , XK_A                   
+% , XK_B                   
+% , XK_C                   
+% , XK_D                   
+% , XK_E                   
+% , XK_F                   
+% , XK_G                   
+% , XK_H                   
+% , XK_I                   
+% , XK_J                   
+% , XK_K                   
+% , XK_L                   
+% , XK_M                   
+% , XK_N                   
+% , XK_O                   
+% , XK_P                   
+% , XK_Q                   
+% , XK_R                   
+% , XK_S                   
+% , XK_T                   
+% , XK_U                   
+% , XK_V                   
+% , XK_W                   
+% , XK_X                   
+% , XK_Y                   
+% , XK_Z                   
+% , XK_bracketleft         
+% , XK_backslash           
+% , XK_bracketright        
+% , XK_asciicircum         
+% , XK_underscore          
+% , XK_grave               
+% , XK_quoteleft               -- deprecated 
+% , XK_a                   
+% , XK_b                   
+% , XK_c                   
+% , XK_d                   
+% , XK_e                   
+% , XK_f                   
+% , XK_g                   
+% , XK_h                   
+% , XK_i                   
+% , XK_j                   
+% , XK_k                   
+% , XK_l                   
+% , XK_m                   
+% , XK_n                   
+% , XK_o                   
+% , XK_p                   
+% , XK_q                   
+% , XK_r                   
+% , XK_s                   
+% , XK_t                   
+% , XK_u                   
+% , XK_v                   
+% , XK_w                   
+% , XK_x                   
+% , XK_y                   
+% , XK_z                   
+% , XK_braceleft           
+% , XK_bar                 
+% , XK_braceright          
+% , XK_asciitilde          
+%
+% , XK_nobreakspace        
+% , XK_exclamdown          
+% , XK_cent                
+% , XK_sterling            
+% , XK_currency            
+% , XK_yen                 
+% , XK_brokenbar           
+% , XK_section             
+% , XK_diaeresis           
+% , XK_copyright           
+% , XK_ordfeminine         
+% , XK_guillemotleft           -- left angle quotation mark 
+% , XK_notsign             
+% , XK_hyphen              
+% , XK_registered          
+% , XK_macron              
+% , XK_degree              
+% , XK_plusminus           
+% , XK_twosuperior         
+% , XK_threesuperior       
+% , XK_acute               
+% , XK_mu                  
+% , XK_paragraph           
+% , XK_periodcentered      
+% , XK_cedilla             
+% , XK_onesuperior         
+% , XK_masculine           
+% , XK_guillemotright          -- right angle quotation mark 
+% , XK_onequarter          
+% , XK_onehalf             
+% , XK_threequarters       
+% , XK_questiondown        
+% , XK_Agrave              
+% , XK_Aacute              
+% , XK_Acircumflex         
+% , XK_Atilde              
+% , XK_Adiaeresis          
+% , XK_Aring               
+% , XK_AE                  
+% , XK_Ccedilla            
+% , XK_Egrave              
+% , XK_Eacute              
+% , XK_Ecircumflex         
+% , XK_Ediaeresis          
+% , XK_Igrave              
+% , XK_Iacute              
+% , XK_Icircumflex         
+% , XK_Idiaeresis          
+% , XK_ETH                 
+% , XK_Eth                     -- deprecated 
+% , XK_Ntilde              
+% , XK_Ograve              
+% , XK_Oacute              
+% , XK_Ocircumflex         
+% , XK_Otilde              
+% , XK_Odiaeresis          
+% , XK_multiply            
+% , XK_Ooblique            
+% , XK_Ugrave              
+% , XK_Uacute              
+% , XK_Ucircumflex         
+% , XK_Udiaeresis          
+% , XK_Yacute              
+% , XK_THORN               
+% , XK_Thorn                   -- deprecated   
+% , XK_ssharp              
+% , XK_agrave              
+% , XK_aacute              
+% , XK_acircumflex         
+% , XK_atilde              
+% , XK_adiaeresis          
+% , XK_aring               
+% , XK_ae                  
+% , XK_ccedilla            
+% , XK_egrave              
+% , XK_eacute              
+% , XK_ecircumflex         
+% , XK_ediaeresis          
+% , XK_igrave              
+% , XK_iacute              
+% , XK_icircumflex         
+% , XK_idiaeresis          
+% , XK_eth                 
+% , XK_ntilde              
+% , XK_ograve              
+% , XK_oacute              
+% , XK_ocircumflex         
+% , XK_otilde              
+% , XK_odiaeresis          
+% , XK_division            
+% , XK_oslash              
+% , XK_ugrave              
+% , XK_uacute              
+% , XK_ucircumflex         
+% , XK_udiaeresis          
+% , XK_yacute              
+% , XK_thorn               
+% , XK_ydiaeresis          
+% ]
+
+type EventMask = Mask
+%dis eventMask x = mask x
+
+%const EventMask 
+% [ NoEventMask
+% , KeyPressMask
+% , KeyReleaseMask
+% , ButtonPressMask
+% , ButtonReleaseMask
+% , EnterWindowMask
+% , LeaveWindowMask
+% , PointerMotionMask
+% , PointerMotionHintMask
+% , Button1MotionMask
+% , Button2MotionMask
+% , Button3MotionMask
+% , Button4MotionMask
+% , Button5MotionMask
+% , ButtonMotionMask
+% , KeymapStateMask
+% , ExposureMask
+% , VisibilityChangeMask
+% , StructureNotifyMask
+% , ResizeRedirectMask
+% , SubstructureNotifyMask
+% , SubstructureRedirectMask
+% , FocusChangeMask
+% , PropertyChangeMask
+% , ColormapChangeMask
+% , OwnerGrabButtonMask       
+% ]
+
+type EventType = Word32
+%dis eventType x = word32 x
+
+%const EventType 
+% [ KeyPress
+% , KeyRelease
+% , ButtonPress
+% , ButtonRelease
+% , MotionNotify
+% , EnterNotify
+% , LeaveNotify
+% , FocusIn
+% , FocusOut
+% , KeymapNotify
+% , Expose
+% , GraphicsExpose
+% , NoExpose
+% , VisibilityNotify
+% , CreateNotify
+% , DestroyNotify
+% , UnmapNotify
+% , MapNotify
+% , MapRequest
+% , ReparentNotify
+% , ConfigureNotify
+% , ConfigureRequest
+% , GravityNotify
+% , ResizeRequest
+% , CirculateNotify
+% , CirculateRequest
+% , PropertyNotify
+% , SelectionClear
+% , SelectionRequest
+% , SelectionNotify
+% , ColormapNotify
+% , ClientMessage
+% , MappingNotify
+% , LASTEvent
+% ]
+
+type Modifier = Mask
+%dis modifier x = mask x
+
+%const Modifier 
+% [ ShiftMapIndex
+% , LockMapIndex
+% , ControlMapIndex
+% , Mod1MapIndex
+% , Mod2MapIndex
+% , Mod3MapIndex
+% , Mod4MapIndex
+% , Mod5MapIndex
+% , AnyModifier
+% ]
+
+type KeyMask = Modifier
+%dis keyMask x = modifier x
+
+%const KeyMask 
+% [ ShiftMask
+% , LockMask
+% , ControlMask
+% , Mod1Mask
+% , Mod2Mask
+% , Mod3Mask
+% , Mod4Mask
+% , Mod5Mask
+% ]
+
+type ButtonMask = Modifier
+%dis buttonMask x = modifier x
+
+%const ButtonMask
+% [ Button1Mask
+% , Button2Mask
+% , Button3Mask
+% , Button4Mask
+% , Button5Mask
+% ]
+
+type Button = Word32
+%dis button x = word32 x
+
+%const Button 
+% [ Button1
+% , Button2
+% , Button3
+% , Button4
+% , Button5
+% ]
+
+type NotifyMode = Int
+%dis notifyMode x = int x
+
+-- NotifyNormal and NotifyHint are used as detail in XMotionEvents
+%const NotifyMode
+% [ NotifyNormal
+% , NotifyGrab
+% , NotifyUngrab
+% , NotifyWhileGrabbed
+% , NotifyHint
+% ]
+
+type NotifyDetail = Int
+%dis notifyDetail x = int x
+
+%const NotifyDetail     
+% [ NotifyAncestor
+% , NotifyVirtual
+% , NotifyInferior
+% , NotifyNonlinear
+% , NotifyNonlinearVirtual
+% , NotifyPointer
+% , NotifyPointerRoot
+% , NotifyDetailNone
+% ]
+
+type Visibility = Int
+%dis visibility x = int x
+%const Visibility
+% [ VisibilityUnobscured
+% , VisibilityPartiallyObscured
+% , VisibilityFullyObscured
+% ]
+
+-- Window's place relative to siblings (used in Circulation requests/events)
+type Place = Int
+%dis place x = int x
+%const Place [ PlaceOnTop, PlaceOnBottom ]
+
+type Protocol = Int
+%dis protocol x = int x
+%const Protocol [ FamilyInternet, FamilyDECnet, FamilyChaos ]
+
+type PropertyNotification = Int
+%dis propertyNotification x = int x
+%const PropertyNotification [ PropertyNewValue, PropertyDelete ]
+
+type ColormapNotification = Int
+%dis colormapNotification x = int x
+%const ColormapNotification [ ColormapUninstalled, ColormapInstalled ]
+
+
+-- Grab{Pointer,Button,Keyboard,Key} Modes
+type GrabMode = Int
+%dis grabMode x = int x
+%const GrabMode [ GrabModeSync, GrabModeAsync ]
+
+-- Grab{Pointer,Keyboard} reply status
+
+type GrabStatus = Int
+%dis grabStatus x = int x
+%const GrabStatus 
+% [ GrabSuccess, AlreadyGrabbed, GrabInvalidTime, GrabNotViewable, GrabFrozen ]
+
+-- AllowEvents modes
+type AllowEvents = Int
+%dis allowEvents x = int x
+%const AllowEvents
+% [ AsyncPointer
+% , SyncPointer
+% , ReplayPointer
+% , AsyncKeyboard
+% , SyncKeyboard
+% , ReplayKeyboard
+% , AsyncBoth
+% , SyncBoth
+% ]
+
+
+-- {Set,Get}InputFocus Modes
+type FocusMode = Int
+%dis focusMode x = int x
+%const FocusMode [ RevertToNone, RevertToPointerRoot, RevertToParent ]
+
+-- Error codes
+type Status = Int
+%dis status x = int x
+%const Status   
+% [ Success
+% , BadRequest
+% , BadValue
+% , BadWindow
+% , BadPixmap
+% , BadAtom
+% , BadCursor
+% , BadFont
+% , BadMatch
+% , BadDrawable
+% , BadAccess
+% , BadAlloc
+% , BadColor
+% , BadGC
+% , BadIDChoice
+% , BadName
+% , BadLength
+% , BadImplementation
+% , FirstExtensionError
+% , LastExtensionError
+% ]
+
+type WindowClass = Int
+%dis windowClass x = int x
+%const WindowClass [ CopyFromParent, InputOutput, InputOnly ]
+
+-- Window attributes mask
+type AttributeMask = Mask 
+%dis attributeMask x = mask x
+
+%const AttributeMask
+% [ CWBackPixmap
+% , CWBackPixel
+% , CWBorderPixmap
+% , CWBorderPixel
+% , CWBitGravity
+% , CWWinGravity
+% , CWBackingStore
+% , CWBackingPlanes
+% , CWBackingPixel
+% , CWOverrideRedirect
+% , CWSaveUnder
+% , CWEventMask
+% , CWDontPropagate
+% , CWColormap
+% , CWCursor
+% ]
+
+-- Used in ChangeCloseDownMode 
+type CloseDownMode = Int 
+%dis closeDownMode x = int x
+
+%const CloseDownMode
+% [ DestroyAll         
+% , RetainPermanent    
+% , RetainTemporary    
+% ]
+
+
+----------------------------------------------------------------
+-- CURSOR STUFF
+----------------------------------------------------------------
+
+type QueryBestSizeClass = Int 
+%dis queryBestSizeClass x = int x
+%const QueryBestSizeClass
+% [ CursorShape         -- largest size that can be displayed 
+% , TileShape           -- size tiled fastest 
+% , StippleShape        -- size stippled fastest 
+% ]
+
+----------------------------------------------------------------
+-- GRAPHICS DEFINITIONS
+----------------------------------------------------------------
+
+-- graphics functions, as in GC.alu
+
+type   GXFunction   = Int 
+%dis   gXFunction x = int x
+%const GXFunction
+% [ GXclear                     -- 0 
+% , GXand                       -- src AND dst 
+% , GXandReverse                -- src AND NOT dst 
+% , GXcopy                      -- src 
+% , GXandInverted               -- NOT src AND dst 
+% , GXnoop                      -- dst 
+% , GXxor                       -- src XOR dst 
+% , GXor                        -- src OR dst 
+% , GXnor                       -- NOT src AND NOT dst 
+% , GXequiv                     -- NOT src XOR dst 
+% , GXinvert                    -- NOT dst 
+% , GXorReverse                 -- src OR NOT dst 
+% , GXcopyInverted              -- NOT src 
+% , GXorInverted                -- NOT src OR dst 
+% , GXnand                      -- NOT src OR NOT dst 
+% , GXset                       -- 1 
+% ]
+
+type   LineStyle   = Int 
+%dis   lineStyle x = int x
+%const LineStyle
+% [ LineSolid           
+% , LineOnOffDash               
+% , LineDoubleDash              
+% ]
+
+type   CapStyle   = Int 
+%dis   capStyle x = int x
+%const CapStyle
+% [ CapNotLast          
+% , CapButt             
+% , CapRound            
+% , CapProjecting       
+% ]
+
+type   JoinStyle   = Int 
+%dis   joinStyle x = int x
+%const JoinStyle
+% [ JoinMiter   
+% , JoinRound   
+% , JoinBevel   
+% ]
+
+type   FillStyle   = Int 
+%dis   fillStyle x = int x
+%const FillStyle
+% [ FillSolid           
+% , FillTiled           
+% , FillStippled        
+% , FillOpaqueStippled  
+% ]
+
+type   FillRule   = Int 
+%dis   fillRule x = int x
+%const FillRule
+% [ EvenOddRule         
+% , WindingRule         
+% ]
+
+type   SubWindowMode   = Int 
+%dis   subWindowMode x = int x
+%const SubWindowMode
+% [ ClipByChildren      
+% , IncludeInferiors    
+% ]
+
+-- -- SetClipRectangles ordering 
+-- type   Ordering        = Int 
+-- %dis   ordering      x = int x
+-- %const Ordering
+-- % [ Unsorted         
+-- % , YSorted          
+-- % , YXSorted         
+-- % , YXBanded         
+-- % ]
+
+-- CoordinateMode for drawing routines 
+type   CoordinateMode   = Int 
+%dis   coordinateMode x = int x
+%const CoordinateMode
+% [ CoordModeOrigin         -- relative to the origin 
+% , CoordModePrevious       -- relative to previous point 
+% ]
+
+type   PolygonShape   = Int 
+%dis   polygonShape x = int x
+%const PolygonShape
+% [ Complex                     -- paths may intersect 
+% , Nonconvex                   -- no paths intersect, but not convex 
+% , Convex                      -- wholly convex 
+% ]
+
+-- Arc modes for PolyFillArc 
+type   ArcMode   = Int 
+%dis   arcMode x = int x
+%const ArcMode
+% [ ArcChord            -- join endpoints of arc 
+% , ArcPieSlice         -- join endpoints to center of arc 
+% ]
+
+-- GC components: masks used in CreateGC, CopyGC, ChangeGC, OR'ed into
+-- GC.stateChanges 
+
+type   GCMask   = Int 
+%dis   gCMask x = int x
+%const GCMask
+% [ GCFunction          
+% , GCPlaneMask         
+% , GCForeground        
+% , GCBackground        
+% , GCLineWidth         
+% , GCLineStyle         
+% , GCCapStyle          
+% , GCJoinStyle         
+% , GCFillStyle         
+% , GCFillRule          
+% , GCTile              
+% , GCStipple           
+% , GCTileStipXOrigin   
+% , GCTileStipYOrigin   
+% , GCFont              
+% , GCSubwindowMode     
+% , GCGraphicsExposures 
+% , GCClipXOrigin       
+% , GCClipYOrigin       
+% , GCClipMask          
+% , GCDashOffset        
+% , GCDashList          
+% , GCArcMode           
+% , GCLastBit           
+% ]
+
+type   CirculationDirection = Int 
+%dis   circulationDirection x = int x
+%const CirculationDirection
+% [ RaiseLowest  
+% , LowerHighest 
+% ]
+
+-- used in imageByteOrder and bitmapBitOrder 
+type   ByteOrder   = Int 
+%dis   byteOrder x = int x
+%const ByteOrder
+% [ LSBFirst    
+% , MSBFirst    
+% ]
+
+type   ColormapAlloc   = Int
+%dis   colormapAlloc x = int x
+%const ColormapAlloc
+% [ AllocNone   -- create map with no entries 
+% , AllocAll    -- allocate entire map writeable 
+% ]
+
+type   MappingRequest   = Int
+%dis   mappingRequest x = int x
+%const MappingRequest
+% [ MappingModifier             
+% , MappingKeyboard             
+% , MappingPointer              
+% ]
+
+
+type   ChangeSaveSetMode = Int
+%dis   changeSaveSetMode x = int x
+%const ChangeSaveSetMode
+% [ SetModeInsert 
+% , SetModeDelete 
+% ]
+
+type   BitGravity      = Int
+%dis   bitGravity    x = int x
+%const BitGravity
+% [ ForgetGravity       
+% , NorthWestGravity    
+% , NorthGravity        
+% , NorthEastGravity    
+% , WestGravity         
+% , CenterGravity       
+% , EastGravity         
+% , SouthWestGravity    
+% , SouthGravity        
+% , SouthEastGravity    
+% , StaticGravity       
+% ]
+
+-- All the BitGravity's plus ...
+type   WindowGravity   = Int
+%dis   windowGravity x = int x
+%const WindowGravity
+% [ UnmapGravity
+% ]
+
+-- Used in CreateWindow for backing-store hint 
+type   BackingStore    = Int
+%dis   backingStore  x = int x
+%const BackingStore
+% [ NotUseful      
+% , WhenMapped     
+% , Always         
+% ]
+
+%const Word8
+% [ DoRed       
+% , DoGreen     
+% , DoBlue      
+% ]
+
+type   FontDirection    = Int
+%dis   fontDirection  x = int x
+%const FontDirection
+% [ FontLeftToRight
+% , FontRightToLeft
+% ]

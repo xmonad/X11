@@ -1,0 +1,2015 @@
+-----------------------------------------------------------------------------
+-- |
+-- Module      :  Graphics.X11.Xlib
+-- Copyright   :  (c) Alastair Reid, 1999-2003
+-- License     :  BSD-style (see the file libraries/base/LICENSE)
+-- 
+-- Maintainer  :  libraries@haskell.org
+-- Stability   :  provisional
+-- Portability :  portable
+--
+-- A collection of GreenCard declarations for interfacing with Xlib.
+--
+-----------------------------------------------------------------------------
+
+module Graphics.X11.Xlib 
+	( module Graphics.X11.Types
+	, module Graphics.X11.Xlib
+	, free
+	) where
+
+import Graphics.X11.StdDIS
+import Graphics.X11.Types
+
+import Monad( zipWithM_ )
+import Foreign(mallocBytes, Storable(..))
+
+%#include "include/HsXlib.h"
+
+%prefix X
+
+type Pixel        = Word32
+type Position     = Int32
+type Dimension    = Word32
+type ScreenNumber = Word32
+type Byte         = Char
+type Buffer       = Int
+
+%dis pixel x = word32 x
+%dis position x = int32 x
+%dis dimension x = word32 x
+%dis screenNumber x = word32 x
+%dis byte x = char x
+%dis buffer x = int
+
+newtype Display    = Display    (Ptr Stub_Display)
+newtype Screen     = Screen     (Ptr Stub_Screen)
+newtype Visual     = Visual     (Ptr Stub_Visual)
+newtype FontStruct = FontStruct (Ptr Stub_FontStruct)
+newtype Region     = Region     (ForeignPtr Stub_Region)
+
+data Stub_Display
+data Stub_Screen
+data Stub_Visual
+data Stub_FontStruct
+data Stub_Region
+
+%dis display x    = Display    (ptr ({Display*}     x))
+%dis screen x     = Screen     (ptr ({Screen*}      x))
+%dis visual x     = Visual     (ptr ({Visual*}      x))
+%dis fontStruct x = FontStruct (ptr ({XFontStruct*} x))
+%dis region x     = Region     (%ForeignPtr {Region} x {XDestroyRegion})
+
+type GC = Ptr Stub_GC
+data Stub_GC
+%dis gC x = ptr x
+
+type Point = 
+  ( Position  -- x
+  , Position  -- y
+  )
+%dis point x = declare {XPoint} x in
+% ( position {(%x).x}
+% , position {(%x).y}
+% )
+
+type Segment = 
+ ( Position -- x1
+ , Position -- y1
+ , Position -- x2
+ , Position -- y2
+ )
+%dis segment x = declare {XSegment} x in
+% ( position {(%x).x1}
+% , position {(%x).y1}
+% , position {(%x).x2}
+% , position {(%x).y2}
+% )
+
+type Rectangle = 
+ ( Position  -- x
+ , Position  -- y
+ , Dimension -- width
+ , Dimension -- height
+ )
+%dis rectangle x = declare {XRectangle} x in
+% ( position  {(%x).x}
+% , position  {(%x).y}
+% , dimension {(%x).width}
+% , dimension {(%x).height}
+% )
+
+type Arc =
+ ( Position  
+ , Position  
+ , Dimension 
+ , Dimension 
+ , Int       
+ , Int       
+ )
+%dis arc x = declare {XArc} x in
+% ( position  {(%x).x}
+% , position  {(%x).y}
+% , dimension {(%x).width}
+% , dimension {(%x).height}
+% , int       {(%x).angle1}
+% , int       {(%x).angle2}
+% )
+
+type Color =
+ ( Pixel 
+ , Word16 
+ , Word16 
+ , Word16 
+ , Word8 
+ )
+%dis color x = declare {XColor} x in
+% ( pixel {(%x).pixel}
+% , word16 {(%x).red}
+% , word16 {(%x).green}
+% , word16 {(%x).blue}
+% , word8 {(%x).flags}
+% )
+
+-- We can't use the similarily named library functions for several reasons:
+-- 1) They deal with Ptrs instead of Ptr-Len pairs
+-- 2) They require instances of Storable but we apply these functions
+--    to type synonyms like 'Point = (Int,Int)' which cannot be
+--    instances.
+
+type Storable' a = 
+  ( a -> Int                    -- sizeOf
+  , Ptr a -> Int      -> IO a   -- peekElemOff
+  , Ptr a -> Int -> a -> IO ()  -- pokeElemOff
+  )
+
+newArray' :: Storable' a -> [a] -> IO (Ptr a, Int)
+newArray' (sz,_,wr) xs = do
+  p <- mallocBytes (sz undefined * l)
+  zipWithM_ (wr p) [0..] xs
+  return (p, l)
+ where
+  l = length xs
+
+peekArray' :: Storable' a -> (Ptr a, Int) -> IO [a]
+peekArray' (_,rd,_) (p,l)
+  | l <= 0    = return []
+  | otherwise = f (l-1) []
+ where
+  f 0 acc = do e <- rd p 0; return (e:acc)
+  f n acc = do e <- rd p n; f (n-1) (e:acc)
+
+-- don't forget to use %end free(arg?) in conjunction with these guys
+type ListPoint       	= [Point]
+%dis listPoint x l   	= << newArray' s_Point     / peekArray' s_Point     >> (ptr ({XPoint*} x))        (int l)
+type ListRectangle   	= [Rectangle]
+%dis listRectangle x l  = << newArray' s_Rectangle / peekArray' s_Rectangle >> (ptr ({XRectangle*} x))    (int l)
+type ListArc        	= [Arc]	     
+%dis listArc x l    	= << newArray' s_Arc       / peekArray' s_Arc       >> (ptr ({XArc*} x))          (int l)
+type ListSegment        = [Segment]  
+%dis listSegment x l    = << newArray' s_Segment   / peekArray' s_Segment   >> (ptr ({XSegment*} x))      (int l)
+type ListColor	     	= [Color]    
+%dis listColor	x l  	= << newArray' s_Color     / peekArray' s_Color     >> (ptr ({XColor*} x))        (int l)
+type ListPixel	     	= [Pixel]    
+%dis listPixel	x l  	= << newArray' s_Pixel     / peekArray' s_Pixel     >> (ptr ({unsigned long*} x)) (int l)
+type ListWindow	     	= [Window]   
+%dis listWindow	x l  	= << newArray' s_Window    / peekArray' s_Window    >> (ptr ({Window*} x))        (int l)
+-- AC, 1/9/2000: Try to define types and marshalling code for Atom lists:
+type ListAtom	     	= [Atom]
+%dis listAtom	x l  	= << newArray' s_Atom      / peekArray' s_Atom      >> (ptr ({Atom *} x))         (int l)
+
+s_Pixel :: Storable' Pixel
+s_Pixel  = (sizeOf, peekElemOff, pokeElemOff)
+
+s_Window :: Storable' Window
+s_Window = (sizeOf, peekElemOff, pokeElemOff)
+
+s_Atom :: Storable' Atom
+s_Atom   = (sizeOf, peekElemOff, pokeElemOff)
+
+s_Point :: Storable' Point
+s_Point = (const sizeOfPoint,readPoint,writePoint)
+
+%fun writePoint :: Ptr Point -> Int -> Point -> IO ()
+%call (ptr ({XPoint*} s)) (int i) (point {s[i]})
+%code
+
+%fun readPoint :: Ptr Point -> Int -> IO Point
+%call (ptr ({XPoint*} s)) (int i)
+%code
+%result (point {s[i]})
+
+%fun sizeOfPoint :: Int
+%code res1 = sizeof(XPoint)
+
+s_Rectangle :: Storable' Rectangle
+s_Rectangle = (const sizeOfRectangle, readRectangle, writeRectangle )
+
+%fun writeRectangle :: Ptr Rectangle -> Int -> Rectangle -> IO ()
+%call (ptr ({XRectangle*} s)) (int i) (rectangle {s[i]})
+%code
+
+%fun readRectangle :: Ptr Rectangle -> Int -> IO Rectangle
+%call (ptr ({XRectangle*} s)) (int i)
+%code
+%result (rectangle {s[i]})
+
+%fun sizeOfRectangle :: Int
+%code res1 = sizeof(XRectangle)
+
+
+s_Arc :: Storable' Arc
+s_Arc = (const sizeOfArc, readArc, writeArc )
+
+%fun writeArc :: Ptr Arc -> Int -> Arc -> IO ()
+%call (ptr ({XArc*} s)) (int i) (arc {s[i]})
+%code
+
+%fun readArc :: Ptr Arc -> Int -> IO Arc
+%call (ptr ({XArc*} s)) (int i)
+%code
+%result (arc {s[i]})
+
+%fun sizeOfArc :: Int
+%code res1 = sizeof(XArc)
+
+
+s_Segment :: Storable' Segment
+s_Segment = (const sizeOfSegment, readSegment, writeSegment )
+
+%fun writeSegment :: Ptr Segment -> Int -> Segment -> IO ()
+%call (ptr ({XSegment*} s)) (int i) (segment {s[i]})
+%code
+
+%fun readSegment :: Ptr Segment -> Int -> IO Segment
+%call (ptr ({XSegment*} s)) (int i)
+%code
+%result (segment {s[i]})
+
+%fun sizeOfSegment :: Int
+%code res1 = sizeof(XSegment)
+
+
+s_Color :: Storable' Color
+s_Color = (const sizeOfColor, readColor, writeColor )
+
+%fun writeColor :: Ptr Color -> Int -> Color -> IO ()
+%call (ptr ({XColor*} s)) (int i) (color {s[i]})
+%code
+
+%fun readColor :: Ptr Color -> Int -> IO Color
+%call (ptr ({XColor*} s)) (int i)
+%code
+%result (color {s[i]})
+
+%fun sizeOfColor :: Int
+%code res1 = sizeof(XColor)
+
+
+%fun AllPlanes_aux           :: Pixel
+%fun BlackPixel              :: Display -> ScreenNumber -> Pixel
+%fun WhitePixel              :: Display -> ScreenNumber -> Pixel
+
+-- This may vary from one execution to another but I believe it 
+-- is constant during any given execution and so it can be made PURE
+-- without breaking referential transparency.
+--
+-- Note: underneath the opaque name, it turns out that this
+-- is the file descriptor.  You need to know this if you want to
+-- use select.
+%fun ConnectionNumber        :: Display -> Int
+
+%fun DefaultColormap         :: Display -> ScreenNumber -> Colormap
+
+-- %fun XListDepths :: Display -> ScreenNumber -> ListInt using res1 = XListDepths(arg1,arg2,&res1_size)
+
+%fun DefaultGC               :: Display -> ScreenNumber -> GC
+%fun DefaultDepth            :: Display -> ScreenNumber -> Int
+%fun DefaultScreen           :: Display -> ScreenNumber
+%fun DefaultScreenOfDisplay  :: Display -> Screen
+%fun DisplayHeight           :: Display -> ScreenNumber -> Int
+%fun DisplayHeightMM         :: Display -> ScreenNumber -> Int
+%fun DisplayWidth            :: Display -> ScreenNumber -> Int
+%fun DisplayWidthMM          :: Display -> ScreenNumber -> Int
+%fun XMaxRequestSize         :: Display -> Int
+%fun XDisplayMotionBufferSize:: Display -> Int
+--Disnae exist in X11R5 %fun XExtendedMaxRequestSize :: Display -> Int
+%fun XResourceManagerString  :: Display -> String
+%fun XScreenResourceString   :: Screen   -> String
+%fun DisplayString           :: Display -> String
+%fun ImageByteOrder          :: Display -> Int   
+%fun ProtocolRevision        :: Display -> Int   
+%fun ProtocolVersion         :: Display -> Int
+%fun ServerVendor            :: Display -> String
+--Disnae exist: %fun XServerRelease          :: Display -> Int    
+%fun ScreenCount             :: Display -> Int    
+%fun DefaultVisual           :: Display -> ScreenNumber -> Visual
+%fun DisplayCells            :: Display -> ScreenNumber -> Int
+%fun DisplayPlanes           :: Display -> ScreenNumber -> Int
+%fun ScreenOfDisplay         :: Display -> ScreenNumber -> Screen
+%fun DefaultRootWindow       :: Display -> Window
+
+-- The following are believed to be order dependent
+
+%fun XRootWindow    	     :: Display -> ScreenNumber -> IO Window
+%fun XQLength       	     :: Display -> IO Int
+     		    	     
+%fun XNoOp          	     :: Display -> IO ()
+
+%fun XOpenDisplay :: String -> IO Display
+%fail {res1 == 0} { NullPtr(XOpenDisplay) }
+
+%fun XCloseDisplay           :: Display -> IO ()
+
+-- I'm not sure why I added this since I don't have any of the related
+-- functions.
+%fun XrmInitialize :: IO ()
+
+-- %fun XGetDefault :: Display -> String -> String -> IO ()
+
+%fun XAutoRepeatOff    :: Display -> IO ()
+%fun XAutoRepeatOn     :: Display -> IO ()
+%fun XBell             :: Display -> Int -> IO ()
+%fun XSetCloseDownMode :: Display -> CloseDownMode -> IO ()
+%fun XLastKnownRequestProcessed :: Display -> IO Int
+
+%fun XGetInputFocus :: Display -> IO (Window, FocusMode)
+%code XGetInputFocus(arg1,&res1,&res2);
+
+%fun XSetInputFocus   :: Display -> Window -> FocusMode -> Time -> IO ()
+
+-- XAllocID omitted
+-- XKillClient omitted
+-- XFetchName omitted
+-- XGetKeyboardControl omitted
+-- XChangeKeyboardControl omitted
+-- XChangeKeyboardMapping omitted
+-- XChangePointerControl omitted
+
+%fun XGrabButton     :: Display -> Button -> ButtonMask -> Window -> Bool -> EventMask -> GrabMode -> GrabMode -> Window -> Cursor -> IO ()
+%fun XUngrabButton   :: Display -> Button -> ButtonMask -> Window -> IO ()
+
+%fun XGrabPointer    :: Display -> Window -> Bool -> EventMask -> GrabMode -> GrabMode -> Window -> Cursor -> Time -> IO GrabStatus
+%fun XUngrabPointer  :: Display -> Time -> IO ()
+
+%fun XGrabKey        :: Display -> KeyCode -> ButtonMask -> Window -> Bool -> GrabMode -> GrabMode -> IO ()
+%fun XUngrabKey      :: Display -> KeyCode -> ButtonMask -> Window -> IO ()
+
+%fun XGrabKeyboard   :: Display -> Window -> Bool -> GrabMode -> GrabMode -> Time -> IO GrabStatus
+%fun XUngrabKeyboard :: Display -> Time -> IO ()
+
+%fun XGrabServer   :: Display -> IO ()
+%fun XUngrabServer :: Display -> IO ()
+
+-- XChangeActivePointerGrab omitted
+
+-- XFree omitted
+-- XFreeStringList omitted
+
+%fun XQueryBestTile    :: Display -> Drawable -> Dimension -> Dimension -> IO (Dimension, Dimension) 
+%code Status err = XQueryBestTile(arg1,arg2,arg3,arg4,&res1,&res2)    
+%fail { Success != err }{ BadStatus(err,XQueryBestTile) }
+
+%fun XQueryBestStipple :: Display -> Drawable -> Dimension -> Dimension -> IO (Dimension, Dimension)
+%code Status err = XQueryBestStipple(arg1,arg2,arg3,arg4,&res1,&res2) 
+%fail { Success != err }{ BadStatus(err,XQueryBestStipple) }
+
+%fun XQueryBestCursor  :: Display -> Drawable -> Dimension -> Dimension -> IO (Dimension, Dimension)
+%code Status err = XQueryBestCursor(arg1,arg2,arg3,arg4,&res1,&res2)  
+%fail { Success != err }{ BadStatus(err,XQueryBestCursor) }
+
+%fun XQueryBestSize    :: Display -> Drawable -> QueryBestSizeClass -> Dimension -> Dimension -> IO (Dimension, Dimension)
+%code Status err = XQueryBestSize(arg1,arg2,arg3,arg4,arg5,&res1,&res2) 
+%fail { Success != err }{ BadStatus(err,XQueryBestSize) }
+
+-- Note: Returns false if pointer not in window w (and win_x = win_y = 0)
+-- ToDo: more effective use of Maybes?
+%fun XQueryPointer :: Display -> Window -> IO (Bool, Window, Window, Int, Int, Int, Int, Modifier)
+%code Status res1 = XQueryPointer(arg1,arg2,&res2,&res3,&res4,&res5,&res6,&res7,&res8) 
+
+-- XSetSelectionOwner omitted
+
+-- XOpenOM omitted
+-- XCloseOM omitted
+-- XSetOMValues omitted
+-- XGetOMValues omitted
+-- DisplayOfOM omitted
+-- XLocaleOfOM omitted
+
+-- XCreateOC omitted
+-- XDestroyOC omitted
+-- XOMOfOC omitted
+-- XSetOCValues omitted
+-- XGetOCValues omitted
+
+-- XVaCreateNestedList omitted
+
+----------------------------------------------------------------
+-- Error reporting
+----------------------------------------------------------------
+
+%fun XDisplayName :: String -> String 
+
+-- type ErrorHandler   = Display -> ErrorEvent -> IO Int
+-- %dis errorHandler x = (stable x)
+-- 
+-- type IOErrorHandler = Display ->                IO Int
+-- %dis ioErrorHandler x = (stable x)
+
+-- Sadly, this code doesn't work because hugs->runIO creates a fresh
+-- stack of exception handlers so the exception gets thrown to the 
+-- wrong place.
+-- 
+-- %C
+-- % static HugsStablePtr ioErrorHandlerPtr; 
+-- % 
+-- % int genericIOErrorHandler(Display *d)
+-- % {
+-- %     if (ioErrorHandlerPtr >= 0) {
+-- %     	  hugs->putStablePtr(ioErrorHandlerPtr);
+-- %     	  hugs->putAddr(d);  
+-- %     	  if (hugs->runIO(1)) { /* exitWith value returned */
+-- %     	   return hugs->getInt();
+-- %     	  } else {
+-- %     	   return hugs->getWord();
+-- %     	  }
+-- %     }
+-- %     return 1;
+-- % }
+
+-- Here's what we might do instead.  The two error handlers set flags
+-- when they fire and every single call to X contains the line:
+--
+--   %fail { errorFlags != 0 } { XError(errorFlags) }
+--
+-- This really sucks.
+-- Oh, and it won't even work with IOErrors since they terminate
+-- the process if the handler returns.  I don't know what the hell they
+-- think they're doing taking it upon themselves to terminate MY
+-- process when THEIR library has a problem but I don't think anyone 
+-- ever accused X of being well-designed.
+-- 
+-- % static int genericIOErrorHandler(Display *d)
+-- % {
+-- %     if (ioErrorHandlerPtr >= 0) {
+-- %     	  hugs->putStablePtr(ioErrorHandlerPtr);
+-- %     	  hugs->putAddr(d);  
+-- %     	  if (hugs->runIO(1)) { /* exitWith value returned */
+-- %     	   return hugs->getInt();
+-- %     	  } else {
+-- %     	   return hugs->getWord();
+-- %     	  }
+-- %     }
+-- %     return 1;
+-- % }
+
+
+-- HN 2001-02-06
+-- Moved to auxiliaries.c to make it easier to use the inlining option.
+-- -- Sigh, for now we just use an error handler that prints an error
+-- -- message on the screen
+-- %C
+-- % static int defaultErrorHandler(Display *d, XErrorEvent *ev)
+-- % {
+-- % 	  char buffer[1000];
+-- % 	  XGetErrorText(d,ev->error_code,buffer,1000);
+-- % 	  printf("Error: %s\n", buffer);
+-- % 	  return 0;
+-- % }
+
+
+%fun setDefaultErrorHandler :: IO ()
+%code XSetErrorHandler(defaultErrorHandler);
+
+
+-- %fun XSetIOErrorHandler :: IOErrorHandler -> IO IOErrorHandler
+-- %fun XSetErrorHandler   :: ErrorHandler   -> IO ErrorHandler
+
+-- XGetErrorDatabaseText omitted
+-- XGetErrorText omitted
+
+-- ----------------------------------------------------------------
+-- -- Buffers
+-- ----------------------------------------------------------------
+-- 
+-- -- OLD: Would arrays be more appropriate?
+-- --
+-- -- IMPURE void	XStoreBytes(display, bytes, nbytes)
+-- -- IN Display*		display
+-- -- VAR Int			nbytes
+-- -- IN list[nbytes] Byte	bytes
+-- -- 
+-- -- IMPURE list[nbytes] Byte	XFetchBytes(display, &nbytes)
+-- -- IN Display*	display
+-- -- VAR Int		nbytes
+-- -- 
+-- -- IMPURE void	XStoreBuffer(display, bytes, nbytes, buffer)
+-- -- IN Display*		display
+-- -- VAR Int			nbytes
+-- -- IN list[nbytes] Byte	bytes
+-- -- IN Buffer		buffer
+-- -- 
+-- -- IMPURE list[nbytes] Byte	XFetchBuffer(display, &nbytes, buffer)
+-- -- IN Display*	display
+-- -- VAR Int		nbytes
+-- -- IN Buffer	buffer
+-- -- 
+-- -- IMPURE void	XRotateBuffers(display, rotate)
+-- -- IN Display*	display
+-- -- VAR Int		rotate
+
+----------------------------------------------------------------
+-- Extensions
+----------------------------------------------------------------
+
+-- ToDo: Use XFreeExtensionList
+-- %fun XListExtensions :: Display -> IO ListString using res1 = XListExtensions(arg1,&res1_size)
+
+-- %errfun False XQueryExtension :: Display -> String -> IO (Int,Int,Int) using res4 = XQueryExtension(arg1,arg2,&res1,&res2,&res3)->(res1,res2,res3)
+-- %fun XInitExtensions :: Display -> String -> IO XExtCodes
+-- %fun XAddExtensions  :: Display ->           IO XExtCodes
+
+-- XAddToExtensionList omitted
+-- XFindOnExtensionList omitted
+-- XEHeadOfExtensionList omitted
+
+----------------------------------------------------------------
+-- Hosts
+----------------------------------------------------------------
+
+-- ToDo: operations to construct and destruct an XHostAddress
+
+-- %fun XAddHost :: Display -> XHostAddress -> IO ()
+-- %fun XRemoveHost :: Display -> XHostAddress -> IO ()
+-- 
+-- %fun XAddHosts    :: Display -> ListXHostAddress -> IO () using XAddHosts(arg1,arg2,arg2_size) 
+-- %fun XRemoveHosts :: Display -> ListXHostAddress -> IO () using XRemoveHosts(arg1,arg2,arg2_size) 
+-- 
+-- # Uses %prim to let us call XFree
+-- %prim XListHosts :: Display -> IO (ListXHostAddress, Bool)
+-- Bool state;
+-- Int r_size;
+-- XHostAddress* r = XListHosts(arg1,&r_size,&state);
+-- %update(r,state);
+-- XFree(r);
+-- return;
+
+-- %fun XEnableAccessControl  :: Display -> IO ()
+-- %fun XDisableAccessControl :: Display -> IO ()
+-- %fun XSetAccessControl     :: Display -> Access -> IO ()
+
+
+----------------------------------------------------------------
+-- Events
+----------------------------------------------------------------
+
+type   QueuedMode   = Int
+%dis   queuedMode x = int x
+%const QueuedMode
+% [ QueuedAlready
+% , QueuedAfterFlush
+% , QueuedAfterReading
+% ]
+
+-- Because of the way the corresponding C types are defined,
+-- These "structs" are somewhat unusual - they omit fields which can
+-- be found in more general structs.
+-- For example, XAnyEvent omits type since it is in XEvent.
+-- Therefore, to get the complete contents of an event one typically
+-- writes:
+--   do
+--     ty <- get_XEvent e
+--     (serial,send_event,display,window) <- get_XAnyEvent
+--     window' <- get_XDestroyWindowEvent
+
+type XEvent = 
+ ( EventType
+ )
+%dis xEvent x = declare {XEvent} x in
+% ( eventType {(%x).type}
+% )
+type XEventPtr   = Ptr Stub_EventPtr
+data Stub_EventPtr
+%dis xEventPtr x = ptr ({XEvent*} x)
+
+%fun allocXEvent :: IO XEventPtr
+%code res1 = (void*)malloc(sizeof(XEvent))
+
+%fun get_EventType :: XEventPtr -> IO EventType
+%code res1 = arg1->type
+
+%fun get_Window :: XEventPtr -> IO Window
+%code res1 = ((XAnyEvent*)arg1)->window
+
+-- %struct : XAnyEvent : XAnyEvent arg1
+--   Int32     : serial            # # of last request processed by server
+--   Bool      : send_event        # true if this came from a SendEvent request
+--   Display   : display           # Display the event was read from
+--   Window    : window            # window on which event was requested in event mask
+
+type XKeyEvent =
+ ( Window    -- root window that the event occured on 
+ , Window    -- child window 
+ , Time      -- milliseconds 
+ , Int       -- pointer x, y coordinates in event window 
+ , Int       -- 
+ , Int       -- coordinates relative to root 
+ , Int       -- 
+ , Modifier  -- key or button mask 
+ , KeyCode   -- detail 
+ , Bool      -- same screen flag 
+ )
+%dis xKeyEvent x = declare {XKeyEvent} x in
+% ( window    {(%x).root} 	
+% , window    {(%x).subwindow} 	
+% , time      {(%x).time} 	
+% , int       {(%x).x} 		
+% , int       {(%x).y}		
+% , int       {(%x).x_root}
+% , int       {(%x).y_root}	
+% , modifier  {(%x).state} 	
+% , keyCode   {(%x).keycode} 	
+% , bool      {(%x).same_screen}
+% )
+type XKeyEventPtr   = Ptr Stub_KeyEventPtr
+data Stub_KeyEventPtr
+%dis xKeyEventPtr x = ptr ({XKeyEvent*} x)
+
+type XButtonEvent = 
+ ( Window    --	root window that the event occured on 
+ , Window    --	child window 
+ , Time      --	milliseconds 
+ , Int       --	pointer x, y coordinates in event window 
+ , Int       
+ , Int       --	coordinates relative to root 
+ , Int       
+ , Modifier  --	key or button mask 
+ , Button    --	detail 
+ , Bool      --	same screen flag 
+ )
+%dis xButtonEvent x = declare {XButtonEvent} x in
+% ( window    {(%x).root} 	        
+% , window    {(%x).subwindow} 	
+% , time      {(%x).time} 		
+% , int       {(%x).x} 		
+% , int       {(%x).y}		
+% , int       {(%x).x_root}	 	
+% , int       {(%x).y_root}		
+% , modifier  {(%x).state} 	        
+% , button    {(%x).button} 	        
+% , bool      {(%x).same_screen} 	
+% )
+
+%fun get_KeyEvent :: XEventPtr -> IO XKeyEvent
+%code 
+%result (xKeyEvent {*(XKeyEvent*)arg1})
+
+%fun get_ButtonEvent :: XEventPtr -> IO XButtonEvent
+%code 
+%result (xButtonEvent {*(XButtonEvent*)arg1})
+
+%fun get_MotionEvent :: XEventPtr -> IO XMotionEvent
+%code 
+%result (xMotionEvent {*(XMotionEvent*)arg1})
+
+
+type XMotionEvent =
+ ( Window      -- root window that the event occured on 
+ , Window      -- child window 
+ , Time        -- milliseconds 
+ , Int         -- pointer x, y coordinates in event window 
+ , Int          
+ , Int         -- coordinates relative to root 
+ , Int          
+ , Modifier    -- key or button mask 
+ , NotifyMode  -- detail 
+ , Bool        -- same screen flag 
+ )
+%dis xMotionEvent x = declare {XMotionEvent} x in
+% ( window      {(%x).root} 	        
+% , window      {(%x).subwindow} 	
+% , time        {(%x).time} 		
+% , int         {(%x).x} 		
+% , int         {(%x).y}		
+% , int         {(%x).x_root}	 	
+% , int         {(%x).y_root}		
+% , modifier    {(%x).state} 	        
+% , notifyMode  {(%x).is_hint} 	
+% , bool        {(%x).same_screen} 	
+% )
+
+
+-- %struct : XCrossingEvent : XCrossingEvent arg1
+--   Window       : root 	        # root window that the event occured on 
+--   Window       : subwindow 	# child window 
+--   Time         : time 		# milliseconds 
+--   Int          : x 		# pointer x, y coordinates in event window 
+--   Int          : y
+--   Int          : x_root	 	# coordinates relative to root 
+--   Int          : y_root
+--   NotifyMode   : mode              
+--   NotifyDetail : detail
+--   Bool         : same_screen	# same screen flag
+--   Bool         : focus		# boolean focus
+--   Modifier     : state	        # key or button mask 
+-- 
+-- %struct : XFocusChangeEvent : XFocusChangeEvent arg1
+--   NotifyMode   : mode
+--   NotifyDetail : detail
+-- 
+-- -- omitted: should be translated into bitmaps
+-- -- PURE void	getKeymapEvent(event)
+-- -- IN XEvent*	event
+-- -- OUT Window	window	 	= ((XKeymapEvent*)event)->window
+-- -- OUT array[32] Char key_vector 	= ((XKeymapEvent*)event)->key_vector
+-- -- RESULT: 
+
+type XExposeEvent =
+ ( Position	-- x	 	
+ , Position	-- y	 	
+ , Dimension	-- width	 	
+ , Dimension	-- height	
+ , Int		-- count	 	
+ )
+%dis xExposeEvent x = declare {XExposeEvent} x in
+% ( position	{(%x).x}	 	
+% , position	{(%x).y}	 	
+% , dimension	{(%x).width}	 	
+% , dimension	{(%x).height}	
+% , int		{(%x).count}	 	
+% )
+
+%fun get_ExposeEvent :: XEventPtr -> IO XExposeEvent
+%code
+%result (xExposeEvent {*(XExposeEvent*)arg1})
+
+-- %struct : XGraphicsExposeEvent : XGraphicsExposeEvent arg1
+--   Position	: x	 	
+--   Position	: y	 	
+--   Dimension	: width	 	.
+--   Dimension	: height	
+--   Int		: count	 	
+--   Int		: major_code 	
+--   Int		: minor_code 	
+-- 
+-- %struct : XCirculateEvent : XCirculateEvent arg1
+--   Window	: window	 	
+--   Place		: place		
+-- 
+-- %struct : XConfigureEvent : XConfigureEvent arg1
+--   Window	: window	
+--   Position	: x	 	
+--   Position	: y	 	
+--   Dimension	: width	 	
+--   Dimension	: height	
+--   Dimension	: border_width 	
+--   Window	: above	 	
+--   Bool	        : override_redirect
+-- 
+-- %struct : XCreateWindowEvent : XCreateWindowEvent arg1
+--   Window	: window	 	
+--   Position	: x	 	
+--   Position	: y	 	
+--   Dimension	: width	 	
+--   Dimension	: height	 	
+--   Dimension	: border_width 	
+--   Bool	        : override_redirect
+-- 
+-- %struct : XDestroyWindowEvent : XDestroyWindowEvent arg1
+--   Window	: window
+-- 
+-- %struct : XGravityEvent : XGravityEvent arg1
+--   Window	: window	
+--   Position	: x	 	
+--   Position	: y	 	
+-- 
+-- %struct : XMapEvent : XMapEvent arg1
+--   Bool	        : override_redirect
+
+type XMappingEvent =
+ ( MappingRequest -- request	
+ , KeyCode	  -- first_keycode
+ , Int		  -- count	
+ )
+%dis xMappingEvent x = declare {XMappingEvent} x in
+% ( mappingRequest {(%x).request}	
+% , keyCode	   {(%x).first_keycode}
+% , int		   {(%x).count}	
+% )
+
+type XConfigureEvent =
+ ( Position
+ , Position
+ , Dimension 
+ , Dimension 
+ )
+%dis xConfigureEvent x =
+% ( position  {(%x).x}
+% , position  {(%x).y}
+% , dimension {(%x).width}	
+% , dimension {(%x).height}
+% )
+%fun get_ConfigureEvent :: XEventPtr -> IO XConfigureEvent
+%code
+%result (xConfigureEvent {*(XConfigureEvent*)arg1})
+
+
+-- %struct : XResizeRequestEvent : XResizeRequestEvent arg1
+--   Dimension	: width	 
+--   Dimension	: height	
+-- 
+
+-- %struct : XReparentEvent : XReparentEvent arg1
+--   Window	: window	
+--   Window	: parent	
+--   Position	: x	 	
+--   Position	: y	 	
+--   Bool	        : override_redirect
+-- 
+-- %struct : XUnmapEvent : XUnmapEvent arg1
+--   Window	: window	 	
+--   Bool	        : from_configure	
+-- 
+-- %struct : XVisibilityEvent : XVisibilityEvent arg1
+--   Visibility	: state
+-- 
+-- %struct : XCirculateRequestEvent : XCirculateRequestEvent arg1
+--   Place	        : place
+-- 
+-- -- omitted because valuemask looks tricky
+-- -- %struct : XConfigureRequestEvent : XConfigureRequestEvent arg1
+-- --   Window	 : window	
+-- --   Position	 : x		
+-- --   Position	 : y		
+-- --   Dimension	 : width	
+-- --   Dimension	 : height	
+-- --   Dimension	 : border_width	
+-- --   Window	 : above	
+-- --   StackingMethod : detail	
+-- --   ???	         : valuemask	
+-- 
+-- %struct : XMapRequestEvent : XMapRequestEvent arg1
+--   Window	: window
+-- 
+-- %struct : XColormapEvent : XColormapEvent arg1
+--   Colormap		: colormap
+--   Bool		        : new	  
+--   ColormapNotification	: state   
+-- 
+-- -- getClientMessageEvent omitted
+-- -- getPropertyEvent omitted
+-- -- getSelectionClearEvent omitted
+-- -- getSelectionRequestEvent omitted
+-- -- getSelectionEvent omitted
+
+-- functions
+
+-- The following is useful if you want to do a read with timeout.
+-- Returns True if timeout occurs.
+%fun waitForEvent :: Display -> Word32 -> IO Bool
+%code
+%  struct timeval timeout;
+%  fd_set readfds;
+%  fd_set nofds;
+%  int    fd = ConnectionNumber(arg1);
+%  int n;
+%  FD_ZERO(&readfds);
+%  FD_ZERO(&nofds);
+%  FD_SET(fd,&readfds);
+%  timeout.tv_sec  = arg2 / 1000000;
+%  timeout.tv_usec = arg2 % 1000000;
+%  /* HN 2001-02-06: Select needs to be told highest fd _+_ 1. */
+%  n = select(fd+1,&readfds,&nofds,&nofds,&timeout);
+%result (bool {n == 0})
+
+-- The following is somewhat compatible with Win32's TimeGetTime
+gettimeofday_in_milliseconds :: IO Integer
+gettimeofday_in_milliseconds = do
+  (sec,usec) <- gettimeofday_in_milliseconds_internal
+  return (toInteger sec * 1000 + toInteger usec `div` 1000)
+
+%fun gettimeofday_in_milliseconds_internal :: IO (Word32,Word32)
+%code
+% struct timeval tv;
+% int rc = gettimeofday(&tv,0);
+% res1 = tv.tv_sec;
+% res2 = tv.tv_usec;
+
+%fun XFlush        :: Display ->               IO ()
+%fun XSync         :: Display -> Bool ->       IO ()
+%fun XPending      :: Display ->               IO Int
+%fun XEventsQueued :: Display -> QueuedMode -> IO Int
+%fun XNextEvent    :: Display -> XEventPtr  -> IO ()
+%fun XAllowEvents  :: Display -> AllowEvents -> Time -> IO ()
+
+-- ToDo: XFree(res1) after constructing result
+-- %fun XGetMotionEvents :: Display -> Window -> Time -> Time -> IO ListXTimeCoord
+-- %code res1 = XGetMotionEvents(arg1,arg2,arg3,arg4,&res1_size)
+
+%fun XSelectInput :: Display -> Window -> EventMask -> IO ()
+%fun XSendEvent :: Display -> Window -> Bool -> EventMask -> XEventPtr -> IO ()
+%code Status err = XSendEvent(arg1,arg2,arg3,arg4,arg5)
+%fail { Success != err }{ BadStatus(err,XSendEvent) }
+
+%fun XWindowEvent :: Display -> Window -> EventMask -> XEventPtr -> IO ()
+%fun XCheckWindowEvent :: Display -> Window -> EventMask -> XEventPtr -> IO Bool
+
+%fun XMaskEvent :: Display -> EventMask -> XEventPtr -> IO ()
+%fun XCheckMaskEvent :: Display -> EventMask -> XEventPtr -> IO Bool
+%fun XCheckTypedEvent :: Display -> EventType -> XEventPtr -> IO Bool
+%fun XCheckTypedWindowEvent :: Display -> Window -> EventType -> XEventPtr -> IO Bool
+%fun XPutBackEvent :: Display -> XEventPtr -> IO ()
+%fun XPeekEvent :: Display -> XEventPtr -> IO ()
+
+-- XFilterEvent omitted (can't find documentation)
+-- XIfEvent omitted (can't pass predicates (yet))
+-- XCheckIfEvent omitted (can't pass predicates (yet))
+-- XPeekIfEvent omitted (can't pass predicates (yet))
+
+%fun XRefreshKeyboardMapping :: XMappingEvent -> IO ()
+%code XRefreshKeyboardMapping(&arg1)
+
+-- XSynchronize omitted (returns C function)
+-- XSetAfterFunction omitted (can't pass functions (yet))
+
+----------------------------------------------------------------
+-- Geometry
+----------------------------------------------------------------
+
+%fun XGeometry :: Display -> Int -> String -> String -> Dimension -> Dimension -> Dimension -> Int -> Int -> IO (Int, Position, Position, Dimension, Dimension)
+%code res1 = XGeometry(arg1,arg2,arg3,arg4,arg5,arg6,arg7,arg8,arg9,&res2,&res3,&res4,&res5)
+
+%fun XGetGeometry :: Display -> Int -> Drawable -> IO (Window, Position, Position, Dimension, Dimension, Dimension, Int)
+%code Status err = XGetGeometry(arg1,arg2,&res1,&res2,&res3,&res4,&res5,&res6,&res7)
+%fail { Success != err }{ BadStatus(err,XGetGeometry) }
+
+-- XParseGeometry omitted (returned bitset too weird)
+
+----------------------------------------------------------------
+-- Locale
+----------------------------------------------------------------
+
+%fun XSupportsLocale :: IO Bool
+%fun XSetLocaleModifiers :: String -> IO String
+
+----------------------------------------------------------------
+-- Screen Saver
+----------------------------------------------------------------
+
+type AllowExposuresMode = Int
+%dis allowExposuresMode x = int x	      
+%const AllowExposuresMode
+% [ DontAllowExposures
+% , AllowExposures
+% , DefaultExposures
+% ]
+
+type PreferBlankingMode = Int
+%dis preferBlankingMode x = int x	      	      
+%const PreferBlankingMode	
+% [ DontPreferBlanking
+% , PreferBlanking
+% , DefaultBlanking
+% ]
+
+type ScreenSaverMode = Int
+%dis screenSaverMode x = int x	      
+%const ScreenSaverMode	
+% [ ScreenSaverActive
+% , ScreenSaverReset
+% ]
+
+%fun XGetScreenSaver :: Display -> IO (Int, Int, PreferBlankingMode, AllowExposuresMode)
+%code XGetScreenSaver(arg1,&res1,&res2,&res3,&res4)
+
+%fun XSetScreenSaver      :: Display -> Int -> Int -> PreferBlankingMode -> AllowExposuresMode -> IO ()
+%fun XActivateScreenSaver :: Display -> IO ()
+%fun XResetScreenSaver    :: Display -> IO ()
+%fun XForceScreenSaver    :: Display -> ScreenSaverMode -> IO ()
+
+
+----------------------------------------------------------------
+-- Pointer
+----------------------------------------------------------------
+
+%fun XGetPointerControl :: Display -> IO (Int, Int, Int)
+%code XGetPointerControl(arg1,&res1,&res2,&res3)
+
+%fun XWarpPointer :: Display -> Window -> Window -> Position -> Position -> Dimension -> Dimension -> Position -> Position -> IO ()
+
+-- XGetPointerMapping omitted
+-- XSetPointerMapping omitted
+
+----------------------------------------------------------------
+-- Visuals
+----------------------------------------------------------------
+
+-- XVisualIDFromVisual omitted
+
+
+----------------------------------------------------------------
+-- Threads
+----------------------------------------------------------------
+
+-- XInitThreads omitted (leary of thread stuff)
+-- XLockDisplay omitted (leary of thread stuff)
+-- XUnlockDisplay omitted (leary of thread stuff)
+
+----------------------------------------------------------------
+-- Screen
+----------------------------------------------------------------
+
+-- Many flags assumed to be PURE.
+
+%fun XBlackPixelOfScreen      :: Screen -> Pixel
+%fun XWhitePixelOfScreen      :: Screen -> Pixel
+%fun XCellsOfScreen           :: Screen -> Int
+%fun XDefaultColormapOfScreen :: Screen -> Colormap
+%fun XDefaultDepthOfScreen    :: Screen -> Int
+%fun XDefaultGCOfScreen       :: Screen -> GC
+%fun XDefaultVisualOfScreen   :: Screen -> Visual
+%fun XDoesBackingStore        :: Screen -> Bool
+%fun XDoesSaveUnders          :: Screen -> Bool
+%fun DisplayOfScreen         :: Screen -> Display
+
+-- event mask at connection setup time - not current event mask!
+%fun XEventMaskOfScreen       :: Screen -> EventMask
+
+%fun XMinCmapsOfScreen        :: Screen -> Int
+%fun XMaxCmapsOfScreen        :: Screen -> Int
+%fun XRootWindowOfScreen      :: Screen -> Window
+%fun XWidthOfScreen           :: Screen -> Dimension
+%fun XWidthMMOfScreen         :: Screen -> Dimension
+%fun XHeightOfScreen          :: Screen -> Dimension
+%fun XHeightMMOfScreen        :: Screen -> Dimension
+%fun XPlanesOfScreen          :: Screen -> Int
+%fun XScreenNumberOfScreen    :: Screen -> ScreenNumber
+
+
+----------------------------------------------------------------
+-- Graphics contexts
+----------------------------------------------------------------
+
+-- Convenience functions
+
+%fun XSetArcMode      	   :: Display -> GC -> ArcMode        	      -> IO ()
+%fun XSetBackground   	   :: Display -> GC -> Pixel          	      -> IO ()
+%fun XSetForeground   	   :: Display -> GC -> Pixel          	      -> IO ()
+%fun XSetFunction     	   :: Display -> GC -> GXFunction     	      -> IO ()
+%fun XSetGraphicsExposures :: Display -> GC -> Bool                  -> IO ()
+%fun XSetClipMask          :: Display -> GC -> Pixmap                -> IO ()
+%fun XSetClipOrigin        :: Display -> GC -> Position -> Position  -> IO ()
+
+-- XSetClipRectangles omitted because it's not clear when it's safe to delete the
+-- array of rectangles
+
+%fun XSetDashes            :: Display -> GC -> Int -> String -> Int  -> IO ()
+%fun XSetFillRule          :: Display -> GC -> FillRule              -> IO ()
+%fun XSetFillStyle         :: Display -> GC -> FillStyle             -> IO ()
+%fun XSetFont              :: Display -> GC -> Font                  -> IO ()
+%fun XSetLineAttributes    :: Display -> GC -> Int -> LineStyle -> CapStyle -> JoinStyle -> IO ()
+%fun XSetPlaneMask         :: Display -> GC -> Pixel                 -> IO ()
+%fun XSetState             :: Display -> GC -> Pixel -> Pixel -> GXFunction -> Pixel -> IO ()
+%fun XSetStipple           :: Display -> GC -> Pixmap                -> IO ()
+%fun XSetSubwindowMode     :: Display -> GC -> SubWindowMode         -> IO ()
+%fun XSetTSOrigin          :: Display -> GC -> Position -> Position  -> IO ()
+%fun XSetTile              :: Display -> GC -> Pixmap                -> IO ()
+
+-- ToDo: create a real interface to this
+%fun XCreateGC :: Display -> Drawable -> IO GC
+%code res1 = XCreateGC(arg1,arg2,0,0);
+
+-- OLD: 
+-- %synonym : GCValueSet : Ptr
+--   in rtsDummy
+-- 
+-- {%
+-- typedef unsigned long GCMask; /* cf XtGCMask */
+-- typedef struct _gcvalues {
+--     GCMask	mask;
+--     XGCValues	values;
+-- }* GCValueSet;
+-- %}
+--
+-- IMPURE GCValueSet	emptyGCValueSet()
+-- RESULT: (RETVAL = (GCValueSet) malloc(sizeof(struct _gcvalues))) ? RETVAL->mask = 0, RETVAL : RETVAL;
+-- POST: RETVAL != NULL
+-- 
+-- IMPURE void	setGCForeground(colour, set)
+-- IN Pixel	colour
+-- IN GCValueSet	set
+-- RESULT: set->mask |= GCForeground; set->values.foreground = colour
+-- 
+-- IMPURE void	setGCBackground(colour, set)
+-- IN Pixel	colour
+-- IN GCValueSet	set
+-- RESULT: set->mask |= GCBackground; set->values.background = colour
+-- 
+-- IMPURE void	freeGCValueSet(set)
+-- IN GCValueSet	set
+-- RESULT: free(set)
+-- 
+-- IMPURE GC	XCreateGC(display, d, set->mask, &(set->values))
+-- NAME: xCreateGC
+-- IN Display*	display
+-- IN Drawable	d
+-- IN GCValueSet	set
+-- 
+-- IMPURE void	XChangeGC(display, gc, set->mask, &(set->values))
+-- NAME: xChangeGC
+-- IN Display*	display
+-- IN GC		gc
+-- IN GCValueSet	set
+-- 
+-- STARTH
+-- -- Code that packages GCValueSets up in a clean monoidic way.
+-- 
+-- data GCSetter = GCSetter (GCValueSet -> IO ()) -- should be newtype 
+-- 
+-- createGC :: Display -> Drawable -> GCSetter -> IO GC
+-- createGC display d (GCSetter setter) =
+--   emptyGCValueSet        >>= \ set ->
+--   setter set             >>
+--   xCreateGC display d set >>= \ gc ->
+--   freeGCValueSet set     >>
+--   return gc
+-- 
+-- changeGC :: Display -> Drawable -> GC -> GCSetter -> IO ()
+-- changeGC display d gc (GCSetter setter) =
+--   emptyGCValueSet        >>= \ set ->
+--   setter set             >>
+--   xChangeGC display d set >>= \ gc ->
+--   freeGCValueSet set
+-- 
+-- instance Monoid GCSetter where
+--   (GCSetter m) >>> (GCSetter k) 
+--     = GCSetter (\ settings -> m settings >> k settings)
+--   unit = GCSetter (\ _ -> return ())
+-- 
+-- set_Background :: Pixel -> GCSetter
+-- set_Background c = GCSetter (setGCBackground c)
+-- 
+-- set_Foreground :: Pixel -> GCSetter
+-- set_Foreground c = GCSetter (setGCForeground c)
+-- ENDH
+
+%fun XGContextFromGC :: GC -> GContext
+
+%fun XFreeGC  :: Display -> GC -> IO ()
+%fun XFlushGC :: Display -> GC -> IO ()
+
+%fun XCopyGC :: Display -> GC -> Mask -> GC -> IO ()
+
+----------------------------------------------------------------
+-- Pixmaps
+----------------------------------------------------------------
+
+%fun XCreatePixmap :: Display -> Drawable -> Dimension -> Dimension -> Int -> IO Pixmap
+%fun XFreePixmap :: Display -> Pixmap -> IO ()
+
+-- XCreatePixmapFromBitmapData omitted (type looks strange)
+
+-- %fun XListPixmapFormatValues = res1 = XListPixmapFormatValues(display, &res1_size) :: Display -> ListXPixmapFormatValues
+
+----------------------------------------------------------------
+-- Bitmaps
+----------------------------------------------------------------
+
+-- ToDo: do these need to be available to the programmer?
+-- Maybe I could just wire them into all other operations?
+
+%fun XBitmapBitOrder :: Display -> ByteOrder
+%fun XBitmapUnit     :: Display -> Int
+%fun XBitmapPad      :: Display -> Int
+
+-- ToDo: make sure that initialisation works correctly for x/y_hot
+-- omitted
+-- IMPURE void	XWriteBitmapFile(display, filename, bitmap, width, height, x_hot, y_hot) RAISES Either
+-- RETURNTYPE	BitmapFileStatus
+-- GLOBAL ERROR BitmapFileStatus	RETVAL
+-- IN Display*	display
+-- IN String	filename
+-- IN Pixmap	bitmap
+-- IN Dimension	width
+-- IN Dimension	height
+-- IN Maybe Int	x_hot = -1
+-- IN Maybe Int	y_hot = -1
+-- POST: RETVAL == BitmapSuccess
+
+-- omitted
+-- IMPURE void	XReadBitmapFile(display, d, filename, bitmap, width, height, x_hot, y_hot) RAISES Either
+-- RETURNTYPE	BitmapFileStatus
+-- GLOBAL ERROR BitmapFileStatus	RETVAL
+-- IN Display*	display
+-- IN Drawable	d
+-- IN String	filename
+-- OUT Pixmap	bitmap
+-- OUT Dimension	width
+-- OUT Dimension	height
+-- OUT Int		x_hot RAISES Maybe IF x_hot == -1
+-- OUT Int		y_hot RAISES Maybe IF x_hot == -1
+-- POST: RETVAL == BitmapSuccess
+
+-- XCreateBitmapFromData omitted (awkward looking type)
+-- XReadBitmapFileData omitted (awkward looking type)
+
+----------------------------------------------------------------
+-- Color and Colormaps
+----------------------------------------------------------------
+
+%fun XLookupColor :: Display -> Colormap -> String -> IO (Color, Color)
+%code Status err = XLookupColor(arg1,arg2,arg3,&res1,&res2)
+%fail { 0 == err }{ Zero(err,XLookupColor) }
+%end  free(arg3)
+
+%fun XAllocNamedColor :: Display -> Colormap -> String -> IO (Color, Color)
+%code Status err = XAllocNamedColor(arg1,arg2,arg3,&res1,&res2)
+%fail { 0 == err }{ Zero(err,XLookupColor) }
+%end  free(arg3)
+
+%fun XAllocColor :: Display -> Colormap -> Color -> IO Color               
+%code Status err = XAllocColor(arg1,arg2,&arg3)
+%fail { 0 == err }{ Zero(err,XLookupColor) }
+%result (color {arg3})
+
+%fun XParseColor :: Display -> Colormap -> String -> IO Color              
+%code Status err = XParseColor(arg1,arg2,arg3,&res1)
+%fail { 0 == err }{ Zero(err,XLookupColor) }
+%end  free(arg3)
+
+-- ToDo: Can't express relationship between arg4 and res1 properly (or arg5, res2)
+-- %errfun Zero XAllocColorCells :: Display -> Colormap -> Bool -> Int -> Int -> IO (ListPixel, ListPixel) using err = XAllocColorCells(arg1,arg2,arg3,arg4_size,res1,arg5_size,res2) 
+
+-- ToDo: Can't express relationship between arg4 and res1 properly
+-- %errfun Zero XAllocColorPlanes :: Display -> Colormap -> Bool -> Int -> Int -> Int -> Int IO (ListPixel, Pixel, Pixel, Pixel) using err = XAllocColorPlanes(...)
+
+%fun XFreeColors :: Display -> Colormap -> ListPixel -> Pixel -> IO () 
+%call (display arg1) (colormap arg2) (listPixel arg3 arg3_size) (pixel arg4)
+%code XFreeColors(arg1,arg2,arg3,arg3_size,arg4)
+%end free(arg3)
+
+%fun XStoreColor  :: Display -> Colormap -> Color -> IO ()             
+%code XStoreColor(arg1,arg2,&arg3) 
+
+-- %fun XStoreColors :: Display -> Colormap -> ListColor -> IO ()         
+-- %code XStoreColors(arg1,arg2,arg3,arg3_size) 
+-- %fun XStoreNamedColor :: Display -> Colormap -> String -> Pixel -> PrimaryMask -> IO ()
+
+%fun XQueryColor  :: Display -> Colormap -> Color -> IO Color         
+%code XQueryColor(arg1,arg2,&arg3)
+%result (color {arg3})
+
+%fun XQueryColors :: Display -> Colormap -> ListColor -> IO ListColor 
+%call (display arg1) (colormap arg2) (listColor arg3 arg3_size)
+%code XQueryColors(arg1,arg2,arg3,arg3_size)
+%result (listColor {arg3} {arg3_size})
+
+%fun XInstallColormap     :: Display -> Colormap -> IO ()
+%fun XUninstallColormap   :: Display -> Colormap -> IO ()
+%fun XCopyColormapAndFree :: Display -> Colormap -> IO Colormap
+%fun XCreateColormap      :: Display -> Window   -> Visual -> ColormapAlloc -> IO Colormap
+%fun XFreeColormap        :: Display -> Colormap -> IO ()
+
+
+----------------------------------------------------------------
+-- Fonts
+----------------------------------------------------------------
+
+-- A glyph (or Char2b) is a 16 bit character identification.
+-- The top 8 bits are zero in many fonts.
+type Glyph = Int
+%dis glyph x = int x
+
+-- Disnae exist: %fun LoadFont       :: Display -> String -> IO Font
+-- Disnae exist: %fun UnloadFont     :: Display -> Font -> IO ()
+
+-- Argument can be a Font or a GContext.
+-- But, if it's a GContext, the fontStruct will use the GContext as the 
+-- FontID - which will cause most things to break so it's probably
+-- safer using XGetGCValues to get a genuine font ID
+%fun XQueryFont     :: Display -> Font -> IO FontStruct
+
+-- Note that this _WILL NOT WORK_ unless you have explicitly set the font.
+-- I'm slowly but surely coming to the conclusion that Xlib is a pile of
+-- steaming shit.
+%fun FontFromGC :: Display -> GC -> IO Font
+%code
+%  XGCValues ret;
+%  Status err = XGetGCValues(arg1,arg2,GCFont,&ret);
+%fail {Success != err} { BadStatus(rc,FontFromGC) }
+%result (font {ret.font})
+
+%fun XLoadQueryFont :: Display -> String -> IO FontStruct
+%fail {res1==0} { NullPtr(XLoadQueryFont) }
+
+%fun XFreeFont      :: Display -> FontStruct -> IO ()
+-- %fun XSetFontPath  :: Display -> ListString  -> IO () using XSetFontPath(arg1,arg2,arg2_size)
+
+%fun fontFromFontStruct :: FontStruct -> Font
+%code res1 = arg1->fid
+%fun ascentFromFontStruct :: FontStruct -> Int32
+%code res1 = arg1->ascent
+%fun descentFromFontStruct :: FontStruct -> Int32
+%code res1 = arg1->descent
+
+-- %prim XGetFontPath :: Display -> IO ListString
+--Int r_size;
+--String* r = XGetFontPath(arg1,&r_size);
+-- %update(r);
+--XFreeFontPath(r);
+--return;
+
+-- %prim XListFonts :: Display -> String -> Int -> IO ListString
+--Int r_size;
+--String *r = XListFonts(arg1,arg2,arg3,&r_size);
+-- %update(r);
+--XFreeFontNames(r);
+--return;
+
+-- XListFontsWithInfo omitted (no support for FontStruct yet)
+
+-- XQueryTextExtents omitted (no support for CharStruct yet)
+-- XQueryTextExtents16 omitted (no support for CharStruct yet)
+
+-- We marshall this across right away because it's usually one-off info
+type CharStruct =
+ ( Int            -- lbearing (origin to left edge of raster)
+ , Int            -- rbearing (origin to right edge of raster)
+ , Int            -- width    (advance to next char's origin)
+ , Int            -- ascent   (baseline to top edge of raster)
+ , Int            -- descent  (baseline to bottom edge of raster)
+-- attributes omitted
+ )
+%dis charStruct x = declare {XCharStruct} x in
+% ( int {(%x).lbearing}	
+% , int {(%x).rbearing}	
+% , int {(%x).width}	
+% , int {(%x).ascent}	
+% , int {(%x).descent}	
+% )
+
+
+-- No need to put ths in the IO monad - this info is essentially constant
+%fun XTextExtents :: FontStruct -> String -> (FontDirection, Int32, Int32, CharStruct)
+%call (fontStruct f) (stringLen s s_len) 
+%code
+%  int         direction;
+%  int         font_ascent;
+%  int         font_descent;
+%  XCharStruct cs;
+%  int rc = XTextExtents(f,s,s_len,&direction,&font_ascent,&font_descent,&cs);
+%result ( fontDirection direction
+%       , int32 font_ascent
+%       , int32 font_descent
+%       , charStruct cs
+%       )
+
+-- No need to put ths in the IO monad - this info is essentially constant
+%fun XTextWidth :: FontStruct -> String -> Int32
+%call (fontStruct f) (stringLen s s_len) 
+%code res1 = XTextWidth(f,s,s_len)
+
+-- XTextExtents16 omitted
+-- XTextWidth16 omitted
+
+-- XGetFontProperty omitted
+-- XFreeFontInfo omitted
+-- XFreeFontNames omitted
+
+-- XCreateFontSet omitted (no documentation available)
+-- XFreeFontSet omitted (no documentation available)
+-- XFontsOfFontSet omitted (no documentation available)
+-- XBaseFontNameListOfFontSet omitted (no documentation available)
+-- XLocaleOfFontSet omitted (no documentation available)
+-- XExtentsOfFontSet omitted (no documentation available)
+
+-- XContextDependentDrawing omitted
+-- XDirectionalDependentDrawing omitted
+-- XContextualDrawing omitted
+
+-- XmbTextEscapement omitted
+-- XwcTextEscapement omitted
+-- XmbTextExtents omitted
+-- XwcTextExtents omitted
+-- XmbTextPerCharExtents omitted
+-- XwcTextPerCharExtents omitted
+-- XmbDrawText omitted
+-- XwcDrawText omitted
+-- XmbDrawString omitted
+-- XwcDrawString omitted
+-- XmbDrawImageString omitted
+-- XwcDrawImageString omitted
+
+-- XOpenIM omitted
+-- XCloseIM omitted
+-- XGetIMValues omitted
+-- XSetIMValues omitted
+-- DisplayOfIM omitted
+-- XLocaleOfIM omitted
+
+-- XCreateIC omitted
+-- XDestroyIC omitted
+-- XSetICFocus omitted
+-- XUnsetICFocus omitted
+-- XwcResetIC omitted
+-- XmbResetIC omitted
+-- XSetICValues omitted
+-- XGetICValues omitted
+-- XIMOfIC omitted
+
+-- XRegisterIMInstantiateCallback omitted
+-- XUnregisterIMInstantiateCallback omitted
+
+-- XInternalConnectionNumbers omitted
+-- XProcessInternalConnection omitted
+-- XAddConnectionWatch omitted
+-- XRemoveConnectionWatch omitted
+
+-- XmbLookupString omitted
+-- XwcLookupString omitted
+
+----------------------------------------------------------------
+-- Atoms
+----------------------------------------------------------------
+
+-- AC, 1/9/2000: Added definition for XInternAtom
+%fun XInternAtom :: Display -> String -> Bool -> IO Atom
+
+-- XInternAtoms omitted
+-- XGetAtomName omitted
+-- XGetAtomNames omitted
+-- XConvertSelection omitted
+-- XListProperties omitted
+-- XChangeProperty omitted
+-- XDeleteProperty omitted
+
+----------------------------------------------------------------
+-- Keycodes
+----------------------------------------------------------------
+
+%fun XDisplayKeycodes :: Display -> (Int,Int)
+%code XDisplayKeycodes(arg1,&res1,&res2) 
+%fun XLookupKeysym    :: XKeyEventPtr -> Int -> IO KeySym
+%fun XKeycodeToKeysym :: Display -> KeyCode -> Int -> IO KeySym
+%fun XKeysymToKeycode :: Display -> KeySym  -> IO KeyCode
+%fun XKeysymToString  :: KeySym -> String
+%fun XStringToKeysym  :: String -> KeySym
+
+-- I should not need to do this: the argument to maybeT below _should_
+-- be treated as a C expression.
+%const KeySym [NoSymbol]
+
+-- I tried to allocate the buffer below on the stack, but that was not a
+-- good idea since the unmarshalling takes place in another stack frame.
+-- I could use malloc, but then it seems tricky to free _after_ unmarshalling.
+-- (%end free(buf) does not work: frees buffer too early.)
+-- Making the buffer static works, but is potentially not thread safe.
+-- But: the graphics library does not use X in a threadsafe way anyway
+-- (does not import/call XInitThreads) and GHC is single threaded as far as
+-- the external world is concerned(?).
+-- OK, go static for now. Introduce a mutex if needs be.
+-- XLookupString cannot handle compose, it seems.
+%fun XLookupString :: XKeyEventPtr -> IO (Maybe KeySym, String)
+%call (xKeyEventPtr e)
+%code static char buf[100];
+%     int n;
+%     KeySym ks;
+%     n = XLookupString(e, buf, 100, &ks, NULL);
+%result (maybeT {noSymbol}(keySym ks), stringLen buf n) -- I meant "NoSymbol".
+
+-- XQueryKeymap omitted
+-- XRebindKeysym omitted
+-- XDeleteModifiermapEntry omitted
+-- XInsertModifiermapEntry omitted
+-- XNewModifiermap omitted
+-- XFreeModifiermap omitted
+-- XSetModifierMapping omitted
+-- XGetModifierMapping omitted
+-- XGetKeyboardMapping omitted
+
+----------------------------------------------------------------
+-- Image
+----------------------------------------------------------------
+
+-- XCreateImage omitted
+-- XInitImage omitted
+-- XGetImage omitted
+-- XPutImage omitted
+-- XGetSubImage omitted
+
+----------------------------------------------------------------
+-- Icons
+----------------------------------------------------------------
+
+%fun XGetIconName :: Display -> Window -> IO String
+%code Status err = XGetIconName(arg1,arg2,&res1) 
+%fail { Success != err }{ BadStatus(err,XGetIconName) }
+
+%fun XSetIconName :: Display -> Window -> String -> IO ()
+
+----------------------------------------------------------------
+-- Cursors
+----------------------------------------------------------------
+
+%fun XDefineCursor       :: Display -> Window -> Cursor -> IO ()
+%fun XUndefineCursor     :: Display -> Window -> IO ()
+
+%fun XCreatePixmapCursor :: Display -> Pixmap -> Pixmap -> Color -> Color -> Dimension -> Dimension -> IO Cursor
+%code res1 = XCreatePixmapCursor(arg1,arg2,arg3,&arg4,&arg5,arg6,arg7) 
+
+%fun XCreateGlyphCursor  :: Display -> Font   -> Font -> Glyph -> Glyph -> Color -> Color -> IO Cursor
+%code res1 = XCreateGlyphCursor(arg1,arg2,arg3,arg4,arg5,&arg6,&arg7) 
+
+%fun XCreateFontCursor   :: Display -> Glyph  -> IO Cursor
+%fun XFreeCursor         :: Display -> Font   -> IO ()
+%fun XRecolorCursor      :: Display -> Cursor -> Color -> Color -> IO ()
+%code XRecolorCursor(arg1,arg2,&arg3,&arg4) 
+
+----------------------------------------------------------------
+-- Window Manager stuff
+----------------------------------------------------------------
+
+-- XConfigureWMWindow omitted (can't find documentation)
+-- XReconfigureWMWindow omitted (can't find documentation)
+-- XWMGeometry omitted (can't find documentation)
+-- XGetWMColormapWindows omitted (can't find documentation)
+-- XSetWMColormapWindows omitted (can't find documentation)
+-- XGetWMProtocols omitted
+
+-- AC, 1/9/2000: Added definition for XSetWMProtocols
+%fun XSetWMProtocols :: Display -> Window -> ListAtom -> IO ()
+%call (display arg1) (window arg2) (listAtom arg3 arg3_size)
+%code XSetWMProtocols(arg1,arg2,arg3,arg3_size)
+%end free(arg3)
+
+
+----------------------------------------------------------------
+-- Set Window Attributes
+----------------------------------------------------------------
+
+-- The following code is based on what you get from the %ptr declaration.
+-- ToDo: generate this kind of stuff automatically.
+
+type XSetWindowAttributesPtr = Ptr Stub_SWA
+data Stub_SWA
+--  toXSetWindowAttributesPtr   :: Addr -> XSetWindowAttributesPtr,
+--  fromXSetWindowAttributesPtr :: XSetWindowAttributesPtr -> Ptr
+%dis xSetWindowAttributesPtr x = ptr ({XSetWindowAttributes*} x)
+
+%fun allocXSetWindowAttributes :: IO XSetWindowAttributesPtr
+%code res1 = (void*)malloc(sizeof(XSetWindowAttributes))
+
+
+-- toXSetWindowAttributesPtr   x = x 
+-- fromXSetWindowAttributesPtr x = x
+-- 
+-- instance Pointer XSetWindowAttributesPtr where
+--   toPtr     = fromXSetWindowAttributesPtr
+--   fromPtr   = toXSetWindowAttributesPtr
+--   alloc     = malloc sizeofXSetWindowAttributes
+--   plus p x  = fromPtr (plusPtr (toPtr p) (x * sizeofXSetWindowAttributes))
+--   minus p q = (toPtr p `minusPtr` toPtr q) `div` sizeofXSetWindowAttributes
+-- %}}
+-- 
+-- %type : XSetWindowAttributesPtr : XSetWindowAttributes* arg1 : %pack(Ptr,arg1);% : %unpack(Ptr,arg1,arg2);%
+-- 
+-- %const Int sizeofXSetWindowAttributes = sizeof(XSetWindowAttributes)
+
+---------------- Access to individual fields ----------------
+
+%fun set_background_pixmap :: XSetWindowAttributesPtr -> Pixmap -> IO ()
+%code arg1->background_pixmap = arg2;
+
+%fun set_background_pixel :: XSetWindowAttributesPtr -> Pixel -> IO ()
+%code arg1->background_pixel = arg2;
+
+%fun set_border_pixmap :: XSetWindowAttributesPtr -> Pixmap -> IO ()
+%code arg1->border_pixmap = arg2;
+
+%fun set_border_pixel :: XSetWindowAttributesPtr -> Pixel -> IO ()
+%code arg1->border_pixel = arg2;
+
+%fun set_bit_gravity :: XSetWindowAttributesPtr -> BitGravity -> IO ()
+%code arg1->bit_gravity = arg2;
+
+%fun set_win_gravity :: XSetWindowAttributesPtr -> WindowGravity -> IO ()
+%code arg1->win_gravity = arg2;
+
+%fun set_backing_store :: XSetWindowAttributesPtr -> BackingStore -> IO ()
+%code arg1->backing_store = arg2;
+
+%fun set_backing_planes :: XSetWindowAttributesPtr -> Pixel -> IO ()
+%code arg1->backing_planes = arg2;
+
+%fun set_backing_pixel :: XSetWindowAttributesPtr -> Pixel -> IO ()
+%code arg1->backing_pixel = arg2;
+
+%fun set_save_under :: XSetWindowAttributesPtr -> Bool -> IO ()
+%code arg1->save_under = arg2;
+
+%fun set_event_mask :: XSetWindowAttributesPtr -> EventMask -> IO ()
+%code arg1->event_mask = arg2;
+
+%fun set_do_not_propagate_mask :: XSetWindowAttributesPtr -> EventMask -> IO ()
+%code arg1->do_not_propagate_mask = arg2;
+
+%fun set_override_redirect :: XSetWindowAttributesPtr -> Bool -> IO ()
+%code arg1->override_redirect = arg2;
+
+%fun set_colormap :: XSetWindowAttributesPtr -> Colormap -> IO ()
+%code arg1->colormap = arg2;
+
+%fun set_cursor :: XSetWindowAttributesPtr -> Cursor -> IO ()
+%code arg1->cursor = arg2;
+
+----------------------------------------------------------------
+-- Windows
+----------------------------------------------------------------
+
+%fun XStoreName :: Display -> Window -> String -> IO ()
+%fun XCreateSimpleWindow :: Display -> Window -> Position -> Position -> Dimension -> Dimension -> Int -> Pixel -> Pixel -> IO Window
+
+%fun XCreateWindow :: Display -> Window -> Position -> Position -> Dimension -> Dimension -> Int -> Int -> WindowClass -> Visual -> AttributeMask -> XSetWindowAttributesPtr -> IO Window
+
+----------------------------------------------------------------
+
+--ToDo: find an effective way to use Maybes
+%fun XTranslateCoordinates :: Display -> Window -> Window -> Position -> Position -> IO (Bool,Position,Position,Window)
+%code res1 = XTranslateCoordinates(arg1,arg2,arg3,arg4,arg5,&res2,&res3,&res4)
+
+%fun XMoveResizeWindow            :: Display -> Window -> Position  -> Position  -> Dimension -> Dimension -> IO ()
+%fun XResizeWindow                :: Display -> Window -> Dimension -> Dimension -> IO ()
+%fun XMoveWindow                  :: Display -> Window -> Position  -> Position  -> IO ()
+%fun XReparentWindow              :: Display -> Window -> Window -> Position -> Position  -> IO ()
+%fun XMapSubwindows               :: Display -> Window -> IO ()
+%fun XUnmapSubwindows             :: Display -> Window -> IO ()
+%fun XMapWindow                   :: Display -> Window -> IO ()
+-- Disnae exist: %fun XUnmapWindows                :: Display -> Window -> IO ()
+-- Disnae exist: %fun XMapRaisedWindow             :: Display -> Window -> IO ()
+%fun XLowerWindow                 :: Display -> Window -> IO ()
+%fun XRaiseWindow                 :: Display -> Window -> IO ()
+%fun XCirculateSubwindowsDown     :: Display -> Window -> IO ()
+%fun XCirculateSubwindowsUp       :: Display -> Window -> IO ()
+%fun XCirculateSubwindows         :: Display -> Window -> CirculationDirection -> IO ()
+%fun XIconifyWindow  :: Display -> Window -> ScreenNumber -> IO ()
+%code Status err = XIconifyWindow(arg1,arg2,arg3)
+%fail { Success != err }{ BadStatus(err,XIconifyWindow) }
+%fun XWithdrawWindow :: Display -> Window -> ScreenNumber -> IO ()
+%code Status err = XWithdrawWindow(arg1,arg2,arg3)
+%fail { Success != err }{ BadStatus(err,XWithdrawWindow) }
+%fun XDestroyWindow               :: Display -> Window -> IO ()
+%fun XDestroySubwindows           :: Display -> Window -> IO ()
+
+%fun XSetWindowBorder             :: Display -> Window -> Pixel     -> IO ()
+%fun XSetWindowBorderPixmap       :: Display -> Window -> Pixmap    -> IO ()
+%fun XSetWindowBorderWidth        :: Display -> Window -> Dimension -> IO ()
+%fun XSetWindowBackground         :: Display -> Window -> Pixel     -> IO ()
+%fun XSetWindowBackgroundPixmap   :: Display -> Window -> Pixmap    -> IO ()
+%fun XSetWindowColormap           :: Display -> Window -> Colormap  -> IO ()
+
+%fun XAddToSaveSet                :: Display -> Window -> IO ()
+%fun XRemoveFromSaveSet           :: Display -> Window -> IO ()
+%fun XChangeSaveSet               :: Display -> Window -> ChangeSaveSetMode -> IO ()
+
+%fun XClearWindow                 :: Display -> Window -> IO ()
+%fun XClearArea                   :: Display -> Window -> Position -> Position -> Dimension -> Dimension -> Bool -> IO ()
+
+-- -- This is almost good enough - but doesn't call XFree
+-- -- %errfun BadStatus XQueryTree :: Display -> Window -> IO (Window, Window, ListWindow) using err = XQueryTree(arg1,arg2,&res1,&res2,&res3,&res3_size)
+-- %prim XQueryTree :: Display -> Window -> IO (Window, Window, ListWindow)
+-- Window root_w, parent;
+-- Int children_size;
+-- Window *children;
+-- Status r = XQueryTree(arg1,arg2,&root_w, &parent, &children, &children_size);
+-- if (Success != r) { %failWith(BadStatus,r); }
+-- %update(root_w,parent,children);
+-- XFree(children);
+-- return;
+
+%fun XRestackWindows :: Display -> ListWindow -> IO ()
+%call (display arg1) (listWindow arg2 arg2_size)
+%code XRestackWindows(arg1, arg2, arg2_size)
+
+-- -- ToDo: I want to be able to write this
+-- -- %fun XListInstalledColormaps :: Display -> Window -> IO ListColormap using res1 = XListInstalledColormaps(arg1,arg2,&res1_size) 
+-- -- But I have to write this instead - need to add a notion of cleanup code!
+-- %prim XListInstalledColormaps :: Display -> Window -> IO ListColormap
+-- Int r_size;
+-- Colormap* r = XListInstalledColormaps(arg1,arg2,&r_size);
+-- %update(r);
+-- XFree(r);
+-- return;
+-- 
+-- -- Again, this is almost good enough
+-- -- %errfun BadStatus XGetCommand :: Display -> Window -> IO ListString using err = XGetCommand(arg1,arg2,&res1,&res1_size)
+-- -- but not quite
+-- -- %prim XGetCommand :: Display -> Window -> IO ListString
+-- --Int    argv_size;
+-- --String *argv;
+-- --Status r = XGetCommand(arg1,arg2,&argv,&argv_size);
+-- --if (Success != r) { %failWith(BadStatus, r); }
+-- -- %update(argv);
+-- --XFreeStringList(argv);
+-- --return;
+-- 
+-- -- %fun XSetCommand :: Display -> Window -> ListString -> IO ()            using XSetCommand(arg1,arg2,arg3,res3_size)
+-- 
+-- %errfun BadStatus XGetTransientForHint :: Display -> Window -> IO Window using err = XGetTransientForHint(arg1,arg2,&res1)
+-- 
+-- %fun XSetTransientForHint :: Display -> Window -> Window -> IO ()
+-- 
+-- -- XRotateWindowProperties omitted
+-- -- XGetWindowProperty omitted
+-- 
+-- -- XGetWindowAttributes omitted
+-- -- XChangeWindowAttributes omitted
+
+----------------------------------------------------------------
+-- Drawing
+----------------------------------------------------------------
+
+%fun XDrawPoint      :: Display -> Drawable -> GC -> Position -> Position -> IO ()
+
+%fun XDrawPoints     :: Display -> Drawable -> GC -> ListPoint -> CoordinateMode -> IO ()
+%call (display arg1) (drawable arg2) (gC arg3) (listPoint arg4 arg4_size) (coordinateMode arg5)
+%code XDrawPoints(arg1,arg2,arg3,arg4,arg4_size,arg5) 
+%end free(arg4)
+
+%fun XDrawLine       :: Display -> Drawable -> GC -> Position -> Position -> Position -> Position -> IO ()
+
+%fun XDrawLines      :: Display -> Drawable -> GC -> ListPoint -> CoordinateMode -> IO ()
+%call (display arg1) (drawable arg2) (gC arg3) (listPoint arg4 arg4_size) (coordinateMode arg5)
+%code XDrawLines(arg1,arg2,arg3,arg4,arg4_size,arg5) 
+%end free(arg4)
+
+%fun XDrawSegments   :: Display -> Drawable -> GC -> ListSegment -> IO ()                
+%call (display arg1) (drawable arg2) (gC arg3) (listSegment arg4 arg4_size)
+%code XDrawSegments(arg1,arg2,arg3,arg4,arg4_size) 
+%end free(arg4)
+
+%fun XDrawRectangle  :: Display -> Drawable -> GC -> Position -> Position -> Dimension -> Dimension -> IO ()
+
+%fun XDrawRectangles :: Display -> Drawable -> GC -> ListRectangle -> IO ()              
+%call (display arg1) (drawable arg2) (gC arg3) (listRectangle arg4 arg4_size)
+%code XDrawRectangles(arg1,arg2,arg3,arg4,arg4_size) 
+%end free(arg4)
+
+%fun XDrawArc        :: Display -> Drawable -> GC -> Position -> Position -> Dimension -> Dimension -> Int -> Int -> IO ()
+
+%fun XDrawArcs       :: Display -> Drawable -> GC -> ListArc -> IO ()                    
+%call (display arg1) (drawable arg2) (gC arg3) (listArc arg4 arg4_size)
+%code XDrawArcs(arg1,arg2,arg3,arg4,arg4_size) 
+%end free(arg4)
+
+%fun XFillRectangle  :: Display -> Drawable -> GC -> Position -> Position -> Dimension -> Dimension -> IO ()
+
+%fun XFillRectangles :: Display -> Drawable -> GC -> ListRectangle -> IO ()              
+%call (display arg1) (drawable arg2) (gC arg3) (listRectangle arg4 arg4_size)
+%code XFillRectangles(arg1,arg2,arg3,arg4,arg4_size) 
+%end free(arg4)
+
+%fun XFillPolygon    :: Display -> Drawable -> GC -> ListPoint -> PolygonShape -> CoordinateMode -> IO ()
+%call (display arg1) (drawable arg2) (gC arg3) (listPoint arg4 arg4_size) (polygonShape arg5) (coordinateMode arg6)
+%code XFillPolygon(arg1,arg2,arg3,arg4,arg4_size,arg5,arg6) 
+%end free(arg4)
+
+%fun XFillArc        :: Display -> Drawable -> GC -> Position -> Position -> Dimension -> Dimension -> Int -> Int -> IO ()
+
+%fun XFillArcs       :: Display -> Drawable -> GC -> ListArc -> IO ()                    
+%call (display arg1) (drawable arg2) (gC arg3) (listArc arg4 arg4_size)
+%code XFillArcs(arg1,arg2,arg3,arg4,arg4_size) 
+%end free(arg4)
+
+%fun XCopyArea       :: Display -> Drawable -> Drawable -> GC -> Position -> Position -> Dimension -> Dimension -> Position -> Position -> IO ()
+%fun XCopyPlane      :: Display -> Drawable -> Drawable -> GC -> Position -> Position -> Dimension -> Dimension -> Position -> Position -> Pixel -> IO ()
+
+-- draw characters over existing background
+%fun XDrawString     :: Display -> Drawable -> GC -> Position -> Position -> String -> IO () 
+%call (display arg1) (drawable arg2) (gC arg3) (position arg4) (position arg5) (stringLen arg6 arg6_size)
+%code XDrawString(arg1,arg2,arg3,arg4,arg5,arg6,arg6_size) 
+%end free(arg6)
+
+-- draw characters over a blank rectangle of current background colour
+%fun XDrawImageString :: Display -> Drawable -> GC -> Position -> Position -> String -> IO ()
+%call (display arg1) (drawable arg2) (gC arg3) (position arg4) (position arg5) (stringLen arg6 arg6_size)
+%code XDrawImageString(arg1,arg2,arg3,arg4,arg5,arg6,arg6_size) 
+%end free(arg6)
+
+-- XDrawString16 omitted (16bit chars not supported)
+-- XDrawImageString16 omitted (16bit chars not supported)
+-- XDrawText omitted (XTextItem not supported)
+-- XDrawText16 omitted (XTextItem not supported)
+
+----------------------------------------------------------------
+-- Cut and paste buffers
+----------------------------------------------------------------
+
+%fun XStoreBuffer :: Display -> String -> Int -> IO ()
+%call (display arg1) (stringLen arg2 arg2_size) (int arg3)
+%code Status err = XStoreBuffer(arg1,arg2,arg2_size,arg3);
+%fail { Success != err }{ BadStatus(err,XStoreBuffer) }
+
+%fun XStoreBytes :: Display -> String -> IO ()
+%call (display arg1) (stringLen arg2 arg2_size) 
+%code Status err = XStoreBytes(arg1,arg2,arg2_size);
+%fail { Success != err }{ BadStatus(err,XStoreBytes) }
+
+%fun XFetchBuffer :: Display -> Int -> IO String
+%code 
+%  int nbytes;
+%  char* res1 = XFetchBuffer(arg1, &nbytes, arg2);
+%fail { res1 != NULL }{ NullPtr(XFetchBuffer) }
+%result (stringLen res1 nbytes)
+%end XFree(res1)
+
+%fun XFetchBytes :: Display -> IO String
+%code 
+%  int nbytes;
+%  char* res1 = XFetchBytes(arg1, &nbytes);
+%fail { res1 != NULL }{ NullPtr(XFetchBytes) }
+%result (stringLen res1 nbytes)
+%end XFree(res1)
+
+%fun XRotateBuffers :: Display -> Int -> IO ()
+%code Status err = XRotateBuffers(arg1,arg2)
+%fail { Success != err }{ BadStatus(err,XRotateBuffers) }
+
+----------------------------------------------------------------
+-- Atoms
+----------------------------------------------------------------
+
+%const Atom 
+% [ XA_PRIMARY 
+% , XA_SECONDARY 
+% , XA_ARC 
+% , XA_ATOM 
+% , XA_BITMAP 
+% , XA_CARDINAL 
+% , XA_COLORMAP 
+% , XA_CURSOR 
+% , XA_CUT_BUFFER0 
+% , XA_CUT_BUFFER1 
+% , XA_CUT_BUFFER2 
+% , XA_CUT_BUFFER3 
+% , XA_CUT_BUFFER4 
+% , XA_CUT_BUFFER5 
+% , XA_CUT_BUFFER6 
+% , XA_CUT_BUFFER7 
+% , XA_DRAWABLE 
+% , XA_FONT 
+% , XA_INTEGER 
+% , XA_PIXMAP 
+% , XA_POINT 
+% , XA_RECTANGLE 
+% , XA_RESOURCE_MANAGER 
+% , XA_RGB_COLOR_MAP 
+% , XA_RGB_BEST_MAP 
+% , XA_RGB_BLUE_MAP 
+% , XA_RGB_DEFAULT_MAP 
+% , XA_RGB_GRAY_MAP 
+% , XA_RGB_GREEN_MAP 
+% , XA_RGB_RED_MAP 
+% , XA_STRING 
+% , XA_VISUALID 
+% , XA_WINDOW 
+% , XA_WM_COMMAND 
+% , XA_WM_HINTS 
+% , XA_WM_CLIENT_MACHINE 
+% , XA_WM_ICON_NAME 
+% , XA_WM_ICON_SIZE 
+% , XA_WM_NAME 
+% , XA_WM_NORMAL_HINTS 
+% , XA_WM_SIZE_HINTS 
+% , XA_WM_ZOOM_HINTS 
+% , XA_MIN_SPACE 
+% , XA_NORM_SPACE 
+% , XA_MAX_SPACE 
+% , XA_END_SPACE 
+% , XA_SUPERSCRIPT_X 
+% , XA_SUPERSCRIPT_Y 
+% , XA_SUBSCRIPT_X 
+% , XA_SUBSCRIPT_Y 
+% , XA_UNDERLINE_POSITION 
+% , XA_UNDERLINE_THICKNESS 
+% , XA_STRIKEOUT_ASCENT 
+% , XA_STRIKEOUT_DESCENT 
+% , XA_ITALIC_ANGLE 
+% , XA_X_HEIGHT 
+% , XA_QUAD_WIDTH 
+% , XA_WEIGHT 
+% , XA_POINT_SIZE 
+% , XA_RESOLUTION 
+% , XA_COPYRIGHT 
+% , XA_NOTICE 
+% , XA_FONT_NAME 
+% , XA_FAMILY_NAME 
+% , XA_FULL_NAME 
+% , XA_CAP_HEIGHT 
+% , XA_WM_CLASS 
+% , XA_WM_TRANSIENT_FOR 
+% , XA_LAST_PREDEFINED 
+% ]
+
+----------------------------------------------------------------
+-- Window properties
+----------------------------------------------------------------
+
+%fun XSetTextProperty :: Display -> Window -> String -> Atom -> IO ()
+%call (display arg1) (window arg2) (stringLen arg3 arg3_size) (atom arg4)
+%code
+%  XTextProperty p = { arg3, XA_STRING, 8, arg3_size };
+%  XSetTextProperty(arg1,arg2,&p,arg4);
+%end free(arg3)
+
+-- %fun XSetStandardProperties :: Display -> Window -> String -> String -> Pixmap -> [String] -> XSizeHints -> IO ()
+-- %code Status err = XSetStandardProperties(arg1,arg2,arg3,arg4,arg5,arg6,arg6_size,&arg7)
+-- %fail { Success != err }{ BadStatus(err,XSetStandardProperties) }
+
+----------------------------------------------------------------
+-- Regions
+----------------------------------------------------------------
+
+type RectInRegionResult = Int
+%dis rectInRegionResult x = int x
+
+-- Return values from XRectInRegion()
+%const RectInRegionResult
+% [ RectangleOut
+% , RectangleIn
+% , RectanglePart
+% ]
+ 
+-- regions deallocation is handled by the GC (ForeignObj magic)
+-- so we don't provide XDestroyRegion explicitly
+-- no idea what the int is for
+-- %fun XDestroyRegion :: Region -> IO Int
+
+----------------------------------------------------------------
+-- Creating regions
+----------------------------------------------------------------
+
+-- an empty region 
+-- (often used as "out argument" to binary operators which return regions)
+%fun XCreateRegion :: IO Region
+
+%fun XPolygonRegion :: ListPoint -> FillRule -> IO Region
+%call (listPoint arg1 arg2) (fillRule arg3)
+
+----------------------------------------------------------------
+-- Combining Regions
+--
+-- The usual shoddy state of Xlib documentation fails to mention
+-- what the Int is for.
+--
+-- All operations overwrite the region in their third argument
+-- which is usually a freshly created region.
+----------------------------------------------------------------
+
+%fun XIntersectRegion     :: Region -> Region -> Region -> IO Int
+%fun XSubtractRegion      :: Region -> Region -> Region -> IO Int
+%fun XUnionRectWithRegion :: Rectangle -> Region -> Region -> IO Int
+%code res1 = XUnionRectWithRegion(&arg1,arg2,arg3)
+%fun XUnionRegion         :: Region -> Region -> Region -> IO Int
+%fun XXorRegion           :: Region -> Region -> Region -> IO Int
+
+----------------------------------------------------------------
+-- Examining regions (tests, bounding boxes, etc)
+----------------------------------------------------------------
+
+%fun XEmptyRegion :: Region -> IO Bool
+%fun XEqualRegion :: Region -> Region -> IO Bool
+%fun XPointInRegion :: Region -> Point -> IO Bool
+%code res1 = XPointInRegion(arg1,arg2.x,arg2.y)
+%fun XRectInRegion :: Region -> Rectangle -> IO RectInRegionResult
+%code res1 = XRectInRegion(arg1,arg2.x,arg2.y,arg2.width,arg2.height)
+
+-- I have no idea what the int is for
+%fun XClipBox :: Region -> IO (Rectangle,Int)
+%code res2 = XClipBox(arg1,&res1)
+
+----------------------------------------------------------------
+-- Modifying regions
+-- (If you use any of these, you can't make regions look like
+--  first class data structures.)
+----------------------------------------------------------------
+
+-- translate region
+%fun XOffsetRegion :: Region -> Point -> IO Int
+%code res1 = XOffsetRegion(arg1,arg2.x,arg2.y)
+
+-- increase size of region by +ve or -ve number of pixels
+-- while preserving the centre of the region (ie half the pixels
+-- come off the left, and half off the right)
+%fun XShrinkRegion :: Region -> Point -> IO Int
+%code res1 = XShrinkRegion(arg1,arg2.x,arg2.y)
+
+----------------------------------------------------------------
+-- Graphics Context
+----------------------------------------------------------------
+
+-- set clip mask of GC
+%fun XSetRegion :: Display -> GC -> Region -> IO Int
+
+----------------------------------------------------------------
+-- End
+----------------------------------------------------------------
