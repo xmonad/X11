@@ -12,13 +12,14 @@
 --
 -----------------------------------------------------------------------------
 
-module Graphics.X11.StdDIS
+module System.Win32.StdDIS
         ( StablePtr
         , ForeignPtr
         , Ptr
         , FunPtr
         , Int8, Int16, Int32, Int64
         , Word8, Word16, Word32, Word64
+        , Storable(..)
         , unsafePerformIO
         , MbString
         , marshall_bool_,      unmarshall_bool_
@@ -26,6 +27,7 @@ module Graphics.X11.StdDIS
         , marshall_stringLen_, unmarshall_stringLen_
         , newStablePtr, deRefStablePtr, freeStablePtr
         , newForeignPtr, withForeignPtr
+        , funPtrToAddr, nullPtr
         , malloc, free
 
 	   -- re-exporting base Prelude types

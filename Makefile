@@ -1,5 +1,5 @@
 # -----------------------------------------------------------------------------
-# $Id: Makefile,v 1.4 2003/04/12 11:42:18 ross Exp $
+# $Id: Makefile,v 1.5 2003/04/27 21:49:48 reid Exp $
 
 TOP = ..
 include $(TOP)/mk/boilerplate.mk
@@ -32,13 +32,6 @@ PACKAGE_CPP_OPTS += -DX_LIBS='$(patsubst %,$(comma)"%",$(X_LIBS))'
 
 STUBOBJS += \
    $(patsubst %.gc,  %_stub_ffi.o, $(GC_SRCS))
-
-# -----------------------------------------------------------------------------
-
-.PHONY: examples
-
-examples:
-	$(MAKE) -C examples
 
 # -----------------------------------------------------------------------------
 
