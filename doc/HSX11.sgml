@@ -12,7 +12,7 @@
     </author>
     <address><email>alastair@reid-consulting-uk.ltd.uk</email></address>
     <copyright>
-      <year>1997-2003</year>
+      <year>1999-2003</year>
       <holder>Alastair Reid</holder>
     </copyright>
     <abstract>
@@ -70,46 +70,47 @@
   to allow us to drop common prefixes (<literal/X/, <literal/XA_/,
   etc.) attached to X11 identifiers.  For example, we translate some C
   functions, constants and types as follows:
-<InformalTable>
-<TGroup cols="2">
-<ColSpec Colname="one" Align="Left" Colsep="0">
-<ColSpec Colname="two" Align="Left" Colsep="0">
-<TBody>
 
-<Row>
-<Entry>C Name</Entry>
-<Entry>Haskell Name</Entry>
-</Row>
-
-<Row>
-<Entry><function/XWindowEvent/</Entry>
-<Entry><function/windowEvent/</Entry>
-</Row>
-
-<Row>
-<Entry><function/XCheckWindowEvent/</Entry>
-<Entry><function/checkWindowEvent/</Entry>
-</Row>
-
-<Row>
-<Entry><function/QueuedAlready/</Entry>
-<Entry><function/queuedAlready/</Entry>
-</Row>
-
-<Row>
-<Entry><function/XA_WM_ICON_NAME/</Entry>
-<Entry><function/wM_ICON_NAME/</Entry>
-</Row>
-
-<Row>
-<Entry><function/XA_WM_ICON_SIZE/</Entry>
-<Entry><function/wM_ICON_SIZE/</Entry>
-</Row>
-
-</TBody>
-
-</TGroup>
-</InformalTable>
+     <InformalTable>
+     <TGroup cols="2">
+     <ColSpec Colname="one" Align="Left" Colsep="0">
+     <ColSpec Colname="two" Align="Left" Colsep="0">
+     <TBody>
+     
+     <Row>
+     <Entry>C Name</Entry>
+     <Entry>Haskell Name</Entry>
+     </Row>
+     
+     <Row>
+     <Entry><function/XWindowEvent/</Entry>
+     <Entry><function/windowEvent/</Entry>
+     </Row>
+     
+     <Row>
+     <Entry><function/XCheckWindowEvent/</Entry>
+     <Entry><function/checkWindowEvent/</Entry>
+     </Row>
+     
+     <Row>
+     <Entry><function/QueuedAlready/</Entry>
+     <Entry><function/queuedAlready/</Entry>
+     </Row>
+     
+     <Row>
+     <Entry><function/XA_WM_ICON_NAME/</Entry>
+     <Entry><function/wM_ICON_NAME/</Entry>
+     </Row>
+     
+     <Row>
+     <Entry><function/XA_WM_ICON_SIZE/</Entry>
+     <Entry><function/wM_ICON_SIZE/</Entry>
+     </Row>
+     
+     </TBody>
+     
+     </TGroup>
+     </InformalTable>
 
 
   </Para>
@@ -119,7 +120,94 @@
   <VarListEntry><term/Types/
   <ListItem>
   <Para>
-  Haskell ...
+  We translate type names as follows... 
+
+     <InformalTable>
+     <TGroup cols="3">
+     <ColSpec Colname="one" Align="Left" Colsep="0">
+     <ColSpec Colname="two" Align="Left" Colsep="0">
+     <ColSpec Colname="three" Align="Left" Colsep="0">
+     <TBody>
+     
+     <Row>
+     <Entry>C Type</Entry>
+     <Entry>Haskell Type</Entry>
+     <Entry>Haskell Expansion</Entry>
+     </Row>
+     
+     <Row>
+     <Entry><function/Display*/</Entry>
+     <Entry><function/Display/</Entry>
+     </Row>
+     
+     <Row>
+     <Entry><function/Screen*/</Entry>
+     <Entry><function/Screen/</Entry>
+     </Row>
+     
+     <Row>
+     <Entry><function/Visual*/</Entry>
+     <Entry><function/Visual/</Entry>
+     </Row>
+     
+     <Row>
+     <Entry><function/XFontStruct*/</Entry>
+     <Entry><function/FontStruct/</Entry>
+     </Row>
+     
+     <Row>
+     <Entry><function/XPoint/</Entry>
+     <Entry><function/Point/</Entry>
+     <Entry><function/(Position,Position)/</Entry>
+     </Row>
+     
+     <Row>
+     <Entry><function/XSegment/</Entry>
+     <Entry><function/Segment/</Entry>
+     <Entry><function/(Position,Position,Position,Position)/</Entry>
+     </Row>
+     
+     <Row>
+     <Entry><function/XRectangle/</Entry>
+     <Entry><function/Rectangle/</Entry>
+     <Entry><function/(Position,Position,Dimension,Dimension)/</Entry>
+     </Row>
+     
+     <Row>
+     <Entry><function/XArc/</Entry>
+     <Entry><function/Arc/</Entry>
+     <Entry><function/(Position,Position,Dimension,Dimension,Int,Int)/</Entry>
+     </Row>
+     
+     <Row>
+     <Entry><function/XColor/</Entry>
+     <Entry><function/Color/</Entry>
+     <Entry><function/(Pixel,Word16, Word16, Word16, Word8)/</Entry>
+     </Row>
+     
+     <Row>
+     <Entry><function//</Entry>
+     <Entry><function//</Entry>
+     <Entry><function//</Entry>
+     </Row>
+     
+     
+     </TBody>
+     
+     </TGroup>
+     </InformalTable>
+
+  </Para>
+  <Para>
+  We systematically use a type of the form <literal/ListFoo/ as a
+  synonym for <literal/[Foo]/ and <literal/MbFoo/ as a synonym for
+  <literal/Maybe Foo/.  This is an unfortunate side-effect of the tool
+  we used to generate the bindings.
+  </Para>
+  <Para>
+  We named enumeration types so that function types would be easier to
+  understand.  For example, we added ...  Note that the types are
+  synonyms for <literal/Int/ so no extra typesafety was obtained.
   </Para>
   </ListItem>
   </VarListEntry>
@@ -132,8 +220,30 @@
   </ListItem>
   </VarListEntry>
 
-
   </VariableList>
+
+  <Para>
+  For example, the C function with type:
+<ProgramListing>
+XDrawPoints(Display *display,
+            Drawable d,
+            GC gc,
+            XPoint *points,
+            int npoints,
+            int mode)
+
+</ProgramListing>
+  is given the Haskell type:
+<ProgramListing>
+drawPoints :: Display 
+           -> Drawable 
+           -> GC 
+           -> [Point] 
+           -> CoordinateMode 
+           -> IO ()
+</ProgramListing>
+  
+  </Para>
 
   </sect1>
 
