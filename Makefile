@@ -30,7 +30,7 @@ endif
 
 # -----------------------------------------------------------------------------
 
-DIST_CLEAN_FILES += HsX11Config.h X11.buildinfo config.cache config.status 
+DIST_CLEAN_FILES += X11.buildinfo config.cache config.status 
 LATE_DIST_CLEAN_FILES += config.mk
 
 extraclean::
