@@ -7,7 +7,7 @@ Package {
 	extra_libraries	= [ "HSX11_cbits", "X11" ],
 	include_dirs	= [],
 	c_includes	= [ "HsX11.h" ],
-	package_deps	= [ "base", "lang" ],
+	package_deps	= [ "haskell98", "HSgreencard" ],
 	extra_ghc_opts	= [],
 	extra_cc_opts	= [ "" X_CFLAGS ],
 	extra_ld_opts	= [ "" X_LIBS ]
