@@ -730,7 +730,7 @@ module Graphics.X11.Types
 
 	) where
 
-import Graphics.X11.StdDIS
+import Foreign.GreenCard
 
 %#include "HsXlib.h"
 

@@ -43,7 +43,7 @@ import Graphics.X11.Xlib.Atom
 import Graphics.X11.Xlib.Region
 import Graphics.X11.Xlib.Misc
 
-import Graphics.X11.StdDIS
+import Foreign.GreenCard
 
 %#include "HsXlib.h"
 

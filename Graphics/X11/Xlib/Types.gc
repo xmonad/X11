@@ -16,7 +16,7 @@ module Graphics.X11.Xlib.Types(
         module Graphics.X11.Xlib.Types
         ) where
 
-import Graphics.X11.StdDIS
+import Foreign.GreenCard
 import Graphics.X11.Types
 
 import Control.Monad( zipWithM_ )
