@@ -1,15 +1,35 @@
+                             HSX11 1.00
+                      A Haskell binding for X11
+
+In preparation for a major release of HSX11, we are making an alpha
+release for folk to play with.  We welcome bug reports, comments on
+how the system is packaged, the web page, examples, comments from
+those who build binary and source packages, etc. and especially
+welcome comments accompanied by patches or cvs commit messages.
+
 We are pleased to announce a new release of the Haskell binding for
 X11 which provides a binding to most of Xlib. The library is
 distributed as open source.
 
-The library can be downloaded from: http://www.haskell.org/packages/.
+The library can be downloaded from: http://www.haskell.org/packages.
 You will need GreenCard 3.00 and GHC 6.0 to build the library.
-Installation instructions are in x11/Install.
+Installation instructions are in HSX11-1.0/INSTALL.
 Bug reports should be sent to X11@reid-consulting-uk.ltd.uk
 
 Enjoy!
-
 --
-Alastair Reid   
-alastair@reid-consulting-uk.ltd.uk  
-http://www.reid-consulting-uk.ltd.uk/alastair/
+Alastair Reid   http://www.reid-consulting-uk.ltd.uk
+
+ps Though they are really independent issues, it is worth
+noting two other things about this release:
+
+1) We have created a page http://www.haskell.org/packages which
+   contains a list of Haskell packages and acts as a 'homepage' for 
+   packages like this that are too small to justify a full homepage.
+   Please feed this page.
+
+2) This release is based on the GHC team's fptools infrastructure
+   which is evolving in the direction of supporting packages like this
+   one.  We welcome comments on this infrastructure and, especially,
+   offers to help make it better.
+

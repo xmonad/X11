@@ -1,0 +1,13 @@
+cd /tmp
+mkdir HSX11-1.00
+cd HSX11-1.00
+cvs -d:ext:reid@cvs.haskell.org:/home/cvs/root checkout fpconfig
+cvs -d:ext:reid@cvs.haskell.org:/home/cvs/root checkout fptools/libraries/X11
+(cd fptools; autoconf)
+cp fptools/libraries/X11/INSTALL .
+cp fptools/libraries/X11/LICENSE .
+cp fptools/libraries/X11/README .
+cd ..
+tar zcf HSX11-1.00.tar.gz HSX11-1.00
+scp HSX11-1.00.tar.gz reid@haskell.org:/home/haskell/packages/downloads
+
