@@ -4,6 +4,9 @@ TOP = ../..
 include $(TOP)/mk/boilerplate.mk
 -include ../config.mk
 
+# HACK
+PACKAGE=
+
 # -----------------------------------------------------------------------------
 
 SRC_CC_OPTS += -Wall -I../include $(X_CFLAGS) 
