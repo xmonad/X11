@@ -1,8 +1,9 @@
 # install ghc >= 6.0
 # install greencard >= 3.00
-tar zxvf x11-1.00.tar.gz
-cd x11-1.00
+tar zxvf HSX11-1.00.tar.gz
+cd HSX11-1.00/fptools
 ./configure --with-greencard
+make -Cglafp-utils 
 cd libraries/X11
 make boot
 make all

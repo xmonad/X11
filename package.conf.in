@@ -1,14 +1,15 @@
 Package {
 	name		= PACKAGE,
-	import_dirs	= [ "${pkglibdir}/imports" ],
+	auto		= True,
+	import_dirs	= [ LIBDIR"/imports" ],
 	source_dirs	= [],
-	library_dirs	= [ "${pkglibdir}" ],
+	library_dirs	= [ LIBDIR ],
 	hs_libraries	= [ LIBRARY ],
 	extra_libraries	= [ "HSX11_cbits", "X11" ],
 	include_dirs	= [],
 	c_includes	= [ ],
 	package_deps	= [ PACKAGE_DEPS ],
 	extra_ghc_opts	= [],
-	extra_cc_opts	= [ "" X_CFLAGS ],
-	extra_ld_opts	= [ "" X_LIBS ]
+	extra_cc_opts	= [ X_CFLAGS ],
+	extra_ld_opts	= [ X_LIBS ]
 }
