@@ -1,4 +1,4 @@
-#include "HsX11Config.h"
+#include "include/HsX11Config.h"
 
 Package {
 	name		= "X11",
