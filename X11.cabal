@@ -30,7 +30,7 @@ c-sources:
 	cbits/fdset.c,
 	cbits/auxiliaries.c
 extensions:	ForeignFunctionInterface
-extra-libs:	"X11"
+extra-libraries: "X11"
 include-dirs:	include
 includes:	"HsXlib.h"
 build-depends:	base
