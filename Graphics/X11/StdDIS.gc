@@ -12,7 +12,7 @@
 --
 -----------------------------------------------------------------------------
 
-module System.Win32.StdDIS
+module Graphics.X11.StdDIS
         ( StablePtr
         , ForeignPtr
         , Ptr
@@ -27,7 +27,7 @@ module System.Win32.StdDIS
         , marshall_stringLen_, unmarshall_stringLen_
         , newStablePtr, deRefStablePtr, freeStablePtr
         , newForeignPtr, withForeignPtr
-        , funPtrToAddr, nullPtr
+        , castFunPtrToPtr, nullPtr
         , malloc, free
 
 	   -- re-exporting base Prelude types
@@ -42,11 +42,13 @@ module System.Win32.StdDIS
 
 import System.IO.Unsafe( unsafePerformIO )
 import Foreign( 
+        Storable(..),
         StablePtr, newStablePtr, deRefStablePtr, freeStablePtr,
         ForeignPtr, newForeignPtr, withForeignPtr,
         Ptr, FunPtr,
         Int8, Int16, Int32, Int64,
         Word8, Word16, Word32, Word64,
+        castFunPtrToPtr, nullPtr,
         malloc, free
 	)
 import Foreign.C.String(
