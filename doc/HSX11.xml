@@ -1,0 +1,335 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.2//EN"
+   "http://www.oasis-open.org/docbook/xml/4.2/docbookx.dtd">
+
+<book id="HSX11">
+  <bookinfo>
+    <date>2003-05-22</date>
+    <title>HSX11 Guide</title>
+    <author>
+      <firstname>Alastair</firstname>
+      <surname>Reid</surname>
+    </author>
+    <address><email>alastair@reid-consulting-uk.ltd.uk</email></address>
+    <copyright>
+      <year>1999-2003</year>
+      <holder>Alastair Reid</holder>
+    </copyright>
+    <abstract>
+      <para>This document describes HSX11, the Haskell binding to X11,
+      version 1.00.</para>
+    </abstract>
+  </bookinfo>
+
+  <!-- Table of contents -->
+  <toc></toc>
+  
+  <chapter id="introduction">
+    <title>Introduction</title>
+
+    <para><literal>HSX11</literal> is a Haskell binding to the popular
+    <literal>X11</literal> library.</para>
+
+    <para>The library aims to provide a direct translation of the X
+    binding into Haskell so the most important pieces of documentation
+    you should read are the <literal>X11</literal> documents which can
+    be obtained from the <ulink
+    url="http://www.xfree86.org/support.html">XFree86 website</ulink>.
+    Let me say that again because it is very important.  Get hold of
+    this documentation and read it: it tells you almost everything you
+    need to know to use this library.</para>
+
+  </chapter>
+
+  <chapter id="changes">
+    <title>Changes from X11 documentation</title>
+
+    <para>In making a Haskell binding to a C library, there are
+    certain necessary and/or desirable changes in the
+    interface.</para>
+
+    <para>These can be divided into systematic changes which are
+    applied uniformly throughout the library and ad-hoc changes which
+    are applied to particular parts of the interface.</para>
+
+    <sect1 id="systematic-changes">
+      <title>Systematic Changes</title>
+
+      <variablelist>
+
+        <varlistentry>
+          <term>Naming Conventions</term>
+          <listitem>
+            <para>In translating the library, we had to change names
+            to conform with Haskell's lexical syntax: function names
+            and names of constants must start with a lowercase letter;
+            type names must start with an uppercase letter.</para>
+
+            <para>In addition, we chose to take advantage of Haskell's
+            module system to allow us to drop common prefixes
+            (<literal>X</literal>, <literal>XA_</literal>, etc.) 
+            attached to X11 identifiers.  For example, we translate
+            some C functions, constants and types as follows:</para>
+
+            <informaltable>
+              <tgroup cols="2">
+                <colspec colname="one" align="left" colsep="0"/>
+                <colspec colname="two" align="left" colsep="0"/>
+                <tbody>
+
+                  <row>
+                    <entry>C Name</entry>
+                    <entry>Haskell Name</entry>
+                  </row>
+
+                  <row>
+                    <entry><function>XWindowEvent</function></entry>
+                    <entry><function>windowEvent</function></entry>
+                  </row>
+
+                  <row>
+                    <entry><function>XCheckWindowEvent</function></entry>
+                    <entry><function>checkWindowEvent</function></entry>
+                  </row>
+
+                  <row>
+                    <entry><function>QueuedAlready</function></entry>
+                    <entry><function>queuedAlready</function></entry>
+                  </row>
+
+                  <row>
+                    <entry><function>XA_WM_ICON_NAME</function></entry>
+                    <entry><function>wM_ICON_NAME</function></entry>
+                  </row>
+
+                  <row>
+                    <entry><function>XA_WM_ICON_SIZE</function></entry>
+                    <entry><function>wM_ICON_SIZE</function></entry>
+                  </row>
+
+                </tbody>
+              </tgroup>
+            </informaltable>
+
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term>Types</term>
+          <listitem>
+            <para>We translate type names as follows... </para>
+
+            <informaltable>
+              <tgroup cols="3">
+                <colspec colname="one" align="left" colsep="0"/>
+                <colspec colname="two" align="left" colsep="0"/>
+                <colspec colname="three" align="left" colsep="0"/>
+                <tbody>
+
+                  <row>
+                    <entry>C Type</entry>
+                    <entry>Haskell Type</entry>
+                    <entry>Haskell Expansion</entry>
+                  </row>
+
+                  <row>
+                    <entry><function>Display*</function></entry>
+                    <entry><function>Display</function></entry>
+                  </row>
+
+                  <row>
+                    <entry><function>Screen*</function></entry>
+                    <entry><function>Screen</function></entry>
+                  </row>
+
+                  <row>
+                    <entry><function>Visual*</function></entry>
+                    <entry><function>Visual</function></entry>
+                  </row>
+
+                  <row>
+                    <entry><function>XFontStruct*</function></entry>
+                    <entry><function>FontStruct</function></entry>
+                  </row>
+
+                  <row>
+                    <entry><function>XPoint</function></entry>
+                    <entry><function>Point</function></entry>
+                    <entry><function>(Position,Position)</function></entry>
+                  </row>
+
+                  <row>
+                    <entry><function>XSegment</function></entry>
+                    <entry><function>Segment</function></entry>
+                    <entry><function>(Position,Position,Position,Position)</function></entry>
+                  </row>
+
+                  <row>
+                    <entry><function>XRectangle</function></entry>
+                    <entry><function>Rectangle</function></entry>
+                    <entry><function>(Position,Position,Dimension,Dimension)</function></entry>
+                  </row>
+
+                  <row>
+                    <entry><function>XArc</function></entry>
+                    <entry><function>Arc</function></entry>
+                    <entry><function>(Position,Position,Dimension,Dimension,Int,Int)</function></entry>
+                  </row>
+                  
+                  <row>
+                    <entry><function>XColor</function></entry>
+                    <entry><function>Color</function></entry>
+                    <entry><function>(Pixel,Word16, Word16, Word16, Word8)</function></entry>
+                  </row>
+
+                </tbody>
+              </tgroup>
+            </informaltable>
+
+            <para>We systematically use a type of the form
+            <literal>ListFoo</literal> as a synonym for
+            <literal>[Foo]</literal> and <literal>MbFoo</literal> as a
+            synonym for <literal>Maybe Foo</literal>.  This is an
+            unfortunate side-effect of the tool we used to generate
+            the bindings.</para>
+
+            <para>We named enumeration types so that function types
+            would be easier to understand. For example, we added ...
+            Note that the types are synonyms for
+            <literal>Int</literal> so no extra typesafety was
+            obtained.</para>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term>Exception Handling</term>
+          <listitem>
+            <para>We consistently raise exceptions when a function
+            returns an error code. In practice, this only affects the
+            following functions because most Xlib functions do not
+            return error codes.</para>
+<programlisting>
+allocColor
+allocNamedColor
+fetchBuffer
+fetchBytes
+fontFromGC
+getGeometry
+getIconName
+iconifyWindow
+loadQueryFont
+lookupColor
+openDisplay
+parseColor
+queryBestCursor
+queryBestSize 
+queryBestStipple
+queryBestTile
+rotateBuffers
+selectInput
+storeBuffer
+storeBytes
+withdrawWindow
+</programlisting>
+
+            <para>The Xlib library reports most errors by invoking a
+            user-provided error handler.  The function</para>
+
+<programlisting>
+setDefaultErrorHandler :: IO ()
+</programlisting>
+
+            <para>installs this error handler.</para>
+
+<programlisting>
+int defaultErrorHandler(Display *d, XErrorEvent *ev)
+{
+    char buffer[1000];
+    XGetErrorText(d,ev->error_code,buffer,1000);
+    printf("Error: %s\n", buffer);
+    return 0;
+}
+</programlisting>
+          </listitem>
+        </varlistentry>
+
+      </variablelist>
+
+  <para>As an example of how these rules are applied in generating a
+  function type, the C function with type:</para>
+<programlisting>
+XDrawPoints(Display *display,
+            Drawable d,
+            GC gc,
+            XPoint *points,
+            int npoints,
+            int mode)
+
+</programlisting>
+
+      <para>is given the Haskell type:</para>
+
+<programlisting>
+drawPoints :: Display 
+           -> Drawable 
+           -> GC 
+           -> [Point] 
+           -> CoordinateMode 
+           -> IO ()
+</programlisting>
+
+  </sect1>
+
+    <sect1 id="adhoc-changes">
+      <title>Ad hoc Changes</title>
+
+      <para>Finally, we chose to make some changes in the interface to
+      better conform with idiomatic Haskell style or to allow a
+      typesafe interface.</para>
+
+      <variablelist>
+
+        <varlistentry>
+          <term>waitForEvent</term>
+          <listitem>
+            <para>The function</para>
+<programlisting>
+waitForEvent :: Display -> Word32 -> IO Bool
+</programlisting>
+            <para>reads an event with a timeout (in microseconds). It
+            is sometimes useful in conjunction with this
+            function:</para>
+<programlisting>
+gettimeofday_in_milliseconds :: IO Integer
+</programlisting>
+          </listitem>
+        </varlistentry>
+
+        <varlistentry>
+          <term>WindowAttribute operations</term>
+          <listitem>
+            <para>We provide the following operations on
+            WindowsAttributes:</para>
+<programlisting>
+set_background_pixmap :: XSetWindowAttributesPtr -> Pixmap -> IO ()
+set_background_pixel  :: XSetWindowAttributesPtr -> Pixel -> IO ()
+set_border_pixmap     :: XSetWindowAttributesPtr -> Pixmap -> IO ()
+set_border_pixel      :: XSetWindowAttributesPtr -> Pixel -> IO ()
+set_bit_gravity       :: XSetWindowAttributesPtr -> BitGravity -> IO ()
+set_win_gravity       :: XSetWindowAttributesPtr -> WindowGravity -> IO ()
+set_backing_store     :: XSetWindowAttributesPtr -> BackingStore -> IO ()
+set_backing_planes    :: XSetWindowAttributesPtr -> Pixel -> IO ()
+set_backing_pixel     :: XSetWindowAttributesPtr -> Pixel -> IO ()
+set_save_under        :: XSetWindowAttributesPtr -> Bool -> IO ()
+set_event_mask        :: XSetWindowAttributesPtr -> EventMask -> IO ()
+set_do_not_propagate_mask :: XSetWindowAttributesPtr -> EventMask -> IO ()
+set_override_redirect :: XSetWindowAttributesPtr -> Bool -> IO ()
+set_colormap          :: XSetWindowAttributesPtr -> Colormap -> IO ()
+set_cursor            :: XSetWindowAttributesPtr -> Cursor -> IO ()
+</programlisting>
+          </listitem>
+        </varlistentry>
+      </variablelist>
+    </sect1>
+  </chapter>
+</book>
