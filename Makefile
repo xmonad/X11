@@ -33,4 +33,7 @@ endif
 DIST_CLEAN_FILES += HsX11Config.h X11.buildinfo config.cache config.status 
 LATE_DIST_CLEAN_FILES += config.mk
 
+extraclean::
+	$(RM) -rf autom4te.cache
+
 include $(TOP)/mk/target.mk
