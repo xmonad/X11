@@ -27,16 +27,16 @@ hidden-modules:
 import-dirs:	IMPORT_DIR
 library-dirs:	LIB_DIR
 hs-libraries:   "HSX11"
-extra-libs:	"HSX11_cbits", "X11"
+extra-libraries:	"HSX11_cbits", "X11"
 include-dirs: 	INCLUDE_DIR
 includes:	"HsXlib.h"
 depends:	base
-extra-hugs-opts:
+hugs-options:
 
-extra-cc-opts:	X_CFLAGS
-extra-ld-opts:  X_LIBS
+cc-options:	X_CFLAGS
+ld-options:  X_LIBS
 framework-dirs:
-extra-frameworks:
+frameworks:
 
 haddock-interfaces:	HADDOCK_IFACE
 haddock-html:		HTML_DIR
