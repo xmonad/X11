@@ -53,54 +53,89 @@ import Foreign.C
 
 -- Convenience functions
 
+-- | interface to the X11 library function @XSetArcMode()@.
 foreign import ccall unsafe "HsXlib.h XSetArcMode"
 	setArcMode     	     :: Display -> GC -> ArcMode               -> IO ()
+
+-- | interface to the X11 library function @XSetBackground()@.
 foreign import ccall unsafe "HsXlib.h XSetBackground"
 	setBackground  	     :: Display -> GC -> Pixel                 -> IO ()
+
+-- | interface to the X11 library function @XSetForeground()@.
 foreign import ccall unsafe "HsXlib.h XSetForeground"
 	setForeground 	     :: Display -> GC -> Pixel                 -> IO ()
+
+-- | interface to the X11 library function @XSetFunction()@.
 foreign import ccall unsafe "HsXlib.h XSetFunction"
 	setFunction	     :: Display -> GC -> GXFunction            -> IO ()
+
+-- | interface to the X11 library function @XSetGraphicsExposures()@.
 foreign import ccall unsafe "HsXlib.h XSetGraphicsExposures"
 	setGraphicsExposures :: Display -> GC -> Bool                  -> IO ()
+
+-- | interface to the X11 library function @XSetClipMask()@.
 foreign import ccall unsafe "HsXlib.h XSetClipMask"
 	setClipMask          :: Display -> GC -> Pixmap                -> IO ()
+
+-- | interface to the X11 library function @XSetClipOrigin()@.
 foreign import ccall unsafe "HsXlib.h XSetClipOrigin"
 	setClipOrigin        :: Display -> GC -> Position -> Position  -> IO ()
 
 -- XSetClipRectangles omitted because it's not clear when it's safe to delete the
 -- array of rectangles
 
+-- | interface to the X11 library function @XSetDashes()@.
 setDashes            :: Display -> GC -> Int -> String -> Int  -> IO ()
 setDashes display gc dash_offset dashes n =
 	withCString dashes $ \ dash_list ->
 	xSetDashes display gc dash_offset dash_list n
 foreign import ccall unsafe "HsXlib.h XSetDashes"
 	xSetDashes           :: Display -> GC -> Int -> CString -> Int -> IO ()
+
+-- | interface to the X11 library function @XSetFillRule()@.
 foreign import ccall unsafe "HsXlib.h XSetFillRule"
 	setFillRule          :: Display -> GC -> FillRule              -> IO ()
+
+-- | interface to the X11 library function @XSetFillStyle()@.
 foreign import ccall unsafe "HsXlib.h XSetFillStyle"
 	setFillStyle         :: Display -> GC -> FillStyle             -> IO ()
+
+-- | interface to the X11 library function @XSetFont()@.
 foreign import ccall unsafe "HsXlib.h XSetFont"
 	setFont              :: Display -> GC -> Font                  -> IO ()
+
+-- | interface to the X11 library function @XSetLineAttributes()@.
 foreign import ccall unsafe "HsXlib.h XSetLineAttributes"
 	setLineAttributes    :: Display -> GC -> Int -> LineStyle ->
 					CapStyle -> JoinStyle -> IO ()
+
+-- | interface to the X11 library function @XSetPlaneMask()@.
 foreign import ccall unsafe "HsXlib.h XSetPlaneMask"
 	setPlaneMask         :: Display -> GC -> Pixel                 -> IO ()
+
+-- | interface to the X11 library function @XSetState()@.
 foreign import ccall unsafe "HsXlib.h XSetState"
 	setState             :: Display -> GC -> Pixel -> Pixel ->
 					GXFunction -> Pixel            -> IO ()
+
+-- | interface to the X11 library function @XSetStipple()@.
 foreign import ccall unsafe "HsXlib.h XSetStipple"
 	setStipple           :: Display -> GC -> Pixmap                -> IO ()
+
+-- | interface to the X11 library function @XSetSubwindowMode()@.
 foreign import ccall unsafe "HsXlib.h XSetSubwindowMode"
 	setSubwindowMode     :: Display -> GC -> SubWindowMode         -> IO ()
+
+-- | interface to the X11 library function @XSetTSOrigin()@.
 foreign import ccall unsafe "HsXlib.h XSetTSOrigin"
 	setTSOrigin          :: Display -> GC -> Position -> Position  -> IO ()
+
+-- | interface to the X11 library function @XSetTile()@.
 foreign import ccall unsafe "HsXlib.h XSetTile"
 	setTile              :: Display -> GC -> Pixmap                -> IO ()
 
 -- ToDo: create a real interface to this
+-- | partial interface to the X11 library function @XCreateGC()@.
 createGC :: Display -> Drawable -> IO GC
 createGC display d = xCreateGC display d 0 nullPtr
 foreign import ccall unsafe "HsXlib.h XCreateGC"
@@ -182,14 +217,19 @@ type ValueMask = Word32
 -- set_Foreground c = GCSetter (setGCForeground c)
 -- ENDH
 
+-- | interface to the X11 library function @XGContextFromGC()@.
 foreign import ccall unsafe "HsXlib.h XGContextFromGC"
 	gContextFromGC :: GC -> GContext
 
+-- | interface to the X11 library function @XFreeGC()@.
 foreign import ccall unsafe "HsXlib.h XFreeGC"
 	freeGC  :: Display -> GC -> IO ()
+
+-- | interface to the X11 library function @XFlushGC()@.
 foreign import ccall unsafe "HsXlib.h XFlushGC"
 	flushGC :: Display -> GC -> IO ()
 
+-- | interface to the X11 library function @XCopyGC()@.
 foreign import ccall unsafe "HsXlib.h XCopyGC"
 	copyGC  :: Display -> GC -> Mask -> GC -> IO ()
 

@@ -27,9 +27,16 @@ module Graphics.X11.Types
 	Cursor,
 	Colormap,
 	GContext,
+	KeyCode,
+
+	-- * Enumeration types
+	-- | These types were introduced to make function types clearer.
+	-- Note that the types are synonyms for 'Int', so no extra
+	-- typesafety was obtained.
+
+	-- ** Key symbols
 	KeySym,
 
-	KeyCode,
 	xK_VoidSymbol,
 	xK_BackSpace,
 	xK_Tab,
@@ -374,6 +381,7 @@ module Graphics.X11.Types
 	xK_thorn,
 	xK_ydiaeresis,
 
+	-- ** Event masks
 	EventMask,
 	noEventMask,
 	keyPressMask,
@@ -402,6 +410,7 @@ module Graphics.X11.Types
 	colormapChangeMask,
 	ownerGrabButtonMask,
 
+	-- ** Event types
 	EventType,
 	keyPress,
 	keyRelease,
@@ -438,6 +447,7 @@ module Graphics.X11.Types
 	mappingNotify,
 	lASTEvent,
 
+	-- ** Modifiers
 	Modifier,
 	shiftMapIndex,
 	lockMapIndex,
@@ -449,6 +459,7 @@ module Graphics.X11.Types
 	mod5MapIndex,
 	anyModifier,
 
+	-- ** Key masks
 	KeyMask,
 	shiftMask,
 	lockMask,
@@ -459,6 +470,7 @@ module Graphics.X11.Types
 	mod4Mask,
 	mod5Mask,
 
+	-- ** Button masks
 	ButtonMask,
 	button1Mask,
 	button2Mask,
@@ -466,6 +478,7 @@ module Graphics.X11.Types
 	button4Mask,
 	button5Mask,
 
+	-- ** Buttons
 	Button,
 	button1,
 	button2,
@@ -473,6 +486,7 @@ module Graphics.X11.Types
 	button4,
 	button5,
 
+	-- ** Notify modes
 	NotifyMode,
 	notifyNormal,
 	notifyGrab,
@@ -480,6 +494,7 @@ module Graphics.X11.Types
 	notifyWhileGrabbed,
 	notifyHint,
 
+	-- ** Notify details
 	NotifyDetail,
 	notifyAncestor,
 	notifyVirtual,
@@ -490,32 +505,39 @@ module Graphics.X11.Types
 	notifyPointerRoot,
 	notifyDetailNone,
 
+	-- ** Visibility
 	Visibility,
 	visibilityUnobscured,
 	visibilityPartiallyObscured,
 	visibilityFullyObscured,
 
+	-- ** Place of window
 	Place,
 	placeOnTop,
 	placeOnBottom,
 
+	-- ** Protocols
 	Protocol,
 	familyInternet,
 	familyDECnet,
 	familyChaos,
 
+	-- ** Property notification
 	PropertyNotification,
 	propertyNewValue,
 	propertyDelete,
 
+	-- ** Colormap notification
 	ColormapNotification,
 	colormapUninstalled,
 	colormapInstalled,
 
+	-- ** Grab modes
 	GrabMode,
 	grabModeSync,
 	grabModeAsync,
 
+	-- ** Grab status
 	GrabStatus,
 	grabSuccess,
 	alreadyGrabbed,
@@ -523,6 +545,7 @@ module Graphics.X11.Types
 	grabNotViewable,
 	grabFrozen,
 
+	-- ** Allow events
 	AllowEvents,
 	asyncPointer,
 	syncPointer,
@@ -533,11 +556,13 @@ module Graphics.X11.Types
 	asyncBoth,
 	syncBoth,
 
+	-- ** Focus modes
 	FocusMode,
 	revertToNone,
 	revertToPointerRoot,
 	revertToParent,
 
+	-- ** Return status
 	Status,
 	success,
 	badRequest,
@@ -560,14 +585,17 @@ module Graphics.X11.Types
 	firstExtensionError,
 	lastExtensionError,
 
+	-- *** Exceptions
 	throwUnlessSuccess,
 	throwIfZero,
 
+	-- ** WindowClass
 	WindowClass,
 	copyFromParent,
 	inputOutput,
 	inputOnly,
 
+	-- ** Attribute masks
 	AttributeMask,
 	cWBackPixmap,
 	cWBackPixel,
@@ -585,16 +613,19 @@ module Graphics.X11.Types
 	cWColormap,
 	cWCursor,
 
+	-- ** Close down modes
 	CloseDownMode,
 	destroyAll,
 	retainPermanent,
 	retainTemporary,
 
+	-- ** QueryBestSize classes
 	QueryBestSizeClass,
 	cursorShape,
 	tileShape,
 	stippleShape,
 
+	-- ** Graphics functions
 	GXFunction,
 	gXclear,
 	gXand,
@@ -613,49 +644,59 @@ module Graphics.X11.Types
 	gXnand,
 	gXset,
 
+	-- ** Line styles
 	LineStyle,
 	lineSolid,
 	lineOnOffDash,
 	lineDoubleDash,
 
+	-- ** Cap styles
 	CapStyle,
 	capNotLast,
 	capButt,
 	capRound,
 	capProjecting,
 
+	-- ** Join styles
 	JoinStyle,
 	joinMiter,
 	joinRound,
 	joinBevel,
 
+	-- ** Fill styles
 	FillStyle,
 	fillSolid,
 	fillTiled,
 	fillStippled,
 	fillOpaqueStippled,
 
+	-- ** Fill rules
 	FillRule,
 	evenOddRule,
 	windingRule,
 
+	-- ** Subwindow modes
 	SubWindowMode,
 	clipByChildren,
 	includeInferiors,
 
+	-- ** Coordinate modes
 	CoordinateMode,
 	coordModeOrigin,
 	coordModePrevious,
 
+	-- ** Polygon shapes
 	PolygonShape,
 	complex,
 	nonconvex,
 	convex,
 
+	-- ** Arc modes
 	ArcMode,
 	arcChord,
 	arcPieSlice,
 
+	-- ** GC masks
 	GCMask,
 	gCFunction,
 	gCPlaneMask,
@@ -682,27 +723,33 @@ module Graphics.X11.Types
 	gCArcMode,
 	gCLastBit,
 
+	-- ** Circulation direction
 	CirculationDirection,
 	raiseLowest,
 	lowerHighest,
 
+	-- ** Byte order
 	ByteOrder,
 	lSBFirst,
 	mSBFirst,
 
+	-- ** ColormapAlloc
 	ColormapAlloc,
 	allocNone,
 	allocAll,
 
+	-- ** Mapping requests
 	MappingRequest,
 	mappingModifier,
 	mappingKeyboard,
 	mappingPointer,
 
+	-- ** ChangeSaveSetMode
 	ChangeSaveSetMode,
 	setModeInsert,
 	setModeDelete,
 
+	-- ** Bit gravity
 	BitGravity,
 	forgetGravity,
 	northWestGravity,
@@ -716,9 +763,11 @@ module Graphics.X11.Types
 	southEastGravity,
 	staticGravity,
 
+	-- ** Window gravity
 	WindowGravity,
 	unmapGravity,
 
+	-- ** Backing store
 	BackingStore,
 	notUseful,
 	whenMapped,
@@ -727,6 +776,7 @@ module Graphics.X11.Types
 	doGreen,
 	doBlue,
 
+	-- ** Font direction
 	FontDirection,
 	fontLeftToRight,
 	fontRightToLeft,
@@ -1282,7 +1332,8 @@ type Visibility = Int
  , visibilityFullyObscured	= VisibilityFullyObscured
  }
 
--- Window's place relative to siblings (used in Circulation requests/events)
+-- | Place of window relative to siblings
+-- (used in Circulation requests or events)
 type Place = Int
 #{enum Place,
  , placeOnTop		= PlaceOnTop

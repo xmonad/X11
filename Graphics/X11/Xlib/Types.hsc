@@ -29,9 +29,13 @@ import Foreign.Storable( Storable(..) )
 -- Types
 ----------------------------------------------------------------
 
+-- | pointer to an X11 @Display@ structure
 newtype Display    = Display    (Ptr Display)
+-- | pointer to an X11 @Screen@ structure
 newtype Screen     = Screen     (Ptr Screen)
+-- | pointer to an X11 @Visual@ structure
 newtype Visual     = Visual     (Ptr Visual)
+-- | pointer to an X11 @XFontStruct@ structure
 newtype FontStruct = FontStruct (Ptr FontStruct)
 newtype GC         = GC         (Ptr GC)
 newtype XGCValues  = XGCValues  (Ptr XGCValues)
@@ -129,6 +133,7 @@ withArray' st xs f = allocaBytes (size st * len) $ \ ptr -> do
 -- Point
 ----------------------------------------------------------------
 
+-- | counterpart of an X11 @XPoint@ structure
 type Point =
 	( Position  -- x
 	, Position  -- y
@@ -158,6 +163,7 @@ withPointArray = withArray' s_Point
 -- Rectangle
 ----------------------------------------------------------------
 
+-- | counterpart of an X11 @XRectangle@ structure
 type Rectangle =
 	( Position  -- x
 	, Position  -- y
@@ -199,6 +205,7 @@ withRectangleArray = withArray' s_Rectangle
 -- Arc
 ----------------------------------------------------------------
 
+-- | counterpart of an X11 @XArc@ structure
 type Arc =
 	( Position  -- x
 	, Position  -- y
@@ -240,6 +247,7 @@ withArcArray = withArray' s_Arc
 -- Segment
 ----------------------------------------------------------------
 
+-- | counterpart of an X11 @XSegment@ structure
 type Segment =
 	( Position -- x1
 	, Position -- y1
@@ -275,6 +283,7 @@ withSegmentArray = withArray' s_Segment
 -- Color
 ----------------------------------------------------------------
 
+-- | counterpart of an X11 @XColor@ structure
 type Color =
 	( Pixel  -- pixel
 	, Word16 -- red

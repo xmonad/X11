@@ -10,13 +10,28 @@
 --
 -- A collection of FFI declarations for interfacing with Xlib.
 --
+-- The library aims to provide a direct translation of the X
+-- binding into Haskell so the most important documentation you
+-- should read is /The Xlib Programming Manual/, available online at
+-- <http://tronche.com/gui/x/xlib/>.  Let me say that again because
+-- it is very important.  Get hold of this documentation and read it:
+-- it tells you almost everything you need to know to use this library.
+--
 -----------------------------------------------------------------------------
 
 module Graphics.X11.Xlib 
-	( module Graphics.X11.Types,
-          free,
+	( -- * Conventions
+	  -- $conventions
 
-          module Graphics.X11.Xlib.Types,
+	  -- * Types
+	  module Graphics.X11.Types,
+          -- module Graphics.X11.Xlib.Types,
+	  Display, Screen, Visual, FontStruct, GC, XSetWindowAttributes,
+	  Pixel, Position, Dimension, Angle,
+	  ScreenNumber, Byte, Buffer,
+	  Point, Rectangle, Arc, Segment, Color,
+
+	  -- * X11 library functions
           module Graphics.X11.Xlib.Event,
           module Graphics.X11.Xlib.Display,
           module Graphics.X11.Xlib.Screen,
@@ -43,7 +58,32 @@ import Graphics.X11.Xlib.Atom
 import Graphics.X11.Xlib.Region
 import Graphics.X11.Xlib.Misc
 
-import Foreign.Marshal.Alloc( free )
+{- $conventions
+
+In translating the library, we had to change names to conform with
+Haskell's lexical syntax: function names and names of constants must start
+with a lowercase letter; type names must start with an uppercase letter.
+The case of the remaining letters is unchanged.
+
+In addition, we chose to take advantage of Haskell's module system to
+allow us to drop common prefixes (@X@, @XA_@, etc.) attached to X11
+identifiers.
+
+We named enumeration types so that function types would be easier
+to understand.  For example, we added 'Status', 'WindowClass', etc.
+Note that the types are synonyms for 'Int' so no extra typesafety was
+obtained.
+
+We consistently raise exceptions when a function returns an error code.
+In practice, this only affects the following functions because most Xlib
+functions do not return error codes: 'allocColor', 'allocNamedColor',
+'fetchBuffer', 'fetchBytes', 'fontFromGC', 'getGeometry', 'getIconName',
+'iconifyWindow', 'loadQueryFont', 'lookupColor', 'openDisplay',
+'parseColor', 'queryBestCursor', 'queryBestSize', 'queryBestStipple',
+'queryBestTile', 'rotateBuffers', 'selectInput', 'storeBuffer',
+'storeBytes', 'withdrawWindow'.
+
+-}
 
 ----------------------------------------------------------------
 -- End

@@ -99,6 +99,8 @@ import Foreign.C.String
 ----------------------------------------------------------------
 
 -- AC, 1/9/2000: Added definition for XInternAtom
+
+-- | interface to the X11 library function @XInternAtom()@.
 internAtom :: Display -> String -> Bool -> IO Atom
 internAtom display atom_name only_if_exists =
 	withCString atom_name $ \ c_atom_name ->

@@ -175,7 +175,6 @@ peekXButtonEvent p = do
 get_ButtonEvent :: XEventPtr -> IO XButtonEvent
 get_ButtonEvent p = peekXButtonEvent (castPtr p)
 
-
 type XMotionEvent =
 	( Window      -- root window that the event occured on
 	, Window      -- child window
@@ -331,7 +330,6 @@ peekXConfigureEvent p = do
 get_ConfigureEvent :: XEventPtr -> IO XConfigureEvent
 get_ConfigureEvent p = peekXConfigureEvent (castPtr p)
 
-
 -- %struct : XResizeRequestEvent : XResizeRequestEvent arg1
 --   Dimension	: width
 --   Dimension	: height
@@ -383,6 +381,8 @@ get_ConfigureEvent p = peekXConfigureEvent (castPtr p)
 -- functions
 
 -- The following is useful if you want to do a read with timeout.
+
+-- | Reads an event with a timeout (in microseconds).
 -- Returns True if timeout occurs.
 waitForEvent :: Display -> Word32 -> IO Bool
 waitForEvent display usecs =
@@ -404,7 +404,7 @@ foreign import ccall unsafe "HsXlib.h" fdSet :: Int -> Ptr FdSet -> IO ()
 foreign import ccall unsafe "HsXlib.h" select ::
 	Int -> Ptr FdSet -> Ptr FdSet -> Ptr FdSet -> Ptr TimeVal -> IO Int
 
--- The following is somewhat compatible with Win32's TimeGetTime
+-- | This function is somewhat compatible with Win32's @TimeGetTime()@
 gettimeofday_in_milliseconds :: IO Integer
 gettimeofday_in_milliseconds =
 	alloca $ \ tv_ptr -> do
@@ -430,16 +430,27 @@ newtype TimeZone = TimeZone (Ptr TimeZone)
 foreign import ccall unsafe "HsXlib.h"
 	gettimeofday :: Ptr TimeVal -> Ptr TimeZone -> IO ()
 
+-- | interface to the X11 library function @XFlush()@.
 foreign import ccall unsafe "HsXlib.h XFlush"
 	flush        :: Display ->               IO ()
+
+-- | interface to the X11 library function @XSync()@.
 foreign import ccall unsafe "HsXlib.h XSync"
 	sync         :: Display -> Bool ->       IO ()
+
+-- | interface to the X11 library function @XPending()@.
 foreign import ccall unsafe "HsXlib.h XPending"
 	pending      :: Display ->               IO Int
+
+-- | interface to the X11 library function @XEventsQueued()@.
 foreign import ccall unsafe "HsXlib.h XEventsQueued"
 	eventsQueued :: Display -> QueuedMode -> IO Int
+
+-- | interface to the X11 library function @XNextEvent()@.
 foreign import ccall unsafe "HsXlib.h XNextEvent"
 	nextEvent    :: Display -> XEventPtr  -> IO ()
+
+-- | interface to the X11 library function @XAllowEvents()@.
 foreign import ccall unsafe "HsXlib.h XAllowEvents"
 	allowEvents  :: Display -> AllowEvents -> Time -> IO ()
 
@@ -447,9 +458,11 @@ foreign import ccall unsafe "HsXlib.h XAllowEvents"
 -- %fun XGetMotionEvents :: Display -> Window -> Time -> Time -> IO ListXTimeCoord
 -- %code res1 = XGetMotionEvents(arg1,arg2,arg3,arg4,&res1_size)
 
+-- | interface to the X11 library function @XSelectInput()@.
 foreign import ccall unsafe "HsXlib.h XSelectInput"
 	selectInput :: Display -> Window -> EventMask -> IO ()
 
+-- | interface to the X11 library function @XSendEvent()@.
 sendEvent :: Display -> Window -> Bool -> EventMask -> XEventPtr -> IO ()
 sendEvent display w propagate event_mask event_send =
 	throwUnlessSuccess "sendEvent" $
@@ -458,23 +471,37 @@ foreign import ccall unsafe "HsXlib.h XSendEvent"
 	xSendEvent :: Display -> Window -> Bool -> EventMask ->
 		XEventPtr -> IO Status
 
+-- | interface to the X11 library function @XWindowEvent()@.
 foreign import ccall unsafe "HsXlib.h XWindowEvent"
 	windowEvent :: Display -> Window -> EventMask -> XEventPtr -> IO ()
+
+-- | interface to the X11 library function @XCheckWindowEvent()@.
 foreign import ccall unsafe "HsXlib.h XCheckWindowEvent"
 	checkWindowEvent :: Display -> Window -> EventMask ->
 		XEventPtr -> IO Bool
 
+-- | interface to the X11 library function @XMaskEvent()@.
 foreign import ccall unsafe "HsXlib.h XMaskEvent"
 	maskEvent :: Display -> EventMask -> XEventPtr -> IO ()
+
+-- | interface to the X11 library function @XCheckMaskEvent()@.
 foreign import ccall unsafe "HsXlib.h XCheckMaskEvent"
 	checkMaskEvent :: Display -> EventMask -> XEventPtr -> IO Bool
+
+-- | interface to the X11 library function @XCheckTypedEvent()@.
 foreign import ccall unsafe "HsXlib.h XCheckTypedEvent"
 	checkTypedEvent :: Display -> EventType -> XEventPtr -> IO Bool
+
+-- | interface to the X11 library function @XCheckTypedWindowEvent()@.
 foreign import ccall unsafe "HsXlib.h XCheckTypedWindowEvent"
 	checkTypedWindowEvent :: Display -> Window -> EventType ->
 		XEventPtr -> IO Bool
+
+-- | interface to the X11 library function @XPutBackEvent()@.
 foreign import ccall unsafe "HsXlib.h XPutBackEvent"
 	putBackEvent :: Display -> XEventPtr -> IO ()
+
+-- | interface to the X11 library function @XPeekEvent()@.
 foreign import ccall unsafe "HsXlib.h XPeekEvent"
 	peekEvent :: Display -> XEventPtr -> IO ()
 
@@ -483,6 +510,7 @@ foreign import ccall unsafe "HsXlib.h XPeekEvent"
 -- XCheckIfEvent omitted (can't pass predicates (yet))
 -- XPeekIfEvent omitted (can't pass predicates (yet))
 
+-- | interface to the X11 library function @XRefreshKeyboardMapping()@.
 refreshKeyboardMapping :: XMappingEvent -> IO ()
 refreshKeyboardMapping event_map =
 	withXMappingEvent event_map $ \ event_map_ptr ->

@@ -51,12 +51,16 @@ type Glyph = Word16
 -- But, if it's a GContext, the fontStruct will use the GContext as the
 -- FontID - which will cause most things to break so it's probably
 -- safer using XGetGCValues to get a genuine font ID
+
+-- | interface to the X11 library function @XQueryFont()@.
 foreign import ccall unsafe "HsXlib.h XQueryFont"
 	queryFont     :: Display -> Font -> IO FontStruct
 
 -- Note that this _WILL NOT WORK_ unless you have explicitly set the font.
 -- I'm slowly but surely coming to the conclusion that Xlib is a pile of
 -- steaming shit.
+
+-- | interface to the X11 library function @XGetGCValues()@.
 fontFromGC :: Display -> GC -> IO Font
 fontFromGC display gc =
 	allocaBytes #{size XGCValues} $ \ values -> do
@@ -68,6 +72,7 @@ foreign import ccall unsafe "HsXlib.h XGetGCValues"
 
 type ValueMask = #{type unsigned long}
 
+-- | interface to the X11 library function @XLoadQueryFont()@.
 loadQueryFont :: Display -> String -> IO FontStruct
 loadQueryFont display name =
 	withCString name $ \ c_name -> do
@@ -76,6 +81,7 @@ loadQueryFont display name =
 foreign import ccall unsafe "HsXlib.h XLoadQueryFont"
 	xLoadQueryFont :: Display -> CString -> IO (Ptr FontStruct)
 
+-- | interface to the X11 library function @XFreeFont()@.
 foreign import ccall unsafe "HsXlib.h XFreeFont"
 	freeFont      :: Display -> FontStruct -> IO ()
 -- %fun XSetFontPath  :: Display -> ListString  -> IO () using XSetFontPath(arg1,arg2,arg2_size)
@@ -135,6 +141,8 @@ peekCharStruct p = do
 		fromIntegral (descent::Short))
 
 -- No need to put this in the IO monad - this info is essentially constant
+
+-- | interface to the X11 library function @XTextExtents()@.
 textExtents :: FontStruct -> String -> (FontDirection, Int32, Int32, CharStruct)
 textExtents font_struct string = unsafePerformIO $
 	withCStringLen string $ \ (c_string, nchars) ->
@@ -155,6 +163,8 @@ foreign import ccall unsafe "HsXlib.h XTextExtents"
 		Ptr CharStruct -> IO Int
 
 -- No need to put ths in the IO monad - this info is essentially constant
+
+-- | interface to the X11 library function @XTextWidth()@.
 textWidth :: FontStruct -> String -> Int32
 textWidth font_struct string = unsafePerformIO $
 	withCStringLen string $ \ (c_string, len) ->

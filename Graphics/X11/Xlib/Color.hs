@@ -40,6 +40,7 @@ import Foreign.C
 -- Color and Colormaps
 ----------------------------------------------------------------
 
+-- | interface to the X11 library function @XLookupColor()@.
 lookupColor :: Display -> Colormap -> String -> IO (Color, Color)
 lookupColor display colormap color_name =
 	withCString color_name $ \c_color_name ->
@@ -55,6 +56,7 @@ foreign import ccall unsafe "HsXlib.h XLookupColor"
 	xLookupColor :: Display -> Colormap -> CString ->
 		Ptr Color -> Ptr Color -> IO Status
 
+-- | interface to the X11 library function @XAllocNamedColor()@.
 allocNamedColor :: Display -> Colormap -> String -> IO (Color, Color)
 allocNamedColor display colormap color_name =
 	withCString color_name $ \c_color_name ->
@@ -70,6 +72,7 @@ foreign import ccall unsafe "HsXlib.h XAllocNamedColor"
 	xAllocNamedColor :: Display -> Colormap -> CString ->
 		Ptr Color -> Ptr Color -> IO Status
 
+-- | interface to the X11 library function @XAllocColor()@.
 allocColor :: Display -> Colormap -> Color -> IO Color
 allocColor display colormap color =
 	withColor color $ \ color_ptr -> do
@@ -79,6 +82,7 @@ allocColor display colormap color =
 foreign import ccall unsafe "HsXlib.h XAllocColor"
 	xAllocColor :: Display -> Colormap -> Ptr Color -> IO Status
 
+-- | interface to the X11 library function @XParseColor()@.
 parseColor :: Display -> Colormap -> String -> IO Color
 parseColor display colormap color_spec =
 	withCString color_spec $ \ spec ->
@@ -95,6 +99,7 @@ foreign import ccall unsafe "HsXlib.h XParseColor"
 -- ToDo: Can't express relationship between arg4 and res1 properly
 -- %errfun Zero XAllocColorPlanes :: Display -> Colormap -> Bool -> Int -> Int -> Int -> Int IO (ListPixel, Pixel, Pixel, Pixel) using err = XAllocColorPlanes(...)
 
+-- | interface to the X11 library function @XFreeColors()@.
 freeColors :: Display -> Colormap -> [Pixel] -> Pixel -> IO ()
 freeColors display colormap pixels planes =
 	withArray pixels $ \ pixel_array ->
@@ -102,6 +107,7 @@ freeColors display colormap pixels planes =
 foreign import ccall unsafe "HsXlib.h XFreeColors"
 	xFreeColors :: Display -> Colormap -> Ptr Pixel -> Int -> Pixel -> IO ()
 
+-- | interface to the X11 library function @XStoreColor()@.
 storeColor :: Display -> Colormap -> Color -> IO ()
 storeColor display colormap color =
 	withColor color $ \ color_ptr ->
@@ -113,6 +119,7 @@ foreign import ccall unsafe "HsXlib.h XStoreColor"
 -- %code XStoreColors(arg1,arg2,arg3,arg3_size)
 -- %fun XStoreNamedColor :: Display -> Colormap -> String -> Pixel -> PrimaryMask -> IO ()
 
+-- | interface to the X11 library function @XQueryColor()@.
 queryColor :: Display -> Colormap -> Color -> IO Color
 queryColor display colormap color =
 	withColor color $ \ color_ptr -> do
@@ -121,6 +128,7 @@ queryColor display colormap color =
 foreign import ccall unsafe "HsXlib.h XQueryColor"
 	xQueryColor  :: Display -> Colormap -> Ptr Color -> IO ()
 
+-- | interface to the X11 library function @XQueryColors()@.
 queryColors :: Display -> Colormap -> [Color] -> IO [Color]
 queryColors display colormap colors =
 	withColorArray colors $ \ color_array ncolors -> do
@@ -129,14 +137,23 @@ queryColors display colormap colors =
 foreign import ccall unsafe "HsXlib.h XQueryColors"
 	xQueryColors :: Display -> Colormap -> Ptr Color -> Int -> IO ()
 
+-- | interface to the X11 library function @XInstallColormap()@.
 foreign import ccall unsafe "HsXlib.h XInstallColormap"
 	installColormap     :: Display -> Colormap -> IO ()
+
+-- | interface to the X11 library function @XUninstallColormap()@.
 foreign import ccall unsafe "HsXlib.h XUninstallColormap"
 	uninstallColormap   :: Display -> Colormap -> IO ()
+
+-- | interface to the X11 library function @XCopyColormapAndFree()@.
 foreign import ccall unsafe "HsXlib.h XCopyColormapAndFree"
 	copyColormapAndFree :: Display -> Colormap -> IO Colormap
+
+-- | interface to the X11 library function @XCreateColormap()@.
 foreign import ccall unsafe "HsXlib.h XCreateColormap"
 	createColormap      :: Display -> Window   -> Visual -> ColormapAlloc -> IO Colormap
+
+-- | interface to the X11 library function @XFreeColormap()@.
 foreign import ccall unsafe "HsXlib.h XFreeColormap"
 	freeColormap        :: Display -> Colormap -> IO ()
 
