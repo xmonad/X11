@@ -6,7 +6,7 @@
 # The TOP variable is reset after the inclusion of the fptools
 # boilerplate, so we stash TOP away first:
 LIBRARY_TOP := $(TOP)
-TOP:=$(TOP)/../..
+TOP:=$(TOP)/fptools
 
 HIERARCHICAL_LIB = YES
 

@@ -1,12 +1,12 @@
 # -----------------------------------------------------------------------------
-# $Id: Makefile,v 1.13 2003/06/05 13:59:06 reid Exp $
+# $Id: Makefile,v 1.14 2003/06/26 12:36:36 reid Exp $
 
 TOP = .
 include $(TOP)/mk/boilerplate.mk
 
 # -----------------------------------------------------------------------------
 
-SUBDIRS = cbits doc
+SUBDIRS = fptools cbits doc
 
 ALL_DIRS = \
 	Graphics/X11 \
