@@ -3,7 +3,7 @@
 name:		PACKAGE
 version:	VERSION
 license:	BSD3
-maintainer:	libraries@haskell.org
+maintainer:	MAINTAINER
 exposed:	True
 
 exposed-modules:

@@ -14,8 +14,6 @@ ALL_DIRS = \
 	Graphics/X11 \
 	Graphics/X11/Xlib
 
-PACKAGE = X11
-VERSION = 1.0
 PACKAGE_DEPS = base
 
 SRC_CC_OPTS += -Iinclude $(X_CFLAGS)
@@ -23,6 +21,8 @@ SRC_CC_OPTS += -Iinclude $(X_CFLAGS)
 SRC_HC_OPTS += -cpp -fffi
 SRC_HC_OPTS += -Iinclude $(X_CFLAGS)
 SRC_HSC2HS_OPTS += -Iinclude $(X_CFLAGS)
+
+PACKAGE_CPP_OPTS += -DMAINTAINER=$(MAINTAINER)
 
 SRC_HADDOCK_OPTS += -t "X11 Libraries ($(PACKAGE) package)"
 
