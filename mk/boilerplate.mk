@@ -1,6 +1,3 @@
-# -----------------------------------------------------------------------------
-# $Id: boilerplate.mk,v 1.1 2003/05/22 11:14:30 reid Exp $
-
 # Begin by slurping in the boilerplate from one level up.
 # Remember, TOP is the top level of the innermost level
 # (FPTOOLS_TOP is the fptools top)
@@ -9,7 +6,20 @@
 # The TOP variable is reset after the inclusion of the fptools
 # boilerplate, so we stash TOP away first:
 LIBRARY_TOP := $(TOP)
-TOP:=$(TOP)/..
+TOP:=$(TOP)/../..
+
+HIERARCHICAL_LIB = YES
+
+# Some of the libraries rely on GreenCard.  When you compile the GreenCard
+# generated code, you have to use -I/usr/lib/ghc-<version>/include so that
+# the C compiler can find HsFFI.h.  The easy way of doing this is to use ghc
+# as your C compiler.
+UseGhcForCc = YES
+
+# NOT YET: Haddock needs to understand about .raw-hs files
+#
+# Set our source links to point to the CVS repository on the web.
+# SRC_HADDOCK_OPTS += -s http://cvs.haskell.org/cgi-bin/cvsweb.cgi/fptools/libaries/$(PACKAGE)
 
 # Pull in the fptools boilerplate
 include $(TOP)/mk/boilerplate.mk
