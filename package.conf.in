@@ -24,27 +24,11 @@ exposed-modules:
 
 hidden-modules:
 
-#ifdef INSTALLING
-import-dirs:	"$libdir/imports"
-#else
-import-dirs:	"$libdir/libraries/X11"
-#endif
-
-#ifdef INSTALLING
-library-dirs:	"$libdir"
-#else
-library-dirs:	"$libdir/libraries/X11"
-#endif
-
+import-dirs:	IMPORT_DIR
+library-dirs:	LIB_DIR
 hs-libraries:   "HSX11"
 extra-libs:	"HSX11_cbits", "X11"
-
-#ifdef INSTALLING
-include-dirs:
-#else
-include-dirs: "$libdir/libraries/X11/include"
-#endif
-
+include-dirs: 	INCLUDE_DIR
 includes:	"HsXlib.h"
 depends:	base
 extra-hugs-opts:
@@ -54,5 +38,5 @@ extra-ld-opts:  X_LIBS
 framework-dirs:
 extra-frameworks:
 
-haddock-interfaces:
-haddock-html:
+haddock-interfaces:	HADDOCK_IFACE
+haddock-html:		HTML_DIR
