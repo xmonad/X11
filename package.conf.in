@@ -1,26 +1,11 @@
-#include "mk/config.h"
-
 Package {
 	name		= "X11",
-#ifdef INSTALLING
-	import_dirs	= [ "$libdir/imports/X11" ],
-#else
-	import_dirs	= [ "$libdir/libraries/X11" ],
-#endif
+	import_dirs	= [ "${pkglibdir}/imports" ],
 	source_dirs	= [],
-#ifdef INSTALLING
-	library_dirs	= [ "$libdir" ],
-#else
-	library_dirs	= [ "$libdir/libraries/X11"
-                          , "$libdir/libraries/X11/cbits" ],
-#endif
+	library_dirs	= [ "${pkglibdir}" ],
 	hs_libraries	= [ "HSX11" ],
 	extra_libraries	= [ "HSX11_cbits", "X11" ],
-#ifdef INSTALLING
 	include_dirs	= [],
-#else
-	include_dirs	= [ "$libdir/libraries/X11/include" ],
-#endif
 	c_includes	= [ "HsX11.h" ],
 	package_deps	= [ "base" ],
 	extra_ghc_opts	= [],
