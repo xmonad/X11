@@ -297,9 +297,7 @@ import Graphics.X11.Xlib.Font
 -- % 	  return 0;
 -- % }
 
-#ifdef __HUGS__
 {-# CBITS auxiliaries.c #-}
-#endif
 
 %fun setDefaultErrorHandler :: IO ()
 %code XSetErrorHandler(defaultErrorHandler);
