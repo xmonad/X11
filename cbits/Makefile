@@ -1,13 +1,13 @@
 
 # -----------------------------------------------------------------------------
-# $Id: Makefile,v 1.4 2004/03/07 01:04:23 ross Exp $
+# $Id: Makefile,v 1.5 2004/05/09 01:34:38 dons Exp $
 
 TOP = ../..
 include $(TOP)/mk/boilerplate.mk
 
 # -----------------------------------------------------------------------------
 
-SRC_CC_OPTS += -Wall -I../include
+SRC_CC_OPTS += -Wall -I../include $(X_CFLAGS) 
 
 LIBRARY = libHSX11_cbits.a
 LIBOBJS = $(C_OBJS)
