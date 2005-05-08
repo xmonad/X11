@@ -13,6 +13,7 @@ AC_PATH_XTRA
 # this will catch the case of using a mingw32 gcc on a Cygwin system:
 # Cygwin has the X headers & libs installed, but the mingw32 gcc can't
 # use them, and we want to disable the package in this case.
+CPPFLAGS="$CPPFLAGS $X_CFLAGS"
 AC_TRY_CPP([#include <X11/Xlib.h>],,[no_x=yes])
 
 # Build the package if we found X11 stuff
