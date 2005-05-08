@@ -562,8 +562,8 @@ module Graphics.X11.Types
 	revertToPointerRoot,
 	revertToParent,
 
-	-- ** Return status
-	Status,
+	-- ** Error codes
+	ErrorCode,
 	success,
 	badRequest,
 	badValue,
@@ -585,8 +585,8 @@ module Graphics.X11.Types
 	firstExtensionError,
 	lastExtensionError,
 
-	-- *** Exceptions
-	throwUnlessSuccess,
+	-- ** Return status
+	Status,
 	throwIfZero,
 
 	-- ** WindowClass
@@ -1399,8 +1399,8 @@ type FocusMode		= Int
  }
 
 -- Error codes
-type Status		= Int
-#{enum Status,
+type ErrorCode		= Int
+#{enum ErrorCode,
  , success		= Success
  , badRequest		= BadRequest
  , badValue		= BadValue
@@ -1423,16 +1423,12 @@ type Status		= Int
  , lastExtensionError	= LastExtensionError
  }
 
-errorMsg :: String -> String -> String
-errorMsg fn_name what = "Error " ++ what ++ " raised in function " ++ fn_name
+type Status		= Int
 
-throwUnlessSuccess :: String -> IO Status -> IO ()
-throwUnlessSuccess fn_name =
-	throwIf_ (/= success)
-		(\status -> errorMsg fn_name ("bad status " ++ show status))
-
+-- |Xlib functions with return values of type @Status@ return zero on
+-- failure and nonzero on success.
 throwIfZero :: String -> IO Status -> IO ()
-throwIfZero fn_name = throwIf_ (== 0) (const (errorMsg fn_name "zero"))
+throwIfZero fn_name = throwIf_ (== 0) (const ("Error in function " ++ fn_name))
 
 type WindowClass	= Int
 #{enum WindowClass,

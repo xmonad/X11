@@ -270,7 +270,7 @@ foreign import ccall unsafe "HsXlib.h XFree" xFree :: Ptr a -> IO ()
 queryBestTile    :: Display -> Drawable -> Dimension -> Dimension ->
 			IO (Dimension, Dimension)
 queryBestTile display which_screen width height =
-	outParameters2 (throwUnlessSuccess "queryBestTile") $
+	outParameters2 (throwIfZero "queryBestTile") $
 		xQueryBestTile display which_screen width height
 foreign import ccall unsafe "HsXlib.h XQueryBestTile"
 	xQueryBestTile    :: Display -> Drawable -> Dimension -> Dimension ->
@@ -280,7 +280,7 @@ foreign import ccall unsafe "HsXlib.h XQueryBestTile"
 queryBestStipple :: Display -> Drawable -> Dimension -> Dimension ->
 			IO (Dimension, Dimension)
 queryBestStipple display which_screen width height =
-	outParameters2 (throwUnlessSuccess "queryBestStipple") $
+	outParameters2 (throwIfZero "queryBestStipple") $
 		xQueryBestStipple display which_screen width height
 foreign import ccall unsafe "HsXlib.h XQueryBestStipple"
 	xQueryBestStipple :: Display -> Drawable -> Dimension -> Dimension ->
@@ -290,7 +290,7 @@ foreign import ccall unsafe "HsXlib.h XQueryBestStipple"
 queryBestCursor  :: Display -> Drawable -> Dimension -> Dimension ->
 			IO (Dimension, Dimension)
 queryBestCursor display d width height =
-	outParameters2 (throwUnlessSuccess "queryBestCursor") $
+	outParameters2 (throwIfZero "queryBestCursor") $
 		xQueryBestCursor display d width height
 foreign import ccall unsafe "HsXlib.h XQueryBestCursor"
 	xQueryBestCursor  :: Display -> Drawable -> Dimension -> Dimension ->
@@ -300,7 +300,7 @@ foreign import ccall unsafe "HsXlib.h XQueryBestCursor"
 queryBestSize    :: Display -> QueryBestSizeClass -> Drawable ->
 			Dimension -> Dimension -> IO (Dimension, Dimension)
 queryBestSize display shape_class which_screen width height =
-	outParameters2 (throwUnlessSuccess "queryBestSize") $
+	outParameters2 (throwIfZero "queryBestSize") $
 		xQueryBestSize display shape_class which_screen width height
 foreign import ccall unsafe "HsXlib.h XQueryBestSize"
 	xQueryBestSize    :: Display -> QueryBestSizeClass -> Drawable ->
@@ -561,7 +561,7 @@ foreign import ccall unsafe "HsXlib.h XGeometry"
 getGeometry :: Display -> Drawable ->
 	IO (Window, Position, Position, Dimension, Dimension, Dimension, Int)
 getGeometry display d =
-	outParameters7 (throwUnlessSuccess "getGeometry") $
+	outParameters7 (throwIfZero "getGeometry") $
 		xGetGeometry display d
 foreign import ccall unsafe "HsXlib.h XGetGeometry"
 	xGetGeometry :: Display -> Drawable ->
@@ -820,7 +820,7 @@ foreign import ccall unsafe "HsXlib.h XLookupString"
 getIconName :: Display -> Window -> IO String
 getIconName display w =
 	alloca $ \ icon_name_return -> do
-	throwUnlessSuccess "getIconName" $
+	throwIfZero "getIconName" $
 		xGetIconName display w icon_name_return
 	c_icon_name <- peek icon_name_return
 	peekCString c_icon_name
@@ -1104,7 +1104,7 @@ foreign import ccall unsafe "HsXlib.h XDrawImageString"
 storeBuffer :: Display -> String -> Int -> IO ()
 storeBuffer display bytes buffer =
 	withCStringLen bytes $ \ (c_bytes, nbytes) ->
-	throwUnlessSuccess "storeBuffer" $
+	throwIfZero "storeBuffer" $
 		xStoreBuffer display c_bytes nbytes buffer
 foreign import ccall unsafe "HsXlib.h XStoreBuffer"
 	xStoreBuffer :: Display -> CString -> Int -> Int -> IO Status
@@ -1113,7 +1113,7 @@ foreign import ccall unsafe "HsXlib.h XStoreBuffer"
 storeBytes :: Display -> String -> IO ()
 storeBytes display bytes =
 	withCStringLen bytes $ \ (c_bytes, nbytes) ->
-	throwUnlessSuccess "storeBytes" $
+	throwIfZero "storeBytes" $
 		xStoreBytes display c_bytes nbytes
 foreign import ccall unsafe "HsXlib.h XStoreBytes"
 	xStoreBytes :: Display -> CString -> Int -> IO Status
@@ -1147,7 +1147,7 @@ foreign import ccall unsafe "HsXlib.h XFetchBytes"
 -- | interface to the X11 library function @XRotateBuffers()@.
 rotateBuffers :: Display -> Int -> IO ()
 rotateBuffers display rotate =
-	throwUnlessSuccess "rotateBuffers" $
+	throwIfZero "rotateBuffers" $
 		xRotateBuffers display rotate
 foreign import ccall unsafe "HsXlib.h XRotateBuffers"
 	xRotateBuffers :: Display -> Int -> IO Status

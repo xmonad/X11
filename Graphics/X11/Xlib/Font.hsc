@@ -64,7 +64,7 @@ foreign import ccall unsafe "HsXlib.h XQueryFont"
 fontFromGC :: Display -> GC -> IO Font
 fontFromGC display gc =
 	allocaBytes #{size XGCValues} $ \ values -> do
-	throwUnlessSuccess "fontFromGC" $
+	throwIfZero "fontFromGC" $
 		xGetGCValues display gc #{const GCFont} (XGCValues values)
 	#{peek XGCValues,font} values
 foreign import ccall unsafe "HsXlib.h XGetGCValues"

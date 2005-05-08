@@ -152,7 +152,7 @@ foreign import ccall unsafe "HsXlib.h XCirculateSubwindows"
 -- | interface to the X11 library function @XIconifyWindow()@.
 iconifyWindow  :: Display -> Window -> ScreenNumber -> IO ()
 iconifyWindow display window screenno =
-	throwUnlessSuccess "iconifyWindow"
+	throwIfZero "iconifyWindow"
 		(xIconifyWindow display window screenno)
 foreign import ccall unsafe "HsXlib.h XIconifyWindow"
 	xIconifyWindow  :: Display -> Window -> ScreenNumber -> IO Status
@@ -160,7 +160,7 @@ foreign import ccall unsafe "HsXlib.h XIconifyWindow"
 -- | interface to the X11 library function @XWithdrawWindow()@.
 withdrawWindow :: Display -> Window -> ScreenNumber -> IO ()
 withdrawWindow display window screenno =
-	throwUnlessSuccess "withdrawWindow"
+	throwIfZero "withdrawWindow"
 		(xWithdrawWindow display window screenno)
 foreign import ccall unsafe "HsXlib.h XWithdrawWindow"
 	xWithdrawWindow :: Display -> Window -> ScreenNumber -> IO Status

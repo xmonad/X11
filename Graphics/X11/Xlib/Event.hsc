@@ -465,7 +465,7 @@ foreign import ccall unsafe "HsXlib.h XSelectInput"
 -- | interface to the X11 library function @XSendEvent()@.
 sendEvent :: Display -> Window -> Bool -> EventMask -> XEventPtr -> IO ()
 sendEvent display w propagate event_mask event_send =
-	throwUnlessSuccess "sendEvent" $
+	throwIfZero "sendEvent" $
 		xSendEvent display w propagate event_mask event_send
 foreign import ccall unsafe "HsXlib.h XSendEvent"
 	xSendEvent :: Display -> Window -> Bool -> EventMask ->
