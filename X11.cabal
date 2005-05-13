@@ -11,6 +11,9 @@ description:	A Haskell binding to the X11 graphics library.
 	The binding is a direct translation of the C binding; for
 	documentation of these calls, refer to "The Xlib Programming
 	Manual", available online at <http://tronche.com/gui/x/xlib/>.
+other-files:
+	configure.ac configure config.mk.in X11.buildinfo.in
+	include/HsX11Config.h.in include/HsXlib.h
 exposed-modules:
 	Graphics.X11,
 	Graphics.X11.Types,
