@@ -4,6 +4,12 @@ TOP = ..
 include $(TOP)/mk/boilerplate.mk
 -include config.mk
 
+ifneq "$(findstring clean, $(MAKECMDGOALS))" ""
+# if we're cleaning, then config.mk might have been cleaned already
+X11_BUILD_PACKAGE=yes
+PACKAGE=X11
+endif
+
 # -----------------------------------------------------------------------------
 
 ifeq "$(X11_BUILD_PACKAGE)" "yes"
@@ -30,8 +36,7 @@ endif
 
 # -----------------------------------------------------------------------------
 
-DIST_CLEAN_FILES += X11.buildinfo config.cache config.status 
-LATE_DIST_CLEAN_FILES += config.mk
+DIST_CLEAN_FILES += X11.buildinfo config.cache config.status config.mk
 
 extraclean::
 	$(RM) -rf autom4te.cache
