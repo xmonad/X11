@@ -75,7 +75,7 @@ foreign import ccall unsafe "HsXlib.h XCreateSimpleWindow"
 foreign import ccall unsafe "HsXlib.h XCreateWindow"
 	createWindow :: Display -> Window -> Position -> Position ->
 		Dimension -> Dimension -> Int -> Int -> WindowClass ->
-		Visual -> AttributeMask -> Ptr XSetWindowAttributes -> IO Window
+		Visual -> AttributeMask -> Ptr SetWindowAttributes -> IO Window
 
 ----------------------------------------------------------------
 

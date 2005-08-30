@@ -1,3 +1,4 @@
+{-# OPTIONS_GHC -fglasgow-exts #-}
 -----------------------------------------------------------------------------
 -- |
 -- Module      :  Graphics.X11.Xlib.Font
@@ -19,6 +20,7 @@ module Graphics.X11.Xlib.Font(
         fontFromGC,
         loadQueryFont,
         freeFont,
+	FontStruct,
         fontFromFontStruct,
         ascentFromFontStruct,
         descentFromFontStruct,
@@ -36,6 +38,10 @@ import Graphics.X11.Xlib.Types
 import Foreign
 import Foreign.C
 
+#if __GLASGOW_HASKELL__
+import Data.Generics
+#endif
+
 ----------------------------------------------------------------
 -- Fonts
 ----------------------------------------------------------------
@@ -43,6 +49,14 @@ import Foreign.C
 -- A glyph (or Char2b) is a 16 bit character identification.
 -- The top 8 bits are zero in many fonts.
 type Glyph = Word16
+
+-- | pointer to an X11 @XFontStruct@ structure
+newtype FontStruct = FontStruct (Ptr FontStruct)
+#if __GLASGOW_HASKELL__
+	deriving (Eq, Ord, Show, Typeable, Data)
+#else
+	deriving (Eq, Ord, Show)
+#endif
 
 -- Disnae exist: %fun LoadFont       :: Display -> String -> IO Font
 -- Disnae exist: %fun UnloadFont     :: Display -> Font -> IO ()
@@ -65,10 +79,10 @@ fontFromGC :: Display -> GC -> IO Font
 fontFromGC display gc =
 	allocaBytes #{size XGCValues} $ \ values -> do
 	throwIfZero "fontFromGC" $
-		xGetGCValues display gc #{const GCFont} (XGCValues values)
+		xGetGCValues display gc #{const GCFont} values
 	#{peek XGCValues,font} values
 foreign import ccall unsafe "HsXlib.h XGetGCValues"
-	xGetGCValues :: Display -> GC -> ValueMask -> XGCValues -> IO Int
+	xGetGCValues :: Display -> GC -> ValueMask -> Ptr GCValues -> IO Int
 
 type ValueMask = #{type unsigned long}
 
@@ -134,11 +148,11 @@ peekCharStruct p = do
 	width    <- #{peek XCharStruct,width} p
 	ascent   <- #{peek XCharStruct,ascent} p
 	descent  <- #{peek XCharStruct,descent} p
-	return (fromIntegral (lbearing::Short),
-		fromIntegral (rbearing::Short),
-		fromIntegral (width::Short),
-		fromIntegral (ascent::Short),
-		fromIntegral (descent::Short))
+	return (fromIntegral (lbearing::CShort),
+		fromIntegral (rbearing::CShort),
+		fromIntegral (width::CShort),
+		fromIntegral (ascent::CShort),
+		fromIntegral (descent::CShort))
 
 -- No need to put this in the IO monad - this info is essentially constant
 

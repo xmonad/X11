@@ -26,10 +26,9 @@ module Graphics.X11.Xlib
 	  -- * Types
 	  module Graphics.X11.Types,
           -- module Graphics.X11.Xlib.Types,
-	  Display, Screen, Visual, FontStruct, GC, XSetWindowAttributes,
-	  Pixel, Position, Dimension, Angle,
-	  ScreenNumber, Byte, Buffer,
-	  Point, Rectangle, Arc, Segment, Color,
+	  Display, Screen, Visual, GC, SetWindowAttributes,
+	  Point(..), Rectangle(..), Arc(..), Segment(..), Color(..),
+	  Pixel, Position, Dimension, Angle, ScreenNumber, Buffer,
 
 	  -- * X11 library functions
           module Graphics.X11.Xlib.Event,

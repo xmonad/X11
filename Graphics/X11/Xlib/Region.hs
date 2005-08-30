@@ -1,3 +1,4 @@
+{-# OPTIONS_GHC -cpp -fglasgow-exts #-}
 -----------------------------------------------------------------------------
 -- |
 -- Module      :  Graphics.X11.Xlib.Region
@@ -43,12 +44,25 @@ import Graphics.X11.Xlib.Types
 
 import Foreign.ForeignPtr
 import Foreign.Ptr
+import Foreign.Storable
+import Foreign.Marshal.Alloc
+import Foreign.Marshal.Array
+import Foreign.Marshal.Utils
+
+#if __GLASGOW_HASKELL__
+import Data.Generics
+#endif
 
 ----------------------------------------------------------------
 -- Regions
 ----------------------------------------------------------------
 
 newtype Region = Region (ForeignPtr Region)
+#if __GLASGOW_HASKELL__
+	deriving (Eq, Ord, Show, Typeable, Data)
+#else
+	deriving (Eq, Ord, Show)
+#endif
 
 withRegion :: Region -> (Ptr Region -> IO a) -> IO a
 withRegion (Region r) = withForeignPtr r
@@ -91,7 +105,7 @@ foreign import ccall unsafe "HsXlib.h XCreateRegion"
 -- | interface to the X11 library function @XPolygonRegion()@.
 polygonRegion :: [Point] -> FillRule -> IO Region
 polygonRegion points fill_rule =
-	withPointArray points $ \ point_arr n -> do
+	withArrayLen points $ \ n point_arr -> do
 	rp <- xPolygonRegion point_arr n fill_rule
 	makeRegion rp
 foreign import ccall unsafe "HsXlib.h XPolygonRegion"
@@ -132,7 +146,7 @@ foreign import ccall unsafe
 -- | interface to the X11 library function @XUnionRectWithRegion()@.
 unionRectWithRegion     :: Rectangle -> Region -> Region -> IO Int
 unionRectWithRegion rect src dest =
-	withRectangle rect $ \ rect_ptr ->
+	with rect $ \ rect_ptr ->
 	withRegion src $ \ src_ptr ->
 	withRegion dest $ \ dest_ptr ->
 	xUnionRectWithRegion rect_ptr src_ptr dest_ptr
@@ -183,7 +197,7 @@ foreign import ccall unsafe "HsXlib.h XEqualRegion"
 
 -- | interface to the X11 library function @XPointInRegion()@.
 pointInRegion :: Region -> Point -> IO Bool
-pointInRegion r (x,y) =
+pointInRegion r (Point x y) =
 	withRegion r $ \ rp ->
 	xPointInRegion rp x y
 foreign import ccall unsafe "HsXlib.h XPointInRegion"
@@ -191,7 +205,7 @@ foreign import ccall unsafe "HsXlib.h XPointInRegion"
 
 -- | interface to the X11 library function @XRectInRegion()@.
 rectInRegion :: Region -> Rectangle -> IO RectInRegionResult
-rectInRegion r (x,y,w,h) =
+rectInRegion r (Rectangle x y w h) =
 	withRegion r $ \ rp ->
 	xRectInRegion rp x y w h
 foreign import ccall unsafe "HsXlib.h XRectInRegion"
@@ -204,9 +218,9 @@ foreign import ccall unsafe "HsXlib.h XRectInRegion"
 clipBox :: Region -> IO (Rectangle,Int)
 clipBox r =
 	withRegion r $ \ rp ->
-	allocaRectangle $ \ rect_ptr -> do
+	alloca $ \ rect_ptr -> do
 	res <- xClipBox rp rect_ptr
-	rect <- peekRectangle rect_ptr
+	rect <- peek rect_ptr
 	return (rect, res)
 foreign import ccall unsafe "HsXlib.h XClipBox"
 	xClipBox :: Ptr Region -> Ptr Rectangle -> IO Int
@@ -221,7 +235,7 @@ foreign import ccall unsafe "HsXlib.h XClipBox"
 
 -- | interface to the X11 library function @XOffsetRegion()@.
 offsetRegion :: Region -> Point -> IO Int
-offsetRegion r (x,y) =
+offsetRegion r (Point x y) =
 	withRegion r $ \ rp ->
 	xOffsetRegion rp x y
 foreign import ccall unsafe "HsXlib.h XOffsetRegion"
@@ -233,7 +247,7 @@ foreign import ccall unsafe "HsXlib.h XOffsetRegion"
 
 -- | interface to the X11 library function @XShrinkRegion()@.
 shrinkRegion :: Region -> Point -> IO Int
-shrinkRegion r (x,y) =
+shrinkRegion r (Point x y) =
 	withRegion r $ \ rp ->
 	xShrinkRegion rp x y
 foreign import ccall unsafe "HsXlib.h XShrinkRegion"

@@ -1,3 +1,4 @@
+{-# OPTIONS_GHC -fglasgow-exts #-}
 -----------------------------------------------------------------------------
 -- |
 -- Module      :  Graphics.X11.Xlib.Misc
@@ -106,7 +107,7 @@ module Graphics.X11.Xlib.Misc(
         setWMProtocols,
 
 	-- * Set window attributes
-        allocaXSetWindowAttributes,
+        allocaSetWindowAttributes,
         set_background_pixmap,
         set_background_pixel,
         set_border_pixmap,
@@ -163,6 +164,10 @@ import Graphics.X11.Xlib.Font
 
 import Foreign
 import Foreign.C
+
+#if __GLASGOW_HASKELL__
+import Data.Generics
+#endif
 
 #include "HsXlib.h"
 
@@ -435,6 +440,11 @@ foreign import ccall unsafe "HsXlib.h XDisplayName"
 {-# CFILES cbits/auxiliaries.c #-}
 
 newtype XErrorEvent = XErrorEvent (Ptr XErrorEvent)
+#if __GLASGOW_HASKELL__
+	deriving (Eq, Ord, Show, Typeable, Data)
+#else
+	deriving (Eq, Ord, Show)
+#endif
 
 type ErrorHandler = FunPtr (Display -> Ptr XErrorEvent -> IO Int)
 
@@ -776,6 +786,11 @@ noSymbol :: KeySym
 noSymbol = #{const NoSymbol}
 
 newtype XComposeStatus = XComposeStatus (Ptr XComposeStatus)
+#if __GLASGOW_HASKELL__
+	deriving (Eq, Ord, Show, Typeable, Data)
+#else
+	deriving (Eq, Ord, Show)
+#endif
 
 -- XLookupString cannot handle compose, it seems.
 
@@ -851,8 +866,8 @@ foreign import ccall unsafe "HsXlib.h XUndefineCursor"
 createPixmapCursor :: Display -> Pixmap -> Pixmap -> Color -> Color ->
 	Dimension -> Dimension -> IO Cursor
 createPixmapCursor display source mask fg_color bg_color x y =
-	withColor fg_color $ \ fg_color_ptr ->
-	withColor bg_color $ \ bg_color_ptr ->
+	with fg_color $ \ fg_color_ptr ->
+	with bg_color $ \ bg_color_ptr ->
 	xCreatePixmapCursor display source mask fg_color_ptr bg_color_ptr x y
 foreign import ccall unsafe "HsXlib.h XCreatePixmapCursor"
 	xCreatePixmapCursor :: Display -> Pixmap -> Pixmap ->
@@ -863,8 +878,8 @@ createGlyphCursor  :: Display -> Font   -> Font -> Glyph -> Glyph ->
 	Color -> Color -> IO Cursor
 createGlyphCursor display source_font mask_font source_char mask_char
 		fg_color bg_color =
-	withColor fg_color $ \ fg_color_ptr ->
-	withColor bg_color $ \ bg_color_ptr ->
+	with fg_color $ \ fg_color_ptr ->
+	with bg_color $ \ bg_color_ptr ->
 	xCreateGlyphCursor display source_font mask_font source_char mask_char
 		fg_color_ptr bg_color_ptr
 foreign import ccall unsafe "HsXlib.h XCreateGlyphCursor"
@@ -882,8 +897,8 @@ foreign import ccall unsafe "HsXlib.h XFreeCursor"
 -- | interface to the X11 library function @XRecolorCursor()@.
 recolorCursor      :: Display -> Cursor -> Color -> Color -> IO ()
 recolorCursor display cursor fg_color bg_color =
-	withColor fg_color $ \ fg_color_ptr ->
-	withColor bg_color $ \ bg_color_ptr ->
+	with fg_color $ \ fg_color_ptr ->
+	with bg_color $ \ bg_color_ptr ->
 	xRecolorCursor display cursor fg_color_ptr bg_color_ptr
 foreign import ccall unsafe "HsXlib.h XRecolorCursor"
 	xRecolorCursor      :: Display -> Cursor -> Ptr Color -> Ptr Color -> IO ()
@@ -915,54 +930,54 @@ foreign import ccall unsafe "HsXlib.h XSetWMProtocols"
 
 -- ToDo: generate this kind of stuff automatically.
 
-allocaXSetWindowAttributes :: (Ptr XSetWindowAttributes -> IO a) -> IO a
-allocaXSetWindowAttributes = allocaBytes #{size XSetWindowAttributes}
+allocaSetWindowAttributes :: (Ptr SetWindowAttributes -> IO a) -> IO a
+allocaSetWindowAttributes = allocaBytes #{size XSetWindowAttributes}
 
 ---------------- Access to individual fields ----------------
 
-set_background_pixmap :: Ptr XSetWindowAttributes -> Pixmap -> IO ()
+set_background_pixmap :: Ptr SetWindowAttributes -> Pixmap -> IO ()
 set_background_pixmap = #{poke XSetWindowAttributes,background_pixmap}
 
-set_background_pixel :: Ptr XSetWindowAttributes -> Pixel -> IO ()
+set_background_pixel :: Ptr SetWindowAttributes -> Pixel -> IO ()
 set_background_pixel = #{poke XSetWindowAttributes,background_pixel}
 
-set_border_pixmap :: Ptr XSetWindowAttributes -> Pixmap -> IO ()
+set_border_pixmap :: Ptr SetWindowAttributes -> Pixmap -> IO ()
 set_border_pixmap = #{poke XSetWindowAttributes,border_pixmap}
 
-set_border_pixel :: Ptr XSetWindowAttributes -> Pixel -> IO ()
+set_border_pixel :: Ptr SetWindowAttributes -> Pixel -> IO ()
 set_border_pixel = #{poke XSetWindowAttributes,border_pixel}
 
-set_bit_gravity :: Ptr XSetWindowAttributes -> BitGravity -> IO ()
+set_bit_gravity :: Ptr SetWindowAttributes -> BitGravity -> IO ()
 set_bit_gravity = #{poke XSetWindowAttributes,bit_gravity}
 
-set_win_gravity :: Ptr XSetWindowAttributes -> WindowGravity -> IO ()
+set_win_gravity :: Ptr SetWindowAttributes -> WindowGravity -> IO ()
 set_win_gravity = #{poke XSetWindowAttributes,win_gravity}
 
-set_backing_store :: Ptr XSetWindowAttributes -> BackingStore -> IO ()
+set_backing_store :: Ptr SetWindowAttributes -> BackingStore -> IO ()
 set_backing_store = #{poke XSetWindowAttributes,backing_store}
 
-set_backing_planes :: Ptr XSetWindowAttributes -> Pixel -> IO ()
+set_backing_planes :: Ptr SetWindowAttributes -> Pixel -> IO ()
 set_backing_planes = #{poke XSetWindowAttributes,backing_planes}
 
-set_backing_pixel :: Ptr XSetWindowAttributes -> Pixel -> IO ()
+set_backing_pixel :: Ptr SetWindowAttributes -> Pixel -> IO ()
 set_backing_pixel = #{poke XSetWindowAttributes,backing_pixel}
 
-set_save_under :: Ptr XSetWindowAttributes -> Bool -> IO ()
+set_save_under :: Ptr SetWindowAttributes -> Bool -> IO ()
 set_save_under = #{poke XSetWindowAttributes,save_under}
 
-set_event_mask :: Ptr XSetWindowAttributes -> EventMask -> IO ()
+set_event_mask :: Ptr SetWindowAttributes -> EventMask -> IO ()
 set_event_mask = #{poke XSetWindowAttributes,event_mask}
 
-set_do_not_propagate_mask :: Ptr XSetWindowAttributes -> EventMask -> IO ()
+set_do_not_propagate_mask :: Ptr SetWindowAttributes -> EventMask -> IO ()
 set_do_not_propagate_mask = #{poke XSetWindowAttributes,do_not_propagate_mask}
 
-set_override_redirect :: Ptr XSetWindowAttributes -> Bool -> IO ()
+set_override_redirect :: Ptr SetWindowAttributes -> Bool -> IO ()
 set_override_redirect = #{poke XSetWindowAttributes,override_redirect}
 
-set_colormap :: Ptr XSetWindowAttributes -> Colormap -> IO ()
+set_colormap :: Ptr SetWindowAttributes -> Colormap -> IO ()
 set_colormap = #{poke XSetWindowAttributes,colormap}
 
-set_cursor :: Ptr XSetWindowAttributes -> Cursor -> IO ()
+set_cursor :: Ptr SetWindowAttributes -> Cursor -> IO ()
 set_cursor = #{poke XSetWindowAttributes,cursor}
 
 ----------------------------------------------------------------
@@ -976,7 +991,7 @@ foreign import ccall unsafe "HsXlib.h XDrawPoint"
 -- | interface to the X11 library function @XDrawPoints()@.
 drawPoints :: Display -> Drawable -> GC -> [Point] -> CoordinateMode -> IO ()
 drawPoints display d gc points mode =
-	withPointArray points $ \ point_array npoints ->
+	withArrayLen points $ \ npoints point_array ->
 	xDrawPoints display d gc point_array npoints mode
 foreign import ccall unsafe "HsXlib.h XDrawPoints"
 	xDrawPoints     :: Display -> Drawable -> GC -> Ptr Point -> Int ->
@@ -990,7 +1005,7 @@ foreign import ccall unsafe "HsXlib.h XDrawLine"
 -- | interface to the X11 library function @XDrawLines()@.
 drawLines :: Display -> Drawable -> GC -> [Point] -> CoordinateMode -> IO ()
 drawLines display d gc points mode =
-	withPointArray points $ \ point_array npoints ->
+	withArrayLen points $ \ npoints point_array ->
 	xDrawLines display d gc point_array npoints mode
 foreign import ccall unsafe "HsXlib.h XDrawLines"
 	xDrawLines      :: Display -> Drawable -> GC -> Ptr Point -> Int ->
@@ -999,7 +1014,7 @@ foreign import ccall unsafe "HsXlib.h XDrawLines"
 -- | interface to the X11 library function @XDrawSegments()@.
 drawSegments :: Display -> Drawable -> GC -> [Segment] -> IO ()
 drawSegments display d gc segments =
-	withSegmentArray segments $ \ segment_array nsegments ->
+	withArrayLen segments $ \ nsegments segment_array ->
 	xDrawSegments display d gc segment_array nsegments
 foreign import ccall unsafe "HsXlib.h XDrawSegments"
 	xDrawSegments   :: Display -> Drawable -> GC -> Ptr Segment -> Int -> IO ()
@@ -1011,7 +1026,7 @@ foreign import ccall unsafe "HsXlib.h XDrawRectangle"
 -- | interface to the X11 library function @XDrawRectangles()@.
 drawRectangles :: Display -> Drawable -> GC -> [Rectangle] -> IO ()
 drawRectangles display d gc rectangles =
-	withRectangleArray rectangles $ \ rectangle_array nrectangles ->
+	withArrayLen rectangles $ \ nrectangles rectangle_array ->
 	xDrawRectangles display d gc rectangle_array nrectangles
 foreign import ccall unsafe "HsXlib.h XDrawRectangles"
 	xDrawRectangles :: Display -> Drawable -> GC -> Ptr Rectangle -> Int -> IO ()
@@ -1024,7 +1039,7 @@ foreign import ccall unsafe "HsXlib.h XDrawArc"
 -- | interface to the X11 library function @XDrawArcs()@.
 drawArcs :: Display -> Drawable -> GC -> [Arc] -> IO ()
 drawArcs display d gc arcs =
-	withArcArray arcs $ \ arc_array narcs ->
+	withArrayLen arcs $ \ narcs arc_array ->
 	xDrawArcs display d gc arc_array narcs
 foreign import ccall unsafe "HsXlib.h XDrawArcs"
 	xDrawArcs       :: Display -> Drawable -> GC -> Ptr Arc -> Int -> IO ()
@@ -1037,7 +1052,7 @@ foreign import ccall unsafe "HsXlib.h XFillRectangle"
 -- | interface to the X11 library function @XFillRectangles()@.
 fillRectangles :: Display -> Drawable -> GC -> [Rectangle] -> IO ()
 fillRectangles display d gc rectangles =
-	withRectangleArray rectangles $ \ rectangle_array nrectangles ->
+	withArrayLen rectangles $ \ nrectangles rectangle_array ->
 	xFillRectangles display d gc rectangle_array nrectangles
 foreign import ccall unsafe "HsXlib.h XFillRectangles"
 	xFillRectangles :: Display -> Drawable -> GC -> Ptr Rectangle -> Int -> IO ()
@@ -1045,7 +1060,7 @@ foreign import ccall unsafe "HsXlib.h XFillRectangles"
 -- | interface to the X11 library function @XFillPolygon()@.
 fillPolygon :: Display -> Drawable -> GC -> [Point] -> PolygonShape -> CoordinateMode -> IO ()
 fillPolygon display d gc points shape mode =
-	withPointArray points $ \ point_array npoints ->
+	withArrayLen points $ \ npoints point_array ->
 	xFillPolygon display d gc point_array npoints shape mode
 foreign import ccall unsafe "HsXlib.h XFillPolygon"
 	xFillPolygon    :: Display -> Drawable -> GC -> Ptr Point -> Int -> PolygonShape -> CoordinateMode -> IO ()
@@ -1058,7 +1073,7 @@ foreign import ccall unsafe "HsXlib.h XFillArc"
 -- | interface to the X11 library function @XFillArcs()@.
 fillArcs :: Display -> Drawable -> GC -> [Arc] -> IO ()
 fillArcs display d gc arcs =
-	withArcArray arcs $ \ arc_array narcs ->
+	withArrayLen arcs $ \ narcs arc_array ->
 	xFillArcs display d gc arc_array narcs
 foreign import ccall unsafe "HsXlib.h XFillArcs"
 	xFillArcs       :: Display -> Drawable -> GC -> Ptr Arc -> Int -> IO ()
@@ -1157,6 +1172,11 @@ foreign import ccall unsafe "HsXlib.h XRotateBuffers"
 ----------------------------------------------------------------
 
 newtype XTextProperty = XTextProperty (Ptr XTextProperty)
+#if __GLASGOW_HASKELL__
+	deriving (Eq, Ord, Show, Typeable, Data)
+#else
+	deriving (Eq, Ord, Show)
+#endif
 
 -- | interface to the X11 library function @XSetTextProperty()@.
 setTextProperty :: Display -> Window -> String -> Atom -> IO ()

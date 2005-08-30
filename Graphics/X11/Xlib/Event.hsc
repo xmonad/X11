@@ -1,3 +1,4 @@
+{-# OPTIONS_GHC -fglasgow-exts #-}
 -----------------------------------------------------------------------------
 -- |
 -- Module      :  Graphics.X11.Xlib.Event
@@ -64,6 +65,10 @@ import Graphics.X11.Xlib.Display( connectionNumber )
 
 import Foreign
 
+#if __GLASGOW_HASKELL__
+import Data.Generics
+#endif
+
 #include "HsXlib.h"
 
 {-# CFILES cbits/fdset.c #-}
@@ -91,6 +96,11 @@ type   QueuedMode   = Int
 --     window' <- get_XDestroyWindowEvent
 
 newtype XEvent = XEvent XEventPtr
+#if __GLASGOW_HASKELL__
+	deriving (Eq, Ord, Show, Typeable, Data)
+#else
+	deriving (Eq, Ord, Show)
+#endif
 type XEventPtr = Ptr XEvent
 
 allocaXEvent :: (XEventPtr -> IO a) -> IO a
@@ -397,6 +407,11 @@ waitForEvent display usecs =
 	return (n == 0)
 
 newtype FdSet = FdSet (Ptr FdSet)
+#if __GLASGOW_HASKELL__
+	deriving (Eq, Ord, Show, Typeable, Data)
+#else
+	deriving (Eq, Ord, Show)
+#endif
 
 foreign import ccall unsafe "HsXlib.h" fdZero :: Ptr FdSet -> IO ()
 foreign import ccall unsafe "HsXlib.h" fdSet :: Int -> Ptr FdSet -> IO ()
@@ -426,6 +441,11 @@ instance Storable TimeVal where
 		#{poke struct timeval,tv_usec} p usec
 
 newtype TimeZone = TimeZone (Ptr TimeZone)
+#if __GLASGOW_HASKELL__
+	deriving (Eq, Ord, Show, Typeable, Data)
+#else
+	deriving (Eq, Ord, Show)
+#endif
 
 foreign import ccall unsafe "HsXlib.h"
 	gettimeofday :: Ptr TimeVal -> Ptr TimeZone -> IO ()

@@ -44,13 +44,13 @@ import Foreign.C
 lookupColor :: Display -> Colormap -> String -> IO (Color, Color)
 lookupColor display colormap color_name =
 	withCString color_name $ \c_color_name ->
-	allocaColor $ \ exact_def_return ->
-	allocaColor $ \ screen_def_return -> do
+	alloca $ \ exact_def_return ->
+	alloca $ \ screen_def_return -> do
 	throwIfZero "lookupColor" $
 		xLookupColor display colormap c_color_name
 			exact_def_return screen_def_return
-	exact_def <- peekColor exact_def_return
-	screen_def <- peekColor screen_def_return
+	exact_def <- peek exact_def_return
+	screen_def <- peek screen_def_return
 	return (exact_def, screen_def)
 foreign import ccall unsafe "HsXlib.h XLookupColor"
 	xLookupColor :: Display -> Colormap -> CString ->
@@ -60,13 +60,13 @@ foreign import ccall unsafe "HsXlib.h XLookupColor"
 allocNamedColor :: Display -> Colormap -> String -> IO (Color, Color)
 allocNamedColor display colormap color_name =
 	withCString color_name $ \c_color_name ->
-	allocaColor $ \ exact_def_return ->
-	allocaColor $ \ screen_def_return -> do
+	alloca $ \ exact_def_return ->
+	alloca $ \ screen_def_return -> do
 	throwIfZero "allocNamedColor" $
 		xAllocNamedColor display colormap c_color_name
 			exact_def_return screen_def_return
-	exact_def <- peekColor exact_def_return
-	screen_def <- peekColor screen_def_return
+	exact_def <- peek exact_def_return
+	screen_def <- peek screen_def_return
 	return (exact_def, screen_def)
 foreign import ccall unsafe "HsXlib.h XAllocNamedColor"
 	xAllocNamedColor :: Display -> Colormap -> CString ->
@@ -75,10 +75,10 @@ foreign import ccall unsafe "HsXlib.h XAllocNamedColor"
 -- | interface to the X11 library function @XAllocColor()@.
 allocColor :: Display -> Colormap -> Color -> IO Color
 allocColor display colormap color =
-	withColor color $ \ color_ptr -> do
+	with color $ \ color_ptr -> do
 	throwIfZero "allocColor" $
 		xAllocColor display colormap color_ptr
-	peekColor color_ptr
+	peek color_ptr
 foreign import ccall unsafe "HsXlib.h XAllocColor"
 	xAllocColor :: Display -> Colormap -> Ptr Color -> IO Status
 
@@ -86,10 +86,10 @@ foreign import ccall unsafe "HsXlib.h XAllocColor"
 parseColor :: Display -> Colormap -> String -> IO Color
 parseColor display colormap color_spec =
 	withCString color_spec $ \ spec ->
-	allocaColor $ \ exact_def_return -> do
+	alloca $ \ exact_def_return -> do
 	throwIfZero "parseColor" $
 		xParseColor display colormap spec exact_def_return
-	peekColor exact_def_return
+	peek exact_def_return
 foreign import ccall unsafe "HsXlib.h XParseColor"
 	xParseColor :: Display -> Colormap -> CString -> Ptr Color -> IO Status
 
@@ -110,7 +110,7 @@ foreign import ccall unsafe "HsXlib.h XFreeColors"
 -- | interface to the X11 library function @XStoreColor()@.
 storeColor :: Display -> Colormap -> Color -> IO ()
 storeColor display colormap color =
-	withColor color $ \ color_ptr ->
+	with color $ \ color_ptr ->
 	xStoreColor display colormap color_ptr
 foreign import ccall unsafe "HsXlib.h XStoreColor"
 	xStoreColor  :: Display -> Colormap -> Ptr Color -> IO ()
@@ -122,18 +122,18 @@ foreign import ccall unsafe "HsXlib.h XStoreColor"
 -- | interface to the X11 library function @XQueryColor()@.
 queryColor :: Display -> Colormap -> Color -> IO Color
 queryColor display colormap color =
-	withColor color $ \ color_ptr -> do
+	with color $ \ color_ptr -> do
 	xQueryColor display colormap color_ptr
-	peekColor color_ptr
+	peek color_ptr
 foreign import ccall unsafe "HsXlib.h XQueryColor"
 	xQueryColor  :: Display -> Colormap -> Ptr Color -> IO ()
 
 -- | interface to the X11 library function @XQueryColors()@.
 queryColors :: Display -> Colormap -> [Color] -> IO [Color]
 queryColors display colormap colors =
-	withColorArray colors $ \ color_array ncolors -> do
+	withArrayLen colors $ \ ncolors color_array -> do
 	xQueryColors display colormap color_array ncolors
-	peekColorArray ncolors color_array
+	peekArray ncolors color_array
 foreign import ccall unsafe "HsXlib.h XQueryColors"
 	xQueryColors :: Display -> Colormap -> Ptr Color -> Int -> IO ()
 

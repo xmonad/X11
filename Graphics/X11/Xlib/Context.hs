@@ -139,7 +139,7 @@ foreign import ccall unsafe "HsXlib.h XSetTile"
 createGC :: Display -> Drawable -> IO GC
 createGC display d = xCreateGC display d 0 nullPtr
 foreign import ccall unsafe "HsXlib.h XCreateGC"
-	xCreateGC  :: Display -> Drawable -> ValueMask -> Ptr XGCValues -> IO GC
+	xCreateGC  :: Display -> Drawable -> ValueMask -> Ptr GCValues -> IO GC
 
 type ValueMask = Word32
 
