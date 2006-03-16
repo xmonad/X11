@@ -1,5 +1,11 @@
 AC_INIT([Haskell X11 package], [1.1], [libraries@haskell.org], [X11])
 
+FP_ARG_X11
+
+if test "$enable_x11" = no; then
+  X11_BUILD_PACKAGE=no
+  BUILD_PACKAGE_BOOL=False
+else
 # Safety check: Ensure that we are in the correct source directory.
 AC_CONFIG_SRCDIR([include/HsXlib.h])
 
@@ -23,6 +29,7 @@ if test "$no_x" = yes; then
 else
   X11_BUILD_PACKAGE=yes
   BUILD_PACKAGE_BOOL=True
+fi
 fi
 AC_SUBST([X11_BUILD_PACKAGE])
 AC_SUBST([BUILD_PACKAGE_BOOL])
