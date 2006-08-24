@@ -20,6 +20,8 @@ ALL_DIRS = \
 	Graphics/X11 \
 	Graphics/X11/Xlib
 
+EXCLUDED_SRCS += Setup.hs
+
 PACKAGE_DEPS = base
 
 SRC_CC_OPTS += -Iinclude $(X_CFLAGS)
