@@ -20,8 +20,6 @@ ALL_DIRS = \
 	Graphics/X11 \
 	Graphics/X11/Xlib
 
-EXCLUDED_SRCS += Setup.hs
-
 PACKAGE_DEPS = base
 
 SRC_CC_OPTS += -Iinclude $(X_CFLAGS)
@@ -35,6 +33,8 @@ PACKAGE_CPP_OPTS += -DMAINTAINER=$(MAINTAINER)
 SRC_HADDOCK_OPTS += -t "X11 Libraries ($(PACKAGE) package)"
 
 endif
+
+EXCLUDED_SRCS += Setup.hs
 
 # -----------------------------------------------------------------------------
 
