@@ -36,7 +36,7 @@ exposed-modules:
 c-sources:
 	cbits/fdset.c,
 	cbits/auxiliaries.c
-extensions:	ForeignFunctionInterface
+extensions:	ForeignFunctionInterface, CPP
 extra-libraries: "X11"
 include-dirs:	include
 install-includes: HsXlib.h
