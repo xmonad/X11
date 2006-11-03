@@ -781,6 +781,11 @@ module Graphics.X11.Types
 	fontLeftToRight,
 	fontRightToLeft,
 
+	-- ** Image format
+        ImageFormat,
+	xyBitmap,
+	xyPixmap,
+	zPixmap
 	) where
 
 import Data.Int
@@ -1676,4 +1681,11 @@ type   FontDirection    = Int
 #{enum FontDirection,
  , fontLeftToRight	= FontLeftToRight
  , fontRightToLeft	= FontRightToLeft
+ }
+
+type   ImageFormat    = Int
+#{enum ImageFormat,
+ , xyBitmap	= XYBitmap
+ , xyPixmap	= XYPixmap
+ , zPixmap	= ZPixmap
  }

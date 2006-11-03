@@ -32,7 +32,8 @@ exposed-modules:
 	Graphics.X11.Xlib.Region,
 	Graphics.X11.Xlib.Screen,
 	Graphics.X11.Xlib.Types,
-	Graphics.X11.Xlib.Window
+	Graphics.X11.Xlib.Window,
+	Graphics.X11.Xlib.Image
 c-sources:
 	cbits/fdset.c,
 	cbits/auxiliaries.c

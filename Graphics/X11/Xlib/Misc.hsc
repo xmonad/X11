@@ -667,7 +667,13 @@ foreign import ccall unsafe "HsXlib.h XWarpPointer"
 -- Visuals
 ----------------------------------------------------------------
 
--- XVisualIDFromVisual omitted
+-- | see @XVisualIDFromVisual()@
+foreign import ccall unsafe "HsXlib.h XVisualIDFromVisual"
+    visualIDFromVisual :: Visual -> IO VisualID
+
+-- XGetVisualInfo omitted
+-- XMatchVisualInfo omitted
+
 
 ----------------------------------------------------------------
 -- Threads
@@ -816,16 +822,6 @@ foreign import ccall unsafe "HsXlib.h XLookupString"
 -- XSetModifierMapping omitted
 -- XGetModifierMapping omitted
 -- XGetKeyboardMapping omitted
-
-----------------------------------------------------------------
--- Image
-----------------------------------------------------------------
-
--- XCreateImage omitted
--- XInitImage omitted
--- XGetImage omitted
--- XPutImage omitted
--- XGetSubImage omitted
 
 ----------------------------------------------------------------
 -- Icons

@@ -16,7 +16,7 @@
 -- #hide
 module Graphics.X11.Xlib.Types(
 	Display(..), Screen, Visual, GC, GCValues, SetWindowAttributes,
-	Point(..), Rectangle(..), Arc(..), Segment(..), Color(..),
+	Image(..), Point(..), Rectangle(..), Arc(..), Segment(..), Color(..),
 	Pixel, Position, Dimension, Angle, ScreenNumber, Buffer
         ) where
 
@@ -80,6 +80,14 @@ newtype GCValues   = GCValues  (Ptr GCValues)
 
 -- | pointer to an X11 @XSetWindowAttributes@ structure
 newtype SetWindowAttributes = SetWindowAttributes (Ptr SetWindowAttributes)
+#if __GLASGOW_HASKELL__
+	deriving (Eq, Ord, Show, Typeable, Data)
+#else
+	deriving (Eq, Ord, Show)
+#endif
+
+-- | pointer to an X11 @XImage@ structure
+newtype Image    = Image    (Ptr Image)
 #if __GLASGOW_HASKELL__
 	deriving (Eq, Ord, Show, Typeable, Data)
 #else
