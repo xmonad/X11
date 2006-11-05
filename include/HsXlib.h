@@ -1,5 +1,4 @@
 /* -----------------------------------------------------------------------------
- * $Id: HsXlib.h,v 1.3 2004/02/16 18:01:29 ross Exp $
  *
  * Definitions for package `X11' which are visible in Haskell land.
  *
@@ -14,6 +13,7 @@
 #include <X11/X.h>
 #include <X11/Xlib.h>
 #include <X11/Xatom.h>
+#define XUTIL_DEFINE_FUNCTIONS
 #include <X11/Xutil.h>
 
 #define XK_MISCELLANY
