@@ -1,4 +1,3 @@
-{-# OPTIONS_GHC -fglasgow-exts #-}
 -----------------------------------------------------------------------------
 -- |
 -- Module      :  Graphics.X11.Xlib.Image
@@ -26,8 +25,6 @@ import Graphics.X11.Xlib.Types
 
 import Foreign
 import Foreign.C
-
-#include "HsXlib.h"
 
 ----------------------------------------------------------------
 -- Image
