@@ -13,7 +13,6 @@
 -----------------------------------------------------------------------------
 
 module Graphics.X11.Xlib.Image(
-        -- * Images,
 	Image,
         createImage,
         putImage,
@@ -30,7 +29,7 @@ import Foreign.C
 -- Image
 ----------------------------------------------------------------
 
--- | XCreateImage
+-- | interface to the X11 library function @XCreateImage()@.
 createImage :: Display -> Visual -> Int -> ImageFormat -> Int -> Ptr CChar -> Dimension -> Dimension -> Int -> Int -> IO Image
 createImage display vis depth format offset dat width height bitmap_pad bytes_per_line = do
     image <- throwIfNull "createImage" (xCreateImage display vis depth format offset dat width height bitmap_pad bytes_per_line)
@@ -39,11 +38,12 @@ foreign import ccall unsafe "HsXlib.h XCreateImage"
     xCreateImage :: Display -> Visual -> Int -> ImageFormat -> Int -> 
         Ptr CChar -> Dimension -> Dimension -> Int -> Int -> IO (Ptr Image)
 
--- | XPutImage
+-- | interface to the X11 library function @XPutImage()@.
 foreign import ccall unsafe "HsXlib.h XPutImage"
     putImage :: Display -> Drawable -> GC -> Image ->
         Position -> Position -> Position -> Position  -> Dimension -> Dimension -> IO ()
 
+-- | interface to the X11 library function @XDestroyImage()@.
 foreign import ccall unsafe "HsXlib.h XDestroyImage"
     destroyImage :: Image -> IO ()
 
