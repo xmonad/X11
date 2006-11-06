@@ -40,6 +40,7 @@ module Graphics.X11.Xlib
           module Graphics.X11.Xlib.Font,
           module Graphics.X11.Xlib.Atom,
           module Graphics.X11.Xlib.Region,
+          module Graphics.X11.Xlib.Image,
           module Graphics.X11.Xlib.Misc,
           
 	) where
@@ -55,6 +56,7 @@ import Graphics.X11.Xlib.Color
 import Graphics.X11.Xlib.Font
 import Graphics.X11.Xlib.Atom
 import Graphics.X11.Xlib.Region
+import Graphics.X11.Xlib.Image
 import Graphics.X11.Xlib.Misc
 
 {- $conventions
