@@ -28,7 +28,10 @@
  * safe for functions with return type int.
  */
 #undef XDestroyImage
-#undef AddPixel
+#undef XGetPixel
+#undef XPutPixel
+#undef XSubImage
+#undef XAddPixel
 
 #define XK_MISCELLANY
 #define XK_LATIN1
