@@ -9,6 +9,9 @@
 
 #include <stdlib.h>
 
+/* This doesn't always work, so we play safe below... */
+#define XUTIL_DEFINE_FUNCTIONS
+
 #include <X11/X.h>
 #include <X11/X.h>
 #include <X11/Xlib.h>
