@@ -17,6 +17,7 @@ ifeq "$(X11_BUILD_PACKAGE)" "yes"
 SUBDIRS = cbits doc include
 
 ALL_DIRS = \
+	Graphics \
 	Graphics/X11 \
 	Graphics/X11/Xlib
 
