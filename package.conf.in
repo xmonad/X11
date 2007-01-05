@@ -26,6 +26,9 @@ hidden-modules:
 
 import-dirs:	IMPORT_DIR
 library-dirs:	LIB_DIR
+#ifndef INSTALLING
+		, LIB_DIR"/cbits"
+#endif
 hs-libraries:   "HSX11"
 extra-libraries:	"HSX11_cbits", "X11"
 include-dirs: 	INCLUDE_DIR
