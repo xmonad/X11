@@ -467,7 +467,7 @@ foreign import ccall unsafe "HsXlib.h XEventsQueued"
 	eventsQueued :: Display -> QueuedMode -> IO Int
 
 -- | interface to the X11 library function @XNextEvent()@.
-foreign import ccall unsafe "HsXlib.h XNextEvent"
+foreign import ccall safe "HsXlib.h XNextEvent"
 	nextEvent    :: Display -> XEventPtr  -> IO ()
 
 -- | interface to the X11 library function @XAllowEvents()@.
