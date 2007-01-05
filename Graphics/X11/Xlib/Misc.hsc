@@ -73,6 +73,11 @@ module Graphics.X11.Xlib.Misc(
         getPointerControl,
         warpPointer,
 
+        -- * Threads
+        initThreads,
+        lockDisplay,
+        unlockDisplay,
+
 	-- * Pixmaps
         createPixmap,
         freePixmap,
@@ -679,9 +684,14 @@ foreign import ccall unsafe "HsXlib.h XVisualIDFromVisual"
 -- Threads
 ----------------------------------------------------------------
 
--- XInitThreads omitted (leary of thread stuff)
--- XLockDisplay omitted (leary of thread stuff)
--- XUnlockDisplay omitted (leary of thread stuff)
+foreign import ccall unsafe "HsXlib.h XInitThreads"
+        initThreads :: IO Status
+
+foreign import ccall unsafe "HsXlib.h XLockDisplay"
+        lockDisplay :: Display -> IO ()
+
+foreign import ccall unsafe "HsXlib.h XLockDisplay"
+        unlockDisplay :: Display -> IO ()
 
 ----------------------------------------------------------------
 -- Pixmaps
