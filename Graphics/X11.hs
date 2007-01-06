@@ -13,11 +13,9 @@
 -----------------------------------------------------------------------------
 
 module Graphics.X11 
-        ( module Graphics.X11.Types
-        , module Graphics.X11.Xlib 
+        ( module Graphics.X11.Xlib
         ) where
 
-import Graphics.X11.Types
 import Graphics.X11.Xlib 
 
 ----------------------------------------------------------------
