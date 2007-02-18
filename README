@@ -1,30 +1,4 @@
-                             HSX11 1.00
-                      A Haskell binding for X11
-
-In preparation for a major release of HSX11, we are making an alpha
-release for folk to play with.  We welcome bug reports, comments on
-how the system is packaged, the web page, examples, comments from
-those who build binary and source packages, etc. and especially
-welcome comments accompanied by patches or cvs commit messages.
-
-We are pleased to announce a new release of the Haskell binding for
-X11 which provides a binding to most of Xlib. The library is
-distributed as open source.
-
-The library can be downloaded from: 
-
-    http://www.reid-consulting-uk.ltd.uk/projects/HSX11.html
-
-You will need GreenCard 3.00, GHC 6.0 and, of course, X11 to build the
-library.  Installation instructions are in HSX11-1.0/INSTALL.  Bug
-reports should be sent to X11@reid-consulting-uk.ltd.uk
-
-Enjoy!
---
-Alastair Reid   http://www.reid-consulting-uk.ltd.uk
-
-ps This release is based on the GHC team's fptools infrastructure
-   which is evolving in the direction of supporting packages like this
-   one.  We welcome comments on this infrastructure and, especially,
-   offers to help make it better.
-
+To build this package using Cabal directly from darcs, you must run
+"autoreconf" before the usual Cabal build steps (configure/build/install).
+autoreconf is included in the GNU autoconf tools.  There is no need to run
+the "configure" script: the "setup configure" step will do this for you.
