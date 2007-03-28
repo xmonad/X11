@@ -97,9 +97,9 @@ newtype Image    = Image    (Ptr Image)
 type Pixel         = #{type unsigned long}
 type Position      = #{type int}
 type Dimension     = #{type unsigned int}
-type Angle         = Int
+type Angle         = CInt
 type ScreenNumber  = Word32
-type Buffer        = Int
+type Buffer        = CInt
 
 ----------------------------------------------------------------
 -- Short forms used in structs
@@ -109,32 +109,32 @@ type ShortPosition = CShort
 type ShortDimension = CUShort
 type ShortAngle    = CShort
 
-peekPositionField :: Ptr a -> Int -> IO Position
+peekPositionField :: Ptr a -> CInt -> IO Position
 peekPositionField ptr off = do
-	v <- peekByteOff ptr off
+	v <- peekByteOff ptr (fromIntegral off)
 	return (fromIntegral (v::ShortPosition))
 
-peekDimensionField :: Ptr a -> Int -> IO Dimension
+peekDimensionField :: Ptr a -> CInt -> IO Dimension
 peekDimensionField ptr off = do
-	v <- peekByteOff ptr off
+	v <- peekByteOff ptr (fromIntegral off)
 	return (fromIntegral (v::ShortDimension))
 
-peekAngleField :: Ptr a -> Int -> IO Angle
+peekAngleField :: Ptr a -> CInt -> IO Angle
 peekAngleField ptr off = do
-	v <- peekByteOff ptr off
+	v <- peekByteOff ptr (fromIntegral off)
 	return (fromIntegral (v::ShortAngle))
 
-pokePositionField :: Ptr a -> Int -> Position -> IO ()
+pokePositionField :: Ptr a -> CInt -> Position -> IO ()
 pokePositionField ptr off v =
-	pokeByteOff ptr off (fromIntegral v::ShortPosition)
+	pokeByteOff ptr (fromIntegral off) (fromIntegral v::ShortPosition)
 
-pokeDimensionField :: Ptr a -> Int -> Dimension -> IO ()
+pokeDimensionField :: Ptr a -> CInt -> Dimension -> IO ()
 pokeDimensionField ptr off v =
-	pokeByteOff ptr off (fromIntegral v::ShortDimension)
+	pokeByteOff ptr (fromIntegral off) (fromIntegral v::ShortDimension)
 
-pokeAngleField :: Ptr a -> Int -> Angle -> IO ()
+pokeAngleField :: Ptr a -> CInt -> Angle -> IO ()
 pokeAngleField ptr off v =
-	pokeByteOff ptr off (fromIntegral v::ShortAngle)
+	pokeByteOff ptr (fromIntegral off) (fromIntegral v::ShortAngle)
 
 ----------------------------------------------------------------
 -- Point
@@ -205,7 +205,7 @@ data Arc = Arc {
 	arc_angle2 :: Angle
 	}
 #if __GLASGOW_HASKELL__
-	deriving (Eq, Show, Typeable, Data)
+	deriving (Eq, Show, Typeable)
 #else
 	deriving (Eq, Show)
 #endif

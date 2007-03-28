@@ -82,7 +82,7 @@ fontFromGC display gc =
 		xGetGCValues display gc #{const GCFont} values
 	#{peek XGCValues,font} values
 foreign import ccall unsafe "HsXlib.h XGetGCValues"
-	xGetGCValues :: Display -> GC -> ValueMask -> Ptr GCValues -> IO Int
+	xGetGCValues :: Display -> GC -> ValueMask -> Ptr GCValues -> IO CInt
 
 type ValueMask = #{type unsigned long}
 
@@ -133,11 +133,11 @@ descentFromFontStruct (FontStruct fs) = unsafePerformIO $
 
 -- We marshall this across right away because it's usually one-off info
 type CharStruct =
-	( Int            -- lbearing (origin to left edge of raster)
-	, Int            -- rbearing (origin to right edge of raster)
-	, Int            -- width    (advance to next char's origin)
-	, Int            -- ascent   (baseline to top edge of raster)
-	, Int            -- descent  (baseline to bottom edge of raster)
+	( CInt            -- lbearing (origin to left edge of raster)
+	, CInt            -- rbearing (origin to right edge of raster)
+	, CInt            -- width    (advance to next char's origin)
+	, CInt            -- ascent   (baseline to top edge of raster)
+	, CInt            -- descent  (baseline to bottom edge of raster)
 	-- attributes omitted
 	)
 
@@ -164,7 +164,7 @@ textExtents font_struct string = unsafePerformIO $
 	alloca $ \ font_ascent_return ->
 	alloca $ \ font_descent_return ->
 	allocaBytes #{size XCharStruct} $ \ overall_return -> do
-	xTextExtents font_struct c_string nchars direction_return
+	xTextExtents font_struct c_string (fromIntegral nchars) direction_return
 		font_ascent_return font_descent_return overall_return
 	direction <- peek direction_return
 	ascent <- peek font_ascent_return
@@ -172,9 +172,9 @@ textExtents font_struct string = unsafePerformIO $
 	cs <- peekCharStruct overall_return
 	return (direction, ascent, descent, cs)
 foreign import ccall unsafe "HsXlib.h XTextExtents"
-	xTextExtents :: FontStruct -> CString -> Int ->
+	xTextExtents :: FontStruct -> CString -> CInt ->
 		Ptr FontDirection -> Ptr Int32 -> Ptr Int32 ->
-		Ptr CharStruct -> IO Int
+		Ptr CharStruct -> IO CInt
 
 -- No need to put ths in the IO monad - this info is essentially constant
 
@@ -182,9 +182,9 @@ foreign import ccall unsafe "HsXlib.h XTextExtents"
 textWidth :: FontStruct -> String -> Int32
 textWidth font_struct string = unsafePerformIO $
 	withCStringLen string $ \ (c_string, len) ->
-	xTextWidth font_struct c_string len
+	xTextWidth font_struct c_string (fromIntegral len)
 foreign import ccall unsafe "HsXlib.h XTextWidth"
-	xTextWidth :: FontStruct -> CString -> Int -> IO Int32
+	xTextWidth :: FontStruct -> CString -> CInt -> IO Int32
 
 -- XTextExtents16 omitted
 -- XTextWidth16 omitted

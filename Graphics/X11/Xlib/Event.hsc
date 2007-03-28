@@ -64,6 +64,7 @@ import Graphics.X11.Xlib.Types
 import Graphics.X11.Xlib.Display( connectionNumber )
 
 import Foreign
+import Foreign.C.Types
 
 #if __GLASGOW_HASKELL__
 import Data.Generics
@@ -77,7 +78,7 @@ import Data.Generics
 -- Events
 ----------------------------------------------------------------
 
-type   QueuedMode   = Int
+type   QueuedMode   = CInt
 #{enum QueuedMode,
  , queuedAlready	= QueuedAlready
  , queuedAfterFlush	= QueuedAfterFlush
@@ -122,10 +123,10 @@ type XKeyEvent =
 	( Window    -- root window that the event occured on
 	, Window    -- child window
 	, Time      -- milliseconds
-	, Int       -- pointer x, y coordinates in event window
-	, Int       --
-	, Int       -- coordinates relative to root
-	, Int       --
+	, CInt       -- pointer x, y coordinates in event window
+	, CInt       --
+	, CInt       -- coordinates relative to root
+	, CInt       --
 	, Modifier  -- key or button mask
 	, KeyCode   -- detail
 	, Bool      -- same screen flag
@@ -158,10 +159,10 @@ type XButtonEvent =
 	( Window    --	root window that the event occured on
 	, Window    --	child window
 	, Time      --	milliseconds
-	, Int       --	pointer x, y coordinates in event window
-	, Int
-	, Int       --	coordinates relative to root
-	, Int
+	, CInt       --	pointer x, y coordinates in event window
+	, CInt
+	, CInt       --	coordinates relative to root
+	, CInt
 	, Modifier  --	key or button mask
 	, Button    --	detail
 	, Bool      --	same screen flag
@@ -189,10 +190,10 @@ type XMotionEvent =
 	( Window      -- root window that the event occured on
 	, Window      -- child window
 	, Time        -- milliseconds
-	, Int         -- pointer x, y coordinates in event window
-	, Int
-	, Int         -- coordinates relative to root
-	, Int
+	, CInt         -- pointer x, y coordinates in event window
+	, CInt
+	, CInt         -- coordinates relative to root
+	, CInt
 	, Modifier    -- key or button mask
 	, NotifyMode  -- detail
 	, Bool        -- same screen flag
@@ -246,7 +247,7 @@ type XExposeEvent =
 	, Position	-- y
 	, Dimension	-- width
 	, Dimension	-- height
-	, Int		-- count
+	, CInt		-- count
 	)
 
 peekXExposeEvent :: Ptr XExposeEvent -> IO XExposeEvent
@@ -307,7 +308,7 @@ get_ExposeEvent p = peekXExposeEvent (castPtr p)
 type XMappingEvent =
 	( MappingRequest  -- request
 	, KeyCode	  -- first_keycode
-	, Int		  -- count
+	, CInt		  -- count
 	)
 
 withXMappingEvent :: XMappingEvent -> (Ptr XMappingEvent -> IO a) -> IO a
@@ -402,8 +403,8 @@ waitForEvent display usecs =
 	let fd = connectionNumber display
 	fdZero readfds
 	fdZero nofds
-	fdSet fd readfds
-	n <- select (fd+1) readfds nofds nofds tv_ptr
+	fdSet (fromIntegral fd) readfds
+	n <- select ((fromIntegral fd)+1) readfds nofds nofds tv_ptr
 	return (n == 0)
 
 newtype FdSet = FdSet (Ptr FdSet)
@@ -414,10 +415,10 @@ newtype FdSet = FdSet (Ptr FdSet)
 #endif
 
 foreign import ccall unsafe "HsXlib.h" fdZero :: Ptr FdSet -> IO ()
-foreign import ccall unsafe "HsXlib.h" fdSet :: Int -> Ptr FdSet -> IO ()
+foreign import ccall unsafe "HsXlib.h" fdSet :: CInt -> Ptr FdSet -> IO ()
 
 foreign import ccall unsafe "HsXlib.h" select ::
-	Int -> Ptr FdSet -> Ptr FdSet -> Ptr FdSet -> Ptr TimeVal -> IO Int
+	CInt -> Ptr FdSet -> Ptr FdSet -> Ptr FdSet -> Ptr TimeVal -> IO CInt
 
 -- | This function is somewhat compatible with Win32's @TimeGetTime()@
 gettimeofday_in_milliseconds :: IO Integer
@@ -460,11 +461,11 @@ foreign import ccall unsafe "HsXlib.h XSync"
 
 -- | interface to the X11 library function @XPending()@.
 foreign import ccall unsafe "HsXlib.h XPending"
-	pending      :: Display ->               IO Int
+	pending      :: Display ->               IO CInt
 
 -- | interface to the X11 library function @XEventsQueued()@.
 foreign import ccall unsafe "HsXlib.h XEventsQueued"
-	eventsQueued :: Display -> QueuedMode -> IO Int
+	eventsQueued :: Display -> QueuedMode -> IO CInt
 
 -- | interface to the X11 library function @XNextEvent()@.
 foreign import ccall safe "HsXlib.h XNextEvent"

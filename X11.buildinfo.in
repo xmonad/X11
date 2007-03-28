@@ -2,5 +2,5 @@
 -- System-dependent values used by Distribution.Simple.defaultUserHooks
 --
 buildable: @BUILD_PACKAGE_BOOL@
-cc-options: @X_CFLAGS@
+cc-options: @X_CFLAGS@ @XSERVER64@
 ld-options: @X_LIBS@

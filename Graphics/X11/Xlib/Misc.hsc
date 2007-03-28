@@ -195,7 +195,7 @@ foreign import ccall unsafe "HsXlib.h XAutoRepeatOn"
 
 -- | interface to the X11 library function @XBell()@.
 foreign import ccall unsafe "HsXlib.h XBell"
-	bell             :: Display -> Int -> IO ()
+	bell             :: Display -> CInt -> IO ()
 
 -- | interface to the X11 library function @XSetCloseDownMode()@.
 foreign import ccall unsafe "HsXlib.h XSetCloseDownMode"
@@ -203,7 +203,7 @@ foreign import ccall unsafe "HsXlib.h XSetCloseDownMode"
 
 -- | interface to the X11 library function @XLastKnownRequestProcessed()@.
 foreign import ccall unsafe "HsXlib.h XLastKnownRequestProcessed"
-	lastKnownRequestProcessed :: Display -> IO Int
+	lastKnownRequestProcessed :: Display -> IO CInt
 
 -- | interface to the X11 library function @XGetInputFocus()@.
 getInputFocus :: Display -> IO (Window, FocusMode)
@@ -322,7 +322,7 @@ foreign import ccall unsafe "HsXlib.h XQueryBestSize"
 
 -- | interface to the X11 library function @XQueryPointer()@.
 queryPointer :: Display -> Window ->
-		IO (Bool, Window, Window, Int, Int, Int, Int, Modifier)
+		IO (Bool, Window, Window, CInt, CInt, CInt, CInt, Modifier)
 queryPointer display w =
 	alloca $ \ root_return ->
 	alloca $ \ child_return ->
@@ -343,8 +343,8 @@ queryPointer display w =
 	return (rel, root, child, root_x, root_y, win_x, win_y, mask)
 foreign import ccall unsafe "HsXlib.h XQueryPointer"
 	xQueryPointer :: Display -> Window ->
-		Ptr Window -> Ptr Window -> Ptr Int -> Ptr Int ->
-		Ptr Int -> Ptr Int -> Ptr Modifier -> IO Bool
+		Ptr Window -> Ptr Window -> Ptr CInt -> Ptr CInt ->
+		Ptr CInt -> Ptr CInt -> Ptr Modifier -> IO Bool
 
 -- XSetSelectionOwner omitted
 
@@ -376,10 +376,10 @@ displayName str = unsafePerformIO $
 foreign import ccall unsafe "HsXlib.h XDisplayName"
 	xDisplayName :: CString -> IO CString
 
--- type ErrorHandler   = Display -> ErrorEvent -> IO Int
+-- type ErrorHandler   = Display -> ErrorEvent -> IO CInt
 -- %dis errorHandler x = (stable x)
 --
--- type IOErrorHandler = Display ->                IO Int
+-- type IOErrorHandler = Display ->                IO CInt
 -- %dis ioErrorHandler x = (stable x)
 
 -- Sadly, this code doesn't work because hugs->runIO creates a fresh
@@ -451,10 +451,10 @@ newtype XErrorEvent = XErrorEvent (Ptr XErrorEvent)
 	deriving (Eq, Ord, Show)
 #endif
 
-type ErrorHandler = FunPtr (Display -> Ptr XErrorEvent -> IO Int)
+type ErrorHandler = FunPtr (Display -> Ptr XErrorEvent -> IO CInt)
 
 foreign import ccall unsafe "HsXlib.h &defaultErrorHandler"
-	defaultErrorHandler :: FunPtr (Display -> Ptr XErrorEvent -> IO Int)
+	defaultErrorHandler :: FunPtr (Display -> Ptr XErrorEvent -> IO CInt)
 
 -- | The Xlib library reports most errors by invoking a user-provided
 -- error handler.  This function installs an error handler that prints a
@@ -547,9 +547,9 @@ foreign import ccall unsafe "HsXlib.h XSetErrorHandler"
 ----------------------------------------------------------------
 
 -- | interface to the X11 library function @XGeometry()@.
-geometry :: Display -> Int -> String -> String ->
-		Dimension -> Dimension -> Dimension -> Int -> Int ->
-		IO (Int, Position, Position, Dimension, Dimension)
+geometry :: Display -> CInt -> String -> String ->
+		Dimension -> Dimension -> Dimension -> CInt -> CInt ->
+		IO (CInt, Position, Position, Dimension, Dimension)
 geometry display screen position default_position
 		bwidth fwidth fheight xadder yadder =
 	withCString position $ \ c_position ->
@@ -567,21 +567,21 @@ geometry display screen position default_position
 	height <- peek height_return
 	return (res, x, y, width, height)
 foreign import ccall unsafe "HsXlib.h XGeometry"
-	xGeometry :: Display -> Int -> CString -> CString ->
-		Dimension -> Dimension -> Dimension -> Int -> Int ->
+	xGeometry :: Display -> CInt -> CString -> CString ->
+		Dimension -> Dimension -> Dimension -> CInt -> CInt ->
 		Ptr Position -> Ptr Position ->
-		Ptr Dimension -> Ptr Dimension -> IO Int
+		Ptr Dimension -> Ptr Dimension -> IO CInt
 
 -- | interface to the X11 library function @XGetGeometry()@.
 getGeometry :: Display -> Drawable ->
-	IO (Window, Position, Position, Dimension, Dimension, Dimension, Int)
+	IO (Window, Position, Position, Dimension, Dimension, Dimension, CInt)
 getGeometry display d =
 	outParameters7 (throwIfZero "getGeometry") $
 		xGetGeometry display d
 foreign import ccall unsafe "HsXlib.h XGetGeometry"
 	xGetGeometry :: Display -> Drawable ->
 		Ptr Window -> Ptr Position -> Ptr Position -> Ptr Dimension ->
-		Ptr Dimension -> Ptr Dimension -> Ptr Int -> IO Status
+		Ptr Dimension -> Ptr Dimension -> Ptr CInt -> IO Status
 
 -- XParseGeometry omitted (returned bitset too weird)
 
@@ -606,36 +606,36 @@ foreign import ccall unsafe "HsXlib.h XSetLocaleModifiers"
 -- Screen Saver
 ----------------------------------------------------------------
 
-type AllowExposuresMode = Int
+type AllowExposuresMode = CInt
 #{enum AllowExposuresMode,
  , dontAllowExposures	= DontAllowExposures
  , allowExposures	= AllowExposures
  , defaultExposures	= DefaultExposures
  }
 
-type PreferBlankingMode = Int
+type PreferBlankingMode = CInt
 #{enum PreferBlankingMode,
  , dontPreferBlanking	= DontPreferBlanking
  , preferBlanking	= PreferBlanking
  , defaultBlanking	= DefaultBlanking
  }
 
-type ScreenSaverMode = Int
+type ScreenSaverMode = CInt
 #{enum ScreenSaverMode,
  , screenSaverActive	= ScreenSaverActive
  , screenSaverReset	= ScreenSaverReset
  }
 
 getScreenSaver :: Display ->
-	IO (Int, Int, PreferBlankingMode, AllowExposuresMode)
+	IO (CInt, CInt, PreferBlankingMode, AllowExposuresMode)
 getScreenSaver display = outParameters4 id (xGetScreenSaver display)
 foreign import ccall unsafe "HsXlib.h XGetScreenSaver"
-	xGetScreenSaver :: Display -> Ptr Int -> Ptr Int ->
+	xGetScreenSaver :: Display -> Ptr CInt -> Ptr CInt ->
 		Ptr PreferBlankingMode -> Ptr AllowExposuresMode -> IO ()
 
 -- | interface to the X11 library function @XSetScreenSaver()@.
 foreign import ccall unsafe "HsXlib.h XSetScreenSaver"
-	setScreenSaver      :: Display -> Int -> Int ->
+	setScreenSaver      :: Display -> CInt -> CInt ->
 		PreferBlankingMode -> AllowExposuresMode -> IO ()
 
 -- | interface to the X11 library function @XActivateScreenSaver()@.
@@ -655,10 +655,10 @@ foreign import ccall unsafe "HsXlib.h XForceScreenSaver"
 ----------------------------------------------------------------
 
 -- | interface to the X11 library function @XGetPointerControl()@.
-getPointerControl :: Display -> IO (Int, Int, Int)
+getPointerControl :: Display -> IO (CInt, CInt, CInt)
 getPointerControl display = outParameters3 id (xGetPointerControl display)
 foreign import ccall unsafe "HsXlib.h XGetPointerControl"
-	xGetPointerControl :: Display -> Ptr Int -> Ptr Int -> Ptr Int -> IO ()
+	xGetPointerControl :: Display -> Ptr CInt -> Ptr CInt -> Ptr CInt -> IO ()
 
 -- | interface to the X11 library function @XWarpPointer()@.
 foreign import ccall unsafe "HsXlib.h XWarpPointer"
@@ -699,7 +699,7 @@ foreign import ccall unsafe "HsXlib.h XLockDisplay"
 
 -- | interface to the X11 library function @XCreatePixmap()@.
 foreign import ccall unsafe "HsXlib.h XCreatePixmap"
-	createPixmap :: Display -> Drawable -> Dimension -> Dimension -> Int -> IO Pixmap
+	createPixmap :: Display -> Drawable -> Dimension -> Dimension -> CInt -> IO Pixmap
 
 -- | interface to the X11 library function @XFreePixmap()@.
 foreign import ccall unsafe "HsXlib.h XFreePixmap"
@@ -722,11 +722,11 @@ foreign import ccall unsafe "HsXlib.h XBitmapBitOrder"
 
 -- | interface to the X11 library function @XBitmapUnit()@.
 foreign import ccall unsafe "HsXlib.h XBitmapUnit"
-	bitmapUnit     :: Display -> Int
+	bitmapUnit     :: Display -> CInt
 
 -- | interface to the X11 library function @XBitmapPad()@.
 foreign import ccall unsafe "HsXlib.h XBitmapPad"
-	bitmapPad      :: Display -> Int
+	bitmapPad      :: Display -> CInt
 
 -- ToDo: make sure that initialisation works correctly for x/y_hot
 -- omitted
@@ -764,19 +764,19 @@ foreign import ccall unsafe "HsXlib.h XBitmapPad"
 ----------------------------------------------------------------
 
 -- | interface to the X11 library function @XDisplayKeycodes()@.
-displayKeycodes :: Display -> (Int,Int)
+displayKeycodes :: Display -> (CInt,CInt)
 displayKeycodes display =
 	unsafePerformIO $ outParameters2 id $ xDisplayKeycodes display
 foreign import ccall unsafe "HsXlib.h XDisplayKeycodes"
-	xDisplayKeycodes :: Display -> Ptr Int -> Ptr Int -> IO ()
+	xDisplayKeycodes :: Display -> Ptr CInt -> Ptr CInt -> IO ()
 
 -- | interface to the X11 library function @XLookupKeysym()@.
 foreign import ccall unsafe "HsXlib.h XLookupKeysym"
-	lookupKeysym    :: XKeyEventPtr -> Int -> IO KeySym
+	lookupKeysym    :: XKeyEventPtr -> CInt -> IO KeySym
 
 -- | interface to the X11 library function @XKeycodeToKeysym()@.
 foreign import ccall unsafe "HsXlib.h XKeycodeToKeysym"
-	keycodeToKeysym :: Display -> KeyCode -> Int -> IO KeySym
+	keycodeToKeysym :: Display -> KeyCode -> CInt -> IO KeySym
 
 -- | interface to the X11 library function @XKeysymToKeycode()@.
 foreign import ccall unsafe "HsXlib.h XKeysymToKeycode"
@@ -816,12 +816,12 @@ lookupString event_ptr =
 	allocaBytes 100 $ \ buf ->
 	alloca $ \ keysym_return -> do
 	n <- xLookupString event_ptr buf 100 keysym_return nullPtr
-	str <- peekCStringLen (buf, n)
+	str <- peekCStringLen (buf, fromIntegral n)
 	keysym <- peek keysym_return
 	return (if keysym == noSymbol then Nothing else Just keysym, str)
 foreign import ccall unsafe "HsXlib.h XLookupString"
-	xLookupString :: XKeyEventPtr -> CString -> Int ->
-		Ptr KeySym -> Ptr XComposeStatus -> IO Int
+	xLookupString :: XKeyEventPtr -> CString -> CInt ->
+		Ptr KeySym -> Ptr XComposeStatus -> IO CInt
 
 -- XQueryKeymap omitted
 -- XRebindKeysym omitted
@@ -926,9 +926,9 @@ foreign import ccall unsafe "HsXlib.h XRecolorCursor"
 setWMProtocols :: Display -> Window -> [Atom] -> IO ()
 setWMProtocols display w protocols =
 	withArray protocols $ \ protocol_array ->
-	xSetWMProtocols display w protocol_array (length protocols)
+	xSetWMProtocols display w protocol_array (fromIntegral $ length protocols)
 foreign import ccall unsafe "HsXlib.h XSetWMProtocols"
-	xSetWMProtocols :: Display -> Window -> Ptr Atom -> Int -> IO ()
+	xSetWMProtocols :: Display -> Window -> Ptr Atom -> CInt -> IO ()
 
 ----------------------------------------------------------------
 -- Set Window Attributes
@@ -998,9 +998,9 @@ foreign import ccall unsafe "HsXlib.h XDrawPoint"
 drawPoints :: Display -> Drawable -> GC -> [Point] -> CoordinateMode -> IO ()
 drawPoints display d gc points mode =
 	withArrayLen points $ \ npoints point_array ->
-	xDrawPoints display d gc point_array npoints mode
+	xDrawPoints display d gc point_array (fromIntegral npoints) mode
 foreign import ccall unsafe "HsXlib.h XDrawPoints"
-	xDrawPoints     :: Display -> Drawable -> GC -> Ptr Point -> Int ->
+	xDrawPoints     :: Display -> Drawable -> GC -> Ptr Point -> CInt ->
 				CoordinateMode -> IO ()
 
 -- | interface to the X11 library function @XDrawLine()@.
@@ -1012,18 +1012,18 @@ foreign import ccall unsafe "HsXlib.h XDrawLine"
 drawLines :: Display -> Drawable -> GC -> [Point] -> CoordinateMode -> IO ()
 drawLines display d gc points mode =
 	withArrayLen points $ \ npoints point_array ->
-	xDrawLines display d gc point_array npoints mode
+	xDrawLines display d gc point_array (fromIntegral npoints) mode
 foreign import ccall unsafe "HsXlib.h XDrawLines"
-	xDrawLines      :: Display -> Drawable -> GC -> Ptr Point -> Int ->
+	xDrawLines      :: Display -> Drawable -> GC -> Ptr Point -> CInt ->
 				CoordinateMode -> IO ()
 
 -- | interface to the X11 library function @XDrawSegments()@.
 drawSegments :: Display -> Drawable -> GC -> [Segment] -> IO ()
 drawSegments display d gc segments =
 	withArrayLen segments $ \ nsegments segment_array ->
-	xDrawSegments display d gc segment_array nsegments
+	xDrawSegments display d gc segment_array (fromIntegral nsegments)
 foreign import ccall unsafe "HsXlib.h XDrawSegments"
-	xDrawSegments   :: Display -> Drawable -> GC -> Ptr Segment -> Int -> IO ()
+	xDrawSegments   :: Display -> Drawable -> GC -> Ptr Segment -> CInt -> IO ()
 
 -- | interface to the X11 library function @XDrawRectangle()@.
 foreign import ccall unsafe "HsXlib.h XDrawRectangle"
@@ -1033,9 +1033,9 @@ foreign import ccall unsafe "HsXlib.h XDrawRectangle"
 drawRectangles :: Display -> Drawable -> GC -> [Rectangle] -> IO ()
 drawRectangles display d gc rectangles =
 	withArrayLen rectangles $ \ nrectangles rectangle_array ->
-	xDrawRectangles display d gc rectangle_array nrectangles
+	xDrawRectangles display d gc rectangle_array (fromIntegral nrectangles)
 foreign import ccall unsafe "HsXlib.h XDrawRectangles"
-	xDrawRectangles :: Display -> Drawable -> GC -> Ptr Rectangle -> Int -> IO ()
+	xDrawRectangles :: Display -> Drawable -> GC -> Ptr Rectangle -> CInt -> IO ()
 
 -- | interface to the X11 library function @XDrawArc()@.
 foreign import ccall unsafe "HsXlib.h XDrawArc"
@@ -1046,9 +1046,9 @@ foreign import ccall unsafe "HsXlib.h XDrawArc"
 drawArcs :: Display -> Drawable -> GC -> [Arc] -> IO ()
 drawArcs display d gc arcs =
 	withArrayLen arcs $ \ narcs arc_array ->
-	xDrawArcs display d gc arc_array narcs
+	xDrawArcs display d gc arc_array (fromIntegral narcs)
 foreign import ccall unsafe "HsXlib.h XDrawArcs"
-	xDrawArcs       :: Display -> Drawable -> GC -> Ptr Arc -> Int -> IO ()
+	xDrawArcs       :: Display -> Drawable -> GC -> Ptr Arc -> CInt -> IO ()
 
 -- | interface to the X11 library function @XFillRectangle()@.
 foreign import ccall unsafe "HsXlib.h XFillRectangle"
@@ -1059,17 +1059,17 @@ foreign import ccall unsafe "HsXlib.h XFillRectangle"
 fillRectangles :: Display -> Drawable -> GC -> [Rectangle] -> IO ()
 fillRectangles display d gc rectangles =
 	withArrayLen rectangles $ \ nrectangles rectangle_array ->
-	xFillRectangles display d gc rectangle_array nrectangles
+	xFillRectangles display d gc rectangle_array (fromIntegral nrectangles)
 foreign import ccall unsafe "HsXlib.h XFillRectangles"
-	xFillRectangles :: Display -> Drawable -> GC -> Ptr Rectangle -> Int -> IO ()
+	xFillRectangles :: Display -> Drawable -> GC -> Ptr Rectangle -> CInt -> IO ()
 
 -- | interface to the X11 library function @XFillPolygon()@.
 fillPolygon :: Display -> Drawable -> GC -> [Point] -> PolygonShape -> CoordinateMode -> IO ()
 fillPolygon display d gc points shape mode =
 	withArrayLen points $ \ npoints point_array ->
-	xFillPolygon display d gc point_array npoints shape mode
+	xFillPolygon display d gc point_array (fromIntegral npoints) shape mode
 foreign import ccall unsafe "HsXlib.h XFillPolygon"
-	xFillPolygon    :: Display -> Drawable -> GC -> Ptr Point -> Int -> PolygonShape -> CoordinateMode -> IO ()
+	xFillPolygon    :: Display -> Drawable -> GC -> Ptr Point -> CInt -> PolygonShape -> CoordinateMode -> IO ()
 
 -- | interface to the X11 library function @XFillArc()@.
 foreign import ccall unsafe "HsXlib.h XFillArc"
@@ -1080,9 +1080,9 @@ foreign import ccall unsafe "HsXlib.h XFillArc"
 fillArcs :: Display -> Drawable -> GC -> [Arc] -> IO ()
 fillArcs display d gc arcs =
 	withArrayLen arcs $ \ narcs arc_array ->
-	xFillArcs display d gc arc_array narcs
+	xFillArcs display d gc arc_array (fromIntegral narcs)
 foreign import ccall unsafe "HsXlib.h XFillArcs"
-	xFillArcs       :: Display -> Drawable -> GC -> Ptr Arc -> Int -> IO ()
+	xFillArcs       :: Display -> Drawable -> GC -> Ptr Arc -> CInt -> IO ()
 
 -- | interface to the X11 library function @XCopyArea()@.
 foreign import ccall unsafe "HsXlib.h XCopyArea"
@@ -1098,9 +1098,9 @@ foreign import ccall unsafe "HsXlib.h XCopyPlane"
 drawString :: Display -> Drawable -> GC -> Position -> Position -> String -> IO ()
 drawString display d gc x y str =
 	withCStringLen str $ \ (c_str, len) ->
-	xDrawString display d gc x y c_str len
+	xDrawString display d gc x y c_str (fromIntegral len)
 foreign import ccall unsafe "HsXlib.h XDrawString"
-	xDrawString     :: Display -> Drawable -> GC -> Position -> Position -> CString -> Int -> IO ()
+	xDrawString     :: Display -> Drawable -> GC -> Position -> Position -> CString -> CInt -> IO ()
 
 -- draw characters over a blank rectangle of current background colour
 
@@ -1108,9 +1108,9 @@ foreign import ccall unsafe "HsXlib.h XDrawString"
 drawImageString :: Display -> Drawable -> GC -> Position -> Position -> String -> IO ()
 drawImageString display d gc x y str =
 	withCStringLen str $ \ (c_str, len) ->
-	xDrawImageString display d gc x y c_str len
+	xDrawImageString display d gc x y c_str (fromIntegral len)
 foreign import ccall unsafe "HsXlib.h XDrawImageString"
-	xDrawImageString :: Display -> Drawable -> GC -> Position -> Position -> CString -> Int -> IO ()
+	xDrawImageString :: Display -> Drawable -> GC -> Position -> Position -> CString -> CInt -> IO ()
 
 -- XDrawString16 omitted (16bit chars not supported)
 -- XDrawImageString16 omitted (16bit chars not supported)
@@ -1122,35 +1122,35 @@ foreign import ccall unsafe "HsXlib.h XDrawImageString"
 ----------------------------------------------------------------
 
 -- | interface to the X11 library function @XStoreBuffer()@.
-storeBuffer :: Display -> String -> Int -> IO ()
+storeBuffer :: Display -> String -> CInt -> IO ()
 storeBuffer display bytes buffer =
 	withCStringLen bytes $ \ (c_bytes, nbytes) ->
 	throwIfZero "storeBuffer" $
-		xStoreBuffer display c_bytes nbytes buffer
+		xStoreBuffer display c_bytes (fromIntegral nbytes) buffer
 foreign import ccall unsafe "HsXlib.h XStoreBuffer"
-	xStoreBuffer :: Display -> CString -> Int -> Int -> IO Status
+	xStoreBuffer :: Display -> CString -> CInt -> CInt -> IO Status
 
 -- | interface to the X11 library function @XStoreBytes()@.
 storeBytes :: Display -> String -> IO ()
 storeBytes display bytes =
 	withCStringLen bytes $ \ (c_bytes, nbytes) ->
 	throwIfZero "storeBytes" $
-		xStoreBytes display c_bytes nbytes
+		xStoreBytes display c_bytes (fromIntegral nbytes)
 foreign import ccall unsafe "HsXlib.h XStoreBytes"
-	xStoreBytes :: Display -> CString -> Int -> IO Status
+	xStoreBytes :: Display -> CString -> CInt -> IO Status
 
 -- | interface to the X11 library function @XFetchBuffer()@.
-fetchBuffer :: Display -> Int -> IO String
+fetchBuffer :: Display -> CInt -> IO String
 fetchBuffer display buffer =
 	alloca $ \ nbytes_return -> do
 	c_bytes <- throwIfNull "fetchBuffer" $
 		xFetchBuffer display nbytes_return buffer
 	nbytes <- peek nbytes_return
-	bytes <- peekCStringLen (c_bytes, nbytes)
+	bytes <- peekCStringLen (c_bytes, (fromIntegral nbytes))
 	xFree c_bytes
 	return bytes
 foreign import ccall unsafe "HsXlib.h XFetchBuffer"
-	xFetchBuffer :: Display -> Ptr Int -> Int -> IO CString
+	xFetchBuffer :: Display -> Ptr CInt -> CInt -> IO CString
 
 -- | interface to the X11 library function @XFetchBytes()@.
 fetchBytes :: Display -> IO String
@@ -1159,19 +1159,19 @@ fetchBytes display =
 	c_bytes <- throwIfNull "fetchBytes" $
 		xFetchBytes display nbytes_return
 	nbytes <- peek nbytes_return
-	bytes <- peekCStringLen (c_bytes, nbytes)
+	bytes <- peekCStringLen (c_bytes, (fromIntegral nbytes))
 	xFree c_bytes
 	return bytes
 foreign import ccall unsafe "HsXlib.h XFetchBytes"
-	xFetchBytes :: Display -> Ptr Int -> IO CString
+	xFetchBytes :: Display -> Ptr CInt -> IO CString
 
 -- | interface to the X11 library function @XRotateBuffers()@.
-rotateBuffers :: Display -> Int -> IO ()
+rotateBuffers :: Display -> CInt -> IO ()
 rotateBuffers display rotate =
 	throwIfZero "rotateBuffers" $
 		xRotateBuffers display rotate
 foreign import ccall unsafe "HsXlib.h XRotateBuffers"
-	xRotateBuffers :: Display -> Int -> IO Status
+	xRotateBuffers :: Display -> CInt -> IO Status
 
 ----------------------------------------------------------------
 -- Window properties
@@ -1191,7 +1191,7 @@ setTextProperty display w value property =
 	allocaBytes #{size XTextProperty} $ \ text_prop -> do
 	#{poke XTextProperty,value} text_prop c_value
 	#{poke XTextProperty,encoding} text_prop sTRING
-	#{poke XTextProperty,format} text_prop (8::Int)
+	#{poke XTextProperty,format} text_prop (8::CInt)
 	#{poke XTextProperty,nitems} text_prop (fromIntegral value_len::Word32)
 	xSetTextProperty display w text_prop property
 foreign import ccall unsafe "HsXlib.h XSetTextProperty"

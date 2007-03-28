@@ -791,6 +791,7 @@ module Graphics.X11.Types
 import Data.Int
 import Data.Word
 import Foreign.Marshal.Error
+import Foreign.C.Types
 
 #include "HsXlib.h"
 
@@ -1308,7 +1309,7 @@ type Button		= Word32
  , button5		= Button5
  }
 
-type NotifyMode		= Int
+type NotifyMode		= CInt
 -- NotifyNormal and NotifyHint are used as detail in XMotionEvents
 #{enum NotifyMode,
  , notifyNormal		= NotifyNormal
@@ -1318,7 +1319,7 @@ type NotifyMode		= Int
  , notifyHint		= NotifyHint
  }
 
-type NotifyDetail	= Int
+type NotifyDetail	= CInt
 #{enum NotifyDetail,
  , notifyAncestor	= NotifyAncestor
  , notifyVirtual	= NotifyVirtual
@@ -1330,7 +1331,7 @@ type NotifyDetail	= Int
  , notifyDetailNone	= NotifyDetailNone
  }
 
-type Visibility = Int
+type Visibility = CInt
 #{enum Visibility,
  , visibilityUnobscured		= VisibilityUnobscured
  , visibilityPartiallyObscured	= VisibilityPartiallyObscured
@@ -1339,33 +1340,33 @@ type Visibility = Int
 
 -- | Place of window relative to siblings
 -- (used in Circulation requests or events)
-type Place = Int
+type Place = CInt
 #{enum Place,
  , placeOnTop		= PlaceOnTop
  , placeOnBottom	= PlaceOnBottom
  }
 
-type Protocol		= Int
+type Protocol		= CInt
 #{enum Protocol,
  , familyInternet	= FamilyInternet
  , familyDECnet		= FamilyDECnet
  , familyChaos		= FamilyChaos
  }
 
-type PropertyNotification = Int
+type PropertyNotification = CInt
 #{enum PropertyNotification,
  , propertyNewValue	= PropertyNewValue
  , propertyDelete	= PropertyDelete
  }
 
-type ColormapNotification = Int
+type ColormapNotification = CInt
 #{enum ColormapNotification,
  , colormapUninstalled	= ColormapUninstalled
  , colormapInstalled	= ColormapInstalled
  }
 
 -- Grab{Pointer,Button,Keyboard,Key} Modes
-type GrabMode		= Int
+type GrabMode		= CInt
 #{enum GrabMode,
  , grabModeSync		= GrabModeSync
  , grabModeAsync	= GrabModeAsync
@@ -1373,7 +1374,7 @@ type GrabMode		= Int
 
 -- Grab{Pointer,Keyboard} reply status
 
-type GrabStatus		= Int
+type GrabStatus		= CInt
 #{enum GrabStatus,
  , grabSuccess		= GrabSuccess
  , alreadyGrabbed	= AlreadyGrabbed
@@ -1383,7 +1384,7 @@ type GrabStatus		= Int
  }
 
 -- AllowEvents modes
-type AllowEvents	= Int
+type AllowEvents	= CInt
 #{enum AllowEvents,
  , asyncPointer		= AsyncPointer
  , syncPointer		= SyncPointer
@@ -1396,7 +1397,7 @@ type AllowEvents	= Int
  }
 
 -- {Set,Get}InputFocus Modes
-type FocusMode		= Int
+type FocusMode		= CInt
 #{enum FocusMode,
  , revertToNone		= RevertToNone
  , revertToPointerRoot	= RevertToPointerRoot
@@ -1404,7 +1405,7 @@ type FocusMode		= Int
  }
 
 -- Error codes
-type ErrorCode		= Int
+type ErrorCode		= CInt
 #{enum ErrorCode,
  , success		= Success
  , badRequest		= BadRequest
@@ -1428,14 +1429,14 @@ type ErrorCode		= Int
  , lastExtensionError	= LastExtensionError
  }
 
-type Status		= Int
+type Status		= CInt
 
 -- |Xlib functions with return values of type @Status@ return zero on
 -- failure and nonzero on success.
 throwIfZero :: String -> IO Status -> IO ()
 throwIfZero fn_name = throwIf_ (== 0) (const ("Error in function " ++ fn_name))
 
-type WindowClass	= Int
+type WindowClass	= CInt
 #{enum WindowClass,
  , copyFromParent	= CopyFromParent
  , inputOutput		= InputOutput
@@ -1463,7 +1464,7 @@ type AttributeMask	= Mask
  }
 
 -- Used in ChangeCloseDownMode
-type CloseDownMode	= Int
+type CloseDownMode	= CInt
 #{enum CloseDownMode,
  , destroyAll		= DestroyAll
  , retainPermanent	= RetainPermanent
@@ -1474,7 +1475,7 @@ type CloseDownMode	= Int
 -- CURSOR STUFF
 ----------------------------------------------------------------
 
-type QueryBestSizeClass = Int
+type QueryBestSizeClass = CInt
 #{enum QueryBestSizeClass,
  , cursorShape		= CursorShape
  , tileShape		= TileShape
@@ -1487,7 +1488,7 @@ type QueryBestSizeClass = Int
 
 -- graphics functions, as in GC.alu
 
-type   GXFunction	= Int
+type   GXFunction	= CInt
 #{enum GXFunction,
  , gXclear		= GXclear
  , gXand		= GXand
@@ -1507,14 +1508,14 @@ type   GXFunction	= Int
  , gXset		= GXset
  }
 
-type   LineStyle	= Int
+type   LineStyle	= CInt
 #{enum LineStyle,
  , lineSolid		= LineSolid
  , lineOnOffDash	= LineOnOffDash
  , lineDoubleDash	= LineDoubleDash
  }
 
-type   CapStyle		= Int
+type   CapStyle		= CInt
 #{enum CapStyle,
  , capNotLast		= CapNotLast
  , capButt		= CapButt
@@ -1522,14 +1523,14 @@ type   CapStyle		= Int
  , capProjecting	= CapProjecting
  }
 
-type   JoinStyle	= Int
+type   JoinStyle	= CInt
 #{enum JoinStyle,
  , joinMiter		= JoinMiter
  , joinRound		= JoinRound
  , joinBevel		= JoinBevel
  }
 
-type   FillStyle	= Int
+type   FillStyle	= CInt
 #{enum FillStyle,
  , fillSolid		= FillSolid
  , fillTiled		= FillTiled
@@ -1537,20 +1538,20 @@ type   FillStyle	= Int
  , fillOpaqueStippled	= FillOpaqueStippled
  }
 
-type   FillRule		= Int
+type   FillRule		= CInt
 #{enum FillRule,
  , evenOddRule		= EvenOddRule
  , windingRule		= WindingRule
  }
 
-type   SubWindowMode	= Int
+type   SubWindowMode	= CInt
 #{enum SubWindowMode,
  , clipByChildren	= ClipByChildren
  , includeInferiors	= IncludeInferiors
  }
 
 -- -- SetClipRectangles ordering
--- type   Ordering        = Int
+-- type   Ordering        = CInt
 -- {enum Ordering,
 -- , unsorted		= Unsorted
 -- , ySorted		= YSorted
@@ -1559,13 +1560,13 @@ type   SubWindowMode	= Int
 -- }
 
 -- CoordinateMode for drawing routines
-type   CoordinateMode	= Int
+type   CoordinateMode	= CInt
 #{enum CoordinateMode,
  , coordModeOrigin	= CoordModeOrigin
  , coordModePrevious	= CoordModePrevious
  }
 
-type   PolygonShape	= Int
+type   PolygonShape	= CInt
 #{enum PolygonShape,
  , complex		= Complex
  , nonconvex		= Nonconvex
@@ -1573,7 +1574,7 @@ type   PolygonShape	= Int
  }
 
 -- Arc modes for PolyFillArc
-type   ArcMode		= Int
+type   ArcMode		= CInt
 #{enum ArcMode,
  , arcChord		= ArcChord
  , arcPieSlice		= ArcPieSlice
@@ -1582,7 +1583,7 @@ type   ArcMode		= Int
 -- GC components: masks used in CreateGC, CopyGC, ChangeGC, OR'ed into
 -- GC.stateChanges
 
-type   GCMask		= Int
+type   GCMask		= CInt
 #{enum GCMask,
  , gCFunction		= GCFunction
  , gCPlaneMask		= GCPlaneMask
@@ -1610,39 +1611,39 @@ type   GCMask		= Int
  , gCLastBit		= GCLastBit
  }
 
-type   CirculationDirection = Int
+type   CirculationDirection = CInt
 #{enum CirculationDirection,
  , raiseLowest		= RaiseLowest
  , lowerHighest		= LowerHighest
  }
 
 -- used in imageByteOrder and bitmapBitOrder
-type   ByteOrder	= Int
+type   ByteOrder	= CInt
 #{enum ByteOrder,
  , lSBFirst		= LSBFirst
  , mSBFirst		= MSBFirst
  }
 
-type   ColormapAlloc	= Int
+type   ColormapAlloc	= CInt
 #{enum ColormapAlloc,
  , allocNone		= AllocNone
  , allocAll		= AllocAll
  }
 
-type   MappingRequest   = Int
+type   MappingRequest   = CInt
 #{enum MappingRequest,
  , mappingModifier	= MappingModifier
  , mappingKeyboard	= MappingKeyboard
  , mappingPointer	= MappingPointer
  }
 
-type   ChangeSaveSetMode = Int
+type   ChangeSaveSetMode = CInt
 #{enum ChangeSaveSetMode,
  , setModeInsert	= SetModeInsert
  , setModeDelete	= SetModeDelete
  }
 
-type   BitGravity	= Int
+type   BitGravity	= CInt
 #{enum BitGravity,
  , forgetGravity	= ForgetGravity
  , northWestGravity	= NorthWestGravity
@@ -1658,13 +1659,13 @@ type   BitGravity	= Int
  }
 
 -- All the BitGravity's plus ...
-type   WindowGravity   = Int
+type   WindowGravity   = CInt
 #{enum WindowGravity,
  , unmapGravity		= UnmapGravity
  }
 
 -- Used in CreateWindow for backing-store hint
-type   BackingStore	= Int
+type   BackingStore	= CInt
 #{enum BackingStore,
  , notUseful		= NotUseful
  , whenMapped		= WhenMapped
@@ -1677,13 +1678,13 @@ type   BackingStore	= Int
  , doBlue		= DoBlue
  }
 
-type   FontDirection    = Int
+type   FontDirection    = CInt
 #{enum FontDirection,
  , fontLeftToRight	= FontLeftToRight
  , fontRightToLeft	= FontRightToLeft
  }
 
-type   ImageFormat    = Int
+type   ImageFormat    = CInt
 #{enum ImageFormat,
  , xyBitmap	= XYBitmap
  , xyPixmap	= XYPixmap
