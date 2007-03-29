@@ -24,19 +24,20 @@ import Graphics.X11.Xlib.Types
 
 import Foreign
 import Foreign.C
+import Foreign.C.Types
 
 ----------------------------------------------------------------
 -- Image
 ----------------------------------------------------------------
 
 -- | interface to the X11 library function @XCreateImage()@.
-createImage :: Display -> Visual -> Int -> ImageFormat -> Int -> Ptr CChar -> Dimension -> Dimension -> Int -> Int -> IO Image
+createImage :: Display -> Visual -> CInt -> ImageFormat -> CInt -> Ptr CChar -> Dimension -> Dimension -> CInt -> CInt -> IO Image
 createImage display vis depth format offset dat width height bitmap_pad bytes_per_line = do
     image <- throwIfNull "createImage" (xCreateImage display vis depth format offset dat width height bitmap_pad bytes_per_line)
     return (Image image)
 foreign import ccall unsafe "HsXlib.h XCreateImage"
-    xCreateImage :: Display -> Visual -> Int -> ImageFormat -> Int -> 
-        Ptr CChar -> Dimension -> Dimension -> Int -> Int -> IO (Ptr Image)
+    xCreateImage :: Display -> Visual -> CInt -> ImageFormat -> CInt -> 
+        Ptr CChar -> Dimension -> Dimension -> CInt -> CInt -> IO (Ptr Image)
 
 -- | interface to the X11 library function @XPutImage()@.
 foreign import ccall unsafe "HsXlib.h XPutImage"

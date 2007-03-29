@@ -39,6 +39,7 @@ module Graphics.X11.Xlib.Screen(
 
 import Graphics.X11.Types
 import Graphics.X11.Xlib.Types
+import Foreign.C.Types
 
 ----------------------------------------------------------------
 -- Screen
@@ -56,7 +57,7 @@ foreign import ccall unsafe "HsXlib.h XWhitePixelOfScreen"
 
 -- | interface to the X11 library function @XCellsOfScreen()@.
 foreign import ccall unsafe "HsXlib.h XCellsOfScreen"
-	cellsOfScreen           :: Screen -> Int
+	cellsOfScreen           :: Screen -> CInt
 
 -- | interface to the X11 library function @XDefaultColormapOfScreen()@.
 foreign import ccall unsafe "HsXlib.h XDefaultColormapOfScreen"
@@ -64,7 +65,7 @@ foreign import ccall unsafe "HsXlib.h XDefaultColormapOfScreen"
 
 -- | interface to the X11 library function @XDefaultDepthOfScreen()@.
 foreign import ccall unsafe "HsXlib.h XDefaultDepthOfScreen"
-	defaultDepthOfScreen    :: Screen -> Int
+	defaultDepthOfScreen    :: Screen -> CInt
 
 -- | interface to the X11 library function @XDefaultGCOfScreen()@.
 foreign import ccall unsafe "HsXlib.h XDefaultGCOfScreen"
@@ -93,11 +94,11 @@ foreign import ccall unsafe "HsXlib.h XEventMaskOfScreen"
 
 -- | interface to the X11 library function @XMinCmapsOfScreen()@.
 foreign import ccall unsafe "HsXlib.h XMinCmapsOfScreen"
-	minCmapsOfScreen        :: Screen -> Int
+	minCmapsOfScreen        :: Screen -> CInt
 
 -- | interface to the X11 library function @XMaxCmapsOfScreen()@.
 foreign import ccall unsafe "HsXlib.h XMaxCmapsOfScreen"
-	maxCmapsOfScreen        :: Screen -> Int
+	maxCmapsOfScreen        :: Screen -> CInt
 
 -- | interface to the X11 library function @XRootWindowOfScreen()@.
 foreign import ccall unsafe "HsXlib.h XRootWindowOfScreen"
@@ -121,7 +122,7 @@ foreign import ccall unsafe "HsXlib.h XHeightMMOfScreen"
 
 -- | interface to the X11 library function @XPlanesOfScreen()@.
 foreign import ccall unsafe "HsXlib.h XPlanesOfScreen"
-	planesOfScreen          :: Screen -> Int
+	planesOfScreen          :: Screen -> CInt
 
 -- | interface to the X11 library function @XScreenNumberOfScreen()@.
 foreign import ccall unsafe "HsXlib.h XScreenNumberOfScreen"

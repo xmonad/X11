@@ -82,7 +82,7 @@ foreign import ccall unsafe "HsXlib.h XWhitePixel"
 
 -- | interface to the X11 library function @XConnectionNumber()@.
 foreign import ccall unsafe "HsXlib.h XConnectionNumber"
-	connectionNumber        :: Display -> Int
+	connectionNumber        :: Display -> CInt
 
 -- | interface to the X11 library function @XDefaultColormap()@.
 foreign import ccall unsafe "HsXlib.h XDefaultColormap"
@@ -96,7 +96,7 @@ foreign import ccall unsafe "HsXlib.h XDefaultGC"
 
 -- | interface to the X11 library function @XDefaultDepth()@.
 foreign import ccall unsafe "HsXlib.h XDefaultDepth"
-	defaultDepth            :: Display -> ScreenNumber -> Int
+	defaultDepth            :: Display -> ScreenNumber -> CInt
 
 -- | interface to the X11 library function @XDefaultScreen()@.
 foreign import ccall unsafe "HsXlib.h XDefaultScreen"
@@ -108,27 +108,27 @@ foreign import ccall unsafe "HsXlib.h XDefaultScreenOfDisplay"
 
 -- | interface to the X11 library function @XDisplayHeight()@.
 foreign import ccall unsafe "HsXlib.h XDisplayHeight"
-	displayHeight           :: Display -> ScreenNumber -> Int
+	displayHeight           :: Display -> ScreenNumber -> CInt
 
 -- | interface to the X11 library function @XDisplayHeightMM()@.
 foreign import ccall unsafe "HsXlib.h XDisplayHeightMM"
-	displayHeightMM         :: Display -> ScreenNumber -> Int
+	displayHeightMM         :: Display -> ScreenNumber -> CInt
 
 -- | interface to the X11 library function @XDisplayWidth()@.
 foreign import ccall unsafe "HsXlib.h XDisplayWidth"
-	displayWidth            :: Display -> ScreenNumber -> Int
+	displayWidth            :: Display -> ScreenNumber -> CInt
 
 -- | interface to the X11 library function @XDisplayWidthMM()@.
 foreign import ccall unsafe "HsXlib.h XDisplayWidthMM"
-	displayWidthMM          :: Display -> ScreenNumber -> Int
+	displayWidthMM          :: Display -> ScreenNumber -> CInt
 
 -- | interface to the X11 library function @XMaxRequestSize()@.
 foreign import ccall unsafe "HsXlib.h XMaxRequestSize"
-	maxRequestSize          :: Display -> Int
+	maxRequestSize          :: Display -> CInt
 
 -- | interface to the X11 library function @XDisplayMotionBufferSize()@.
 foreign import ccall unsafe "HsXlib.h XDisplayMotionBufferSize"
-	displayMotionBufferSize :: Display -> Int
+	displayMotionBufferSize :: Display -> CInt
 --Disnae exist in X11R5 	XExtendedMaxRequestSize :: Display -> Int
 
 -- | interface to the X11 library function @XResourceManagerString()@.
@@ -151,15 +151,15 @@ foreign import ccall unsafe "HsXlib.h XDisplayString"
 
 -- | interface to the X11 library function @XImageByteOrder()@.
 foreign import ccall unsafe "HsXlib.h XImageByteOrder"
-	imageByteOrder          :: Display -> Int
+	imageByteOrder          :: Display -> CInt
 
 -- | interface to the X11 library function @XProtocolRevision()@.
 foreign import ccall unsafe "HsXlib.h XProtocolRevision"
-	protocolRevision        :: Display -> Int
+	protocolRevision        :: Display -> CInt
 
 -- | interface to the X11 library function @XProtocolVersion()@.
 foreign import ccall unsafe "HsXlib.h XProtocolVersion"
-	protocolVersion         :: Display -> Int
+	protocolVersion         :: Display -> CInt
 
 -- | interface to the X11 library function @XServerVendor()@.
 serverVendor            :: Display -> String
@@ -171,7 +171,7 @@ foreign import ccall unsafe "HsXlib.h XServerVendor"
 
 -- | interface to the X11 library function @XScreenCount()@.
 foreign import ccall unsafe "HsXlib.h XScreenCount"
-	screenCount             :: Display -> Int
+	screenCount             :: Display -> CInt
 
 -- | interface to the X11 library function @XDefaultVisual()@.
 foreign import ccall unsafe "HsXlib.h XDefaultVisual"
@@ -179,11 +179,11 @@ foreign import ccall unsafe "HsXlib.h XDefaultVisual"
 
 -- | interface to the X11 library function @XDisplayCells()@.
 foreign import ccall unsafe "HsXlib.h XDisplayCells"
-	displayCells            :: Display -> ScreenNumber -> Int
+	displayCells            :: Display -> ScreenNumber -> CInt
 
 -- | interface to the X11 library function @XDisplayPlanes()@.
 foreign import ccall unsafe "HsXlib.h XDisplayPlanes"
-	displayPlanes           :: Display -> ScreenNumber -> Int
+	displayPlanes           :: Display -> ScreenNumber -> CInt
 
 -- | interface to the X11 library function @XScreenOfDisplay()@.
 foreign import ccall unsafe "HsXlib.h XScreenOfDisplay"
@@ -201,7 +201,7 @@ foreign import ccall unsafe "HsXlib.h XRootWindow"
 
 -- | interface to the X11 library function @XQLength()@.
 foreign import ccall unsafe "HsXlib.h XQLength"
-	qLength       	        :: Display -> IO Int
+	qLength       	        :: Display -> IO CInt
 
 -- | interface to the X11 library function @XNoOp()@.
 foreign import ccall unsafe "HsXlib.h XNoOp"

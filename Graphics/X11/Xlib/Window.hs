@@ -53,6 +53,7 @@ import Graphics.X11.Xlib.Types
 
 import Foreign
 import Foreign.C
+import Foreign.C.Types
 
 ----------------------------------------------------------------
 -- Windows
@@ -69,12 +70,12 @@ foreign import ccall unsafe "HsXlib.h XStoreName"
 -- | interface to the X11 library function @XCreateSimpleWindow()@.
 foreign import ccall unsafe "HsXlib.h XCreateSimpleWindow"
 	createSimpleWindow :: Display -> Window -> Position -> Position ->
-		Dimension -> Dimension -> Int -> Pixel -> Pixel -> IO Window
+		Dimension -> Dimension -> CInt -> Pixel -> Pixel -> IO Window
 
 -- | interface to the X11 library function @XCreateWindow()@.
 foreign import ccall unsafe "HsXlib.h XCreateWindow"
 	createWindow :: Display -> Window -> Position -> Position ->
-		Dimension -> Dimension -> Int -> Int -> WindowClass ->
+		Dimension -> Dimension -> CInt -> CInt -> WindowClass ->
 		Visual -> AttributeMask -> Ptr SetWindowAttributes -> IO Window
 
 ----------------------------------------------------------------
@@ -234,9 +235,9 @@ foreign import ccall unsafe "HsXlib.h XClearArea"
 restackWindows :: Display -> [Window] -> IO ()
 restackWindows display windows =
 	withArray windows $ \ window_array ->
-	xRestackWindows display window_array (length windows)
+	xRestackWindows display window_array (fromIntegral (length windows))
 foreign import ccall unsafe "HsXlib.h XRestackWindows"
-	xRestackWindows :: Display -> Ptr Window -> Int -> IO ()
+	xRestackWindows :: Display -> Ptr Window -> CInt -> IO ()
 
 -- ToDo: I want to be able to write this
 -- -- %fun XListInstalledColormaps :: Display -> Window -> IO ListColormap using res1 = XListInstalledColormaps(arg1,arg2,&res1_size)

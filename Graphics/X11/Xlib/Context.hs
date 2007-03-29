@@ -46,6 +46,7 @@ import Graphics.X11.Xlib.Types
 
 import Foreign
 import Foreign.C
+import Foreign.C.Types
 
 ----------------------------------------------------------------
 -- Graphics contexts
@@ -85,12 +86,12 @@ foreign import ccall unsafe "HsXlib.h XSetClipOrigin"
 -- array of rectangles
 
 -- | interface to the X11 library function @XSetDashes()@.
-setDashes            :: Display -> GC -> Int -> String -> Int  -> IO ()
+setDashes            :: Display -> GC -> CInt -> String -> CInt  -> IO ()
 setDashes display gc dash_offset dashes n =
 	withCString dashes $ \ dash_list ->
 	xSetDashes display gc dash_offset dash_list n
 foreign import ccall unsafe "HsXlib.h XSetDashes"
-	xSetDashes           :: Display -> GC -> Int -> CString -> Int -> IO ()
+	xSetDashes           :: Display -> GC -> CInt -> CString -> CInt -> IO ()
 
 -- | interface to the X11 library function @XSetFillRule()@.
 foreign import ccall unsafe "HsXlib.h XSetFillRule"
@@ -106,7 +107,7 @@ foreign import ccall unsafe "HsXlib.h XSetFont"
 
 -- | interface to the X11 library function @XSetLineAttributes()@.
 foreign import ccall unsafe "HsXlib.h XSetLineAttributes"
-	setLineAttributes    :: Display -> GC -> Int -> LineStyle ->
+	setLineAttributes    :: Display -> GC -> CInt -> LineStyle ->
 					CapStyle -> JoinStyle -> IO ()
 
 -- | interface to the X11 library function @XSetPlaneMask()@.

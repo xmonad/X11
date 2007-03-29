@@ -35,6 +35,7 @@ import Graphics.X11.Xlib.Types
 
 import Foreign
 import Foreign.C
+import Foreign.C.Types
 
 ----------------------------------------------------------------
 -- Color and Colormaps
@@ -103,9 +104,9 @@ foreign import ccall unsafe "HsXlib.h XParseColor"
 freeColors :: Display -> Colormap -> [Pixel] -> Pixel -> IO ()
 freeColors display colormap pixels planes =
 	withArray pixels $ \ pixel_array ->
-	xFreeColors display colormap pixel_array (length pixels) planes
+	xFreeColors display colormap pixel_array (fromIntegral (length pixels)) planes
 foreign import ccall unsafe "HsXlib.h XFreeColors"
-	xFreeColors :: Display -> Colormap -> Ptr Pixel -> Int -> Pixel -> IO ()
+	xFreeColors :: Display -> Colormap -> Ptr Pixel -> CInt -> Pixel -> IO ()
 
 -- | interface to the X11 library function @XStoreColor()@.
 storeColor :: Display -> Colormap -> Color -> IO ()
@@ -132,10 +133,10 @@ foreign import ccall unsafe "HsXlib.h XQueryColor"
 queryColors :: Display -> Colormap -> [Color] -> IO [Color]
 queryColors display colormap colors =
 	withArrayLen colors $ \ ncolors color_array -> do
-	xQueryColors display colormap color_array ncolors
+	xQueryColors display colormap color_array (fromIntegral ncolors)
 	peekArray ncolors color_array
 foreign import ccall unsafe "HsXlib.h XQueryColors"
-	xQueryColors :: Display -> Colormap -> Ptr Color -> Int -> IO ()
+	xQueryColors :: Display -> Colormap -> Ptr Color -> CInt -> IO ()
 
 -- | interface to the X11 library function @XInstallColormap()@.
 foreign import ccall unsafe "HsXlib.h XInstallColormap"
