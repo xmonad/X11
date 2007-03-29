@@ -1266,7 +1266,7 @@ type EventType		= Word32
  , lASTEvent		= LASTEvent
  }
 
-type Modifier		= Mask
+type Modifier		= CUInt
 #{enum Modifier,
  , shiftMapIndex	= ShiftMapIndex
  , lockMapIndex		= LockMapIndex

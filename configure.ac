@@ -45,11 +45,6 @@ if test "$X11_BUILD_PACKAGE" = yes; then
     [`echo '' $X_LIBS | sed -e 's/-[[^ ]]*/,"&"/g' -e 's/^ *,//'`],
     [Library flags for X11, as a list of string literals.])
 
-  AC_CHECK_SIZEOF([unsigned long])
-  if test "$ac_cv_sizeof_unsigned_long" = 8; then
-	  AC_SUBST(XSERVER64,["-D_XSERVER64"])
-  fi
-
 fi
 
 AC_CONFIG_FILES([config.mk X11.buildinfo])
