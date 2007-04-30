@@ -24,8 +24,7 @@ AC_TRY_CPP([#include <X11/Xlib.h>],,[no_x=yes])
 
 # Build the package if we found X11 stuff
 if test "$no_x" = yes; then
-  X11_BUILD_PACKAGE=no
-  BUILD_PACKAGE_BOOL=False
+  AC_MSG_FAILURE([X11 libraries not found, so X11 package cannot be built])
 else
   X11_BUILD_PACKAGE=yes
   BUILD_PACKAGE_BOOL=True
