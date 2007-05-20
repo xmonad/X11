@@ -44,7 +44,9 @@ removePrefix (x:xs) (y:ys)
 
 type Hook a = PackageDescription -> LocalBuildInfo -> UserHooks -> a -> IO ()
 
-add_ghc_options :: [String] -> Hook a -> Hook a
+-- We can't give a type signature as Cabal < 1.1.7 has Maybe UserHooks
+-- where we have UserHooks.
+-- add_ghc_options :: [String] -> Hook a -> Hook a
 add_ghc_options args f pd lbi uhs x
  = do let lib' = case library pd of
                      Just lib ->
