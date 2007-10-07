@@ -1,11 +1,11 @@
-name:		X11
-version:	1.2.2
-license:	BSD3
-license-file:	LICENSE
-copyright:	Alastair Reid, 1999-2003
-maintainer:	<libraries@haskell.org>
-category:	Graphics
-synopsis:	A binding to the X11 graphics library
+name:		        X11
+version:	        1.2.3
+license:	        BSD3
+license-file:	    LICENSE
+copyright:	        Alastair Reid, 1999-2003
+maintainer:	        <libraries@haskell.org>
+category:	        Graphics
+synopsis:	        A binding to the X11 graphics library
 description:	A Haskell binding to the X11 graphics library.
 	.
 	The binding is a direct translation of the C binding; for
@@ -37,10 +37,11 @@ exposed-modules:
 c-sources:
 	cbits/fdset.c,
 	cbits/auxiliaries.c
-extensions:	ForeignFunctionInterface, CPP
-extra-libraries: "X11"
-include-dirs:	include
-includes: HsXlib.h
-install-includes: HsXlib.h
-build-depends:	base
-ghc-options: -O2 -Wall
+extensions:	        ForeignFunctionInterface, CPP
+extra-libraries:    "X11"
+include-dirs:	    include
+includes:           HsXlib.h
+install-includes:   HsXlib.h
+build-depends:	    base
+build-type:         Configure
+ghc-options:        -O2 -Wall
