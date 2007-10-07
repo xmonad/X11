@@ -43,3 +43,4 @@ include-dirs:	include
 includes: HsXlib.h
 install-includes: HsXlib.h
 build-depends:	base
+ghc-options: -O2 -Wall
