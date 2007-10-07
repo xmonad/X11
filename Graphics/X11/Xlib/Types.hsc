@@ -141,7 +141,7 @@ pokeAngleField ptr off v =
 ----------------------------------------------------------------
 
 -- | counterpart of an X11 @XPoint@ structure
-data Point = Point { pt_x :: Position, pt_y :: Position }
+data Point = Point { pt_x :: !Position, pt_y :: !Position }
 #if __GLASGOW_HASKELL__
 	deriving (Eq, Show, Typeable, Data)
 #else
@@ -165,10 +165,10 @@ instance Storable Point where
 
 -- | counterpart of an X11 @XRectangle@ structure
 data Rectangle = Rectangle {
-	rect_x :: Position,
-	rect_y :: Position,
-	rect_width :: Dimension,
-	rect_height :: Dimension
+	rect_x      :: !Position,
+	rect_y      :: !Position,
+	rect_width  :: !Dimension,
+	rect_height :: !Dimension
 	}
 #if __GLASGOW_HASKELL__
 	deriving (Eq, Show, Typeable, Data)
