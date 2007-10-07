@@ -3,7 +3,7 @@ version:	        1.2.3
 license:	        BSD3
 license-file:	    LICENSE
 copyright:	        Alastair Reid, 1999-2003
-maintainer:	        <libraries@haskell.org>
+maintainer:	        Don Stewart <dons@galois.com
 category:	        Graphics
 synopsis:	        A binding to the X11 graphics library
 description:	A Haskell binding to the X11 graphics library.
