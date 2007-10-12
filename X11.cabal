@@ -44,4 +44,4 @@ includes:           HsXlib.h
 install-includes:   HsXlib.h
 build-depends:	    base
 build-type:         Configure
-ghc-options:        -O2 -Wall
+ghc-options:        -O2 -funbox-strict-fields -Wall
