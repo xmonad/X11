@@ -2,11 +2,11 @@ name:		        X11
 version:	        1.2.3
 license:	        BSD3
 license-file:	    LICENSE
-copyright:	        Alastair Reid, 1999-2003
+copyright:	        Alastair Reid, 1999-2003, libraries@haskell.org 2003-2007
 maintainer:	        Don Stewart <dons@galois.com
 category:	        Graphics
 synopsis:	        A binding to the X11 graphics library
-description:	A Haskell binding to the X11 graphics library.
+description:	    A Haskell binding to the X11 graphics library.
 	.
 	The binding is a direct translation of the C binding; for
 	documentation of these calls, refer to "The Xlib Programming
