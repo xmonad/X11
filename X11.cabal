@@ -14,7 +14,7 @@ description:	    A Haskell binding to the X11 graphics library.
 extra-source-files:
 	configure.ac configure
 	config.mk.in X11.buildinfo.in include/HsX11Config.h.in
-	include/HsXlib.h
+	include/HsXlib.h include/XlibExtras.h include/X11_extras_config.h.in
 extra-tmp-files:
 	config.log config.status autom4te.cache
 	config.mk X11.buildinfo include/HsX11Config.h
@@ -43,16 +43,9 @@ c-sources:
     cbits/XUtils.c
 extensions:	        ForeignFunctionInterface, CPP
 extra-libraries:    "X11"
-extra-source-files:
-    include/XlibExtras.h
-    include/X11_extras_config.h.in
-    configure.ac
-    configure
-    X11.buildinfo.in
 include-dirs:	    include
 includes:           HsXlib.h
-install-includes:   HsXlib.h,
-                    XlibExtras.h
+install-includes:   HsXlib.h, XlibExtras.h
 build-depends:	    base
 build-type:         Configure
 ghc-options:        -O2 -funbox-strict-fields -Wall
