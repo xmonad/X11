@@ -603,6 +603,7 @@ getEvent p = do
                                  return $ map fromIntegral (a::[Word16])
                         32 -> do a <- peekArray 5 datPtr
                                  return $ map fromIntegral (a::[Word32])
+                        _  -> error "X11.Extras.clientMessage: illegal value"
             return $ ClientMessageEvent
                         { ev_event_type    = type_
                         , ev_serial        = serial
@@ -1238,24 +1239,27 @@ foreign import ccall unsafe "XlibExtras.h XGetClassHint"
 -- These are the documented values for a window's "WM State", set, for example,
 -- in wmh_initial_state, below. Note, you may need to play games with
 -- fromIntegral and/or fromEnum.
-withdrawnState = #{const WithdrawnState} :: Int
-normalState    = #{const NormalState}    :: Int
-iconicState    = #{const IconicState}    :: Int
+withdrawnState,normalState, iconicState :: Int
+withdrawnState = #{const WithdrawnState}
+normalState    = #{const NormalState}
+iconicState    = #{const IconicState}
 
 -- The following values are the documented bit positions on XWMHints's flags field.
 -- Use testBit, setBit, and clearBit to manipulate the field.
-inputHintBit        = 0 :: Int
-stateHintBit        = 1 :: Int
-iconPixmapHintBit   = 2 :: Int
-iconWindowHintBit   = 3 :: Int
-iconPositionHintBit = 4 :: Int
-iconMaskHintBit     = 5 :: Int
-windowGroupHintBit  = 6 :: Int
-urgencyHintBit      = 8 :: Int
+inputHintBit,stateHintBit,iconPixmapHintBit,iconWindowHintBit,iconPositionHintBit,iconMaskHintBit,windowGroupHintBit,urgencyHintBit :: Int
+inputHintBit        = 0
+stateHintBit        = 1
+iconPixmapHintBit   = 2
+iconWindowHintBit   = 3
+iconPositionHintBit = 4
+iconMaskHintBit     = 5
+windowGroupHintBit  = 6
+urgencyHintBit      = 8
 
 -- The following bitmask tests for the presence of all bits except for the
 -- urgencyHintBit.
-allHintsBitmask    = #{const AllHints} :: CLong
+allHintsBitmask :: CLong
+allHintsBitmask    = #{const AllHints}
 
 data WMHints = WMHints
                  { wmh_flags         :: CLong
