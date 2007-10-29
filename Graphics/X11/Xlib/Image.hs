@@ -13,7 +13,7 @@
 -----------------------------------------------------------------------------
 
 module Graphics.X11.Xlib.Image(
-	Image,
+        Image,
         createImage,
         putImage,
         destroyImage,
@@ -23,7 +23,7 @@ import Graphics.X11.Types
 import Graphics.X11.Xlib.Types
 
 import Foreign
-import Foreign.C
+-- import Foreign.C
 import Foreign.C.Types
 
 ----------------------------------------------------------------

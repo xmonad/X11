@@ -24,7 +24,7 @@ module Graphics.X11.Xlib.Types(
 import Data.Int
 import Data.Word
 import Foreign.C.Types
-import Foreign.Marshal.Alloc( allocaBytes )
+-- import Foreign.Marshal.Alloc( allocaBytes )
 import Foreign.Ptr
 import Foreign.Storable( Storable(..) )
 
