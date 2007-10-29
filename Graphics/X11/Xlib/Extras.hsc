@@ -216,6 +216,7 @@ data Event
 
     deriving ( Show, Typeable )
 
+eventTable :: [(EventType, String)]
 eventTable =
     [ (keyPress             , "KeyPress")
     , (keyRelease           , "KeyRelease")
@@ -719,9 +720,9 @@ data WindowAttributes = WindowAttributes
 -- possible map_states'
 --
 waIsUnmapped, waIsUnviewable, waIsViewable :: CInt
-waIsUnmapped   = fromIntegral $ #{const IsUnmapped}     -- 0
-waIsUnviewable = fromIntegral $ #{const IsUnviewable}   -- 1
-waIsViewable   = fromIntegral $ #{const IsViewable}     -- 2
+waIsUnmapped   = fromIntegral ( #{const IsUnmapped}   :: CInt )  -- 0
+waIsUnviewable = fromIntegral ( #{const IsUnviewable} :: CInt )  -- 1
+waIsViewable   = fromIntegral ( #{const IsViewable}   :: CInt )  -- 2
 
 instance Storable WindowAttributes where
     -- this might be incorrect
@@ -747,13 +748,14 @@ instance Storable WindowAttributes where
 foreign import ccall unsafe "XlibExtras.h XGetWindowAttributes"
     xGetWindowAttributes :: Display -> Window -> Ptr (WindowAttributes) -> IO Status
 
+getWindowAttributes :: Display -> Window -> IO WindowAttributes
 getWindowAttributes d w = alloca $ \p -> do
     xGetWindowAttributes d w p
     peek p
 
 -- | interface to the X11 library function @XChangeWindowAttributes()@.
 foreign import ccall unsafe "XlibExtras.h XChangeWindowAttributes"
-	changeWindowAttributes :: Display -> Window -> AttributeMask -> Ptr SetWindowAttributes -> IO ()
+        changeWindowAttributes :: Display -> Window -> AttributeMask -> Ptr SetWindowAttributes -> IO ()
 
 -- | Run an action with the server
 withServer :: Display -> IO () -> IO ()
@@ -948,15 +950,15 @@ setEventType = #{poke XEvent,type}
 
 {-
 typedef struct {
-	int type;		/* SelectionNotify */
-	unsigned long serial;	/* # of last request processed by server */
-	Bool send_event;	/* true if this came from a SendEvent request */
-	Display *display;	/* Display the event was read from */
-	Window requestor;
-	Atom selection;
-	Atom target;
-	Atom property;		/* atom or None */
-	Time time;
+        int type;               /* SelectionNotify */
+        unsigned long serial;   /* # of last request processed by server */
+        Bool send_event;        /* true if this came from a SendEvent request */
+        Display *display;       /* Display the event was read from */
+        Window requestor;
+        Atom selection;
+        Atom target;
+        Atom property;          /* atom or None */
+        Time time;
 } XSelectionEvent;
 -}
 
@@ -983,7 +985,7 @@ setClientMessageEvent p window message_type format l_0_ l_1_ = do
     return ()
 
 setConfigureEvent :: XEventPtr -> Window -> Window -> CInt -> CInt -> CInt -> CInt -> CInt -> Window -> Bool -> IO ()
-setConfigureEvent p ev win x y w h bw abv or = do
+setConfigureEvent p ev win x y w h bw abv org = do
     #{poke XConfigureEvent, event            } p ev
     #{poke XConfigureEvent, window           } p win
     #{poke XConfigureEvent, x                } p x
@@ -992,7 +994,7 @@ setConfigureEvent p ev win x y w h bw abv or = do
     #{poke XConfigureEvent, height           } p h
     #{poke XConfigureEvent, border_width     } p bw
     #{poke XConfigureEvent, above            } p abv
-    #{poke XConfigureEvent, override_redirect} p (if or then 1 else 0 :: CInt)
+    #{poke XConfigureEvent, override_redirect} p (if org then 1 else 0 :: CInt)
 
 
 {-
@@ -1134,6 +1136,7 @@ data SizeHints = SizeHints
                    , sh_win_gravity  :: Maybe (BitGravity)
                    }
 
+pMinSizeBit, pMaxSizeBit, pResizeIncBit, pAspectBit, pBaseSizeBit, pWinGravityBit :: Int
 pMinSizeBit    = 4
 pMaxSizeBit    = 5
 pResizeIncBit  = 6
