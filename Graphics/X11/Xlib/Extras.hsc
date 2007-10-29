@@ -1293,16 +1293,16 @@ instance Storable WMHints where
         #{poke XWMHints, icon_mask}     p $ wmh_icon_mask     wmh
         #{poke XWMHints, window_group}  p $ wmh_window_group  wmh
 
-foreign import ccall unsafe "Xutils.h XGetWMHints"
+foreign import ccall unsafe "Xutil.h XGetWMHints"
     xGetWMHints :: Display -> Window -> IO (Ptr WMHints)
 
 getWMHints :: Display -> Window -> IO WMHints
 getWMHints dpy w = xGetWMHints dpy w >>= peek
 
-foreign import ccall unsafe "Xutils.h XAllocWMHints"
+foreign import ccall unsafe "Xutil.h XAllocWMHints"
     xAllocWMHints :: IO (Ptr WMHints)
 
-foreign import ccall unsafe "Xutils.h XSetWMHints"
+foreign import ccall unsafe "Xutil.h XSetWMHints"
     xSetWMHints :: Display -> Window -> Ptr WMHints -> IO Status
 
 setWMHints :: Display -> Window -> WMHints -> IO Status
