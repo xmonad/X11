@@ -1164,7 +1164,7 @@ instance Storable SizeHints where
       whenSet sh_resize_inc $ \(w, h) -> do
         pokeFlag pResizeIncBit
         #{poke XSizeHints, width_inc   } p w
-        #{poke XSizeHints, height_inc  } p w
+        #{poke XSizeHints, height_inc  } p h
       whenSet sh_aspect $ \((minx, miny), (maxx, maxy)) -> do
         pokeFlag pAspectBit
         #{poke XSizeHints, min_aspect.x} p minx
