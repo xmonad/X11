@@ -1,9 +1,9 @@
 name:		        X11
-version:	        1.2.3
+version:	        1.3.0
 license:	        BSD3
 license-file:	    LICENSE
 copyright:	        Alastair Reid, 1999-2003, libraries@haskell.org 2003-2007
-maintainer:	        Don Stewart <dons@galois.com
+maintainer:	        Don Stewart <dons@galois.com>
 category:	        Graphics
 synopsis:	        A binding to the X11 graphics library
 description:	    A Haskell binding to the X11 graphics library.
@@ -33,15 +33,26 @@ exposed-modules:
 	Graphics.X11.Xlib.Screen,
 	Graphics.X11.Xlib.Types,
 	Graphics.X11.Xlib.Window,
-	Graphics.X11.Xlib.Image
+	Graphics.X11.Xlib.Image,
+    Graphics.X11.Xlib.Extras,
+    Graphics.X11.Xinerama
 c-sources:
 	cbits/fdset.c,
-	cbits/auxiliaries.c
+	cbits/auxiliaries.c,
+    cbits/XUtils.c
 extensions:	        ForeignFunctionInterface, CPP
 extra-libraries:    "X11"
+extra-source-files:
+    include/XlibExtras.h
+    include/X11_extras_config.h.in
+    configure.ac
+    configure
+    X11.buildinfo.in
 include-dirs:	    include
 includes:           HsXlib.h
-install-includes:   HsXlib.h
+install-includes:   HsXlib.h,
+                    XlibExtras.h
+extra-tmp-files:    include/X11_extras_config.h X11.buildinfo config.log config.status autom4te.cache
 build-depends:	    base
 build-type:         Configure
 ghc-options:        -O2 -funbox-strict-fields -Wall

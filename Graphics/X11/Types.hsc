@@ -788,7 +788,7 @@ module Graphics.X11.Types
 	zPixmap
 	) where
 
-import Data.Int
+-- import Data.Int
 import Data.Word
 import Foreign.Marshal.Error
 import Foreign.C.Types

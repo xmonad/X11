@@ -20,7 +20,7 @@ module Graphics.X11.Xlib.Types(
 	Pixel, Position, Dimension, Angle, ScreenNumber, Buffer
         ) where
 
-import Control.Monad( zipWithM_ )
+-- import Control.Monad( zipWithM_ )
 import Data.Int
 import Data.Word
 import Foreign.C.Types

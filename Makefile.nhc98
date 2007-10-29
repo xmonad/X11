@@ -17,7 +17,10 @@ SRCS	= \
 	Graphics/X11/Xlib/Screen.hs \
 	Graphics/X11/Xlib/Types.hsc \
 	Graphics/X11/Xlib/Window.hs \
+    Graphics.X11.Xlib.Extras \
+    Graphics.X11.Xinerama \
 	fdset.c \
+    XUtils.c \
 	auxiliaries.c
 
 # Here are the main rules.

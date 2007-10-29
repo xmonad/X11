@@ -4,3 +4,4 @@
 buildable: @BUILD_PACKAGE_BOOL@
 cc-options: @X_CFLAGS@
 ld-options: @X_LIBS@
+@EXTRA_LIBRARIES@
