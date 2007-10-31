@@ -15,9 +15,9 @@
 
 -- #hide
 module Graphics.X11.Xlib.Types(
-	Display(..), Screen, Visual, GC, GCValues, SetWindowAttributes,
-	Image(..), Point(..), Rectangle(..), Arc(..), Segment(..), Color(..),
-	Pixel, Position, Dimension, Angle, ScreenNumber, Buffer
+        Display(..), Screen, Visual, GC, GCValues, SetWindowAttributes,
+        Image(..), Point(..), Rectangle(..), Arc(..), Segment(..), Color(..),
+        Pixel, Position, Dimension, Angle, ScreenNumber, Buffer
         ) where
 
 -- import Control.Monad( zipWithM_ )
@@ -41,57 +41,57 @@ import Data.Generics
 -- | pointer to an X11 @Display@ structure
 newtype Display    = Display    (Ptr Display)
 #if __GLASGOW_HASKELL__
-	deriving (Eq, Ord, Show, Typeable, Data)
+        deriving (Eq, Ord, Show, Typeable, Data)
 #else
-	deriving (Eq, Ord, Show)
+        deriving (Eq, Ord, Show)
 #endif
 
 -- | pointer to an X11 @Screen@ structure
 newtype Screen     = Screen     (Ptr Screen)
 #if __GLASGOW_HASKELL__
-	deriving (Eq, Ord, Show, Typeable, Data)
+        deriving (Eq, Ord, Show, Typeable, Data)
 #else
-	deriving (Eq, Ord, Show)
+        deriving (Eq, Ord, Show)
 #endif
 
 -- | pointer to an X11 @Visual@ structure
 newtype Visual     = Visual     (Ptr Visual)
 #if __GLASGOW_HASKELL__
-	deriving (Eq, Ord, Show, Typeable, Data)
+        deriving (Eq, Ord, Show, Typeable, Data)
 #else
-	deriving (Eq, Ord, Show)
+        deriving (Eq, Ord, Show)
 #endif
 
 -- | pointer to an X11 @GC@ structure
 newtype GC         = GC         (Ptr GC)
 #if __GLASGOW_HASKELL__
-	deriving (Eq, Ord, Show, Typeable, Data)
+        deriving (Eq, Ord, Show, Typeable, Data)
 #else
-	deriving (Eq, Ord, Show)
+        deriving (Eq, Ord, Show)
 #endif
 
 -- | pointer to an X11 @XGCValues@ structure
 newtype GCValues   = GCValues  (Ptr GCValues)
 #if __GLASGOW_HASKELL__
-	deriving (Eq, Ord, Show, Typeable, Data)
+        deriving (Eq, Ord, Show, Typeable, Data)
 #else
-	deriving (Eq, Ord, Show)
+        deriving (Eq, Ord, Show)
 #endif
 
 -- | pointer to an X11 @XSetWindowAttributes@ structure
 newtype SetWindowAttributes = SetWindowAttributes (Ptr SetWindowAttributes)
 #if __GLASGOW_HASKELL__
-	deriving (Eq, Ord, Show, Typeable, Data)
+        deriving (Eq, Ord, Show, Typeable, Data)
 #else
-	deriving (Eq, Ord, Show)
+        deriving (Eq, Ord, Show)
 #endif
 
 -- | pointer to an X11 @XImage@ structure
 newtype Image    = Image    (Ptr Image)
 #if __GLASGOW_HASKELL__
-	deriving (Eq, Ord, Show, Typeable, Data)
+        deriving (Eq, Ord, Show, Typeable, Data)
 #else
-	deriving (Eq, Ord, Show)
+        deriving (Eq, Ord, Show)
 #endif
 
 type Pixel         = #{type unsigned long}
@@ -111,30 +111,30 @@ type ShortAngle    = CShort
 
 peekPositionField :: Ptr a -> CInt -> IO Position
 peekPositionField ptr off = do
-	v <- peekByteOff ptr (fromIntegral off)
-	return (fromIntegral (v::ShortPosition))
+        v <- peekByteOff ptr (fromIntegral off)
+        return (fromIntegral (v::ShortPosition))
 
 peekDimensionField :: Ptr a -> CInt -> IO Dimension
 peekDimensionField ptr off = do
-	v <- peekByteOff ptr (fromIntegral off)
-	return (fromIntegral (v::ShortDimension))
+        v <- peekByteOff ptr (fromIntegral off)
+        return (fromIntegral (v::ShortDimension))
 
 peekAngleField :: Ptr a -> CInt -> IO Angle
 peekAngleField ptr off = do
-	v <- peekByteOff ptr (fromIntegral off)
-	return (fromIntegral (v::ShortAngle))
+        v <- peekByteOff ptr (fromIntegral off)
+        return (fromIntegral (v::ShortAngle))
 
 pokePositionField :: Ptr a -> CInt -> Position -> IO ()
 pokePositionField ptr off v =
-	pokeByteOff ptr (fromIntegral off) (fromIntegral v::ShortPosition)
+        pokeByteOff ptr (fromIntegral off) (fromIntegral v::ShortPosition)
 
 pokeDimensionField :: Ptr a -> CInt -> Dimension -> IO ()
 pokeDimensionField ptr off v =
-	pokeByteOff ptr (fromIntegral off) (fromIntegral v::ShortDimension)
+        pokeByteOff ptr (fromIntegral off) (fromIntegral v::ShortDimension)
 
 pokeAngleField :: Ptr a -> CInt -> Angle -> IO ()
 pokeAngleField ptr off v =
-	pokeByteOff ptr (fromIntegral off) (fromIntegral v::ShortAngle)
+        pokeByteOff ptr (fromIntegral off) (fromIntegral v::ShortAngle)
 
 ----------------------------------------------------------------
 -- Point
@@ -143,21 +143,21 @@ pokeAngleField ptr off v =
 -- | counterpart of an X11 @XPoint@ structure
 data Point = Point { pt_x :: !Position, pt_y :: !Position }
 #if __GLASGOW_HASKELL__
-	deriving (Eq, Show, Typeable, Data)
+        deriving (Eq, Show, Typeable, Data)
 #else
-	deriving (Eq, Show)
+        deriving (Eq, Show)
 #endif
 
 instance Storable Point where
-	sizeOf _ = #{size XPoint}
-	alignment _ = alignment (undefined::CInt)
-	peek p = do
-		x <- peekPositionField p #{offset XPoint,x}
-		y <- peekPositionField p #{offset XPoint,y}
-		return (Point x y)
-	poke p (Point x y) = do
-		pokePositionField p #{offset XPoint,x} x
-		pokePositionField p #{offset XPoint,y} y
+        sizeOf _ = #{size XPoint}
+        alignment _ = alignment (undefined::CInt)
+        peek p = do
+                x <- peekPositionField p #{offset XPoint,x}
+                y <- peekPositionField p #{offset XPoint,y}
+                return (Point x y)
+        poke p (Point x y) = do
+                pokePositionField p #{offset XPoint,x} x
+                pokePositionField p #{offset XPoint,y} y
 
 ----------------------------------------------------------------
 -- Rectangle
@@ -165,31 +165,31 @@ instance Storable Point where
 
 -- | counterpart of an X11 @XRectangle@ structure
 data Rectangle = Rectangle {
-	rect_x      :: !Position,
-	rect_y      :: !Position,
-	rect_width  :: !Dimension,
-	rect_height :: !Dimension
-	}
+        rect_x      :: !Position,
+        rect_y      :: !Position,
+        rect_width  :: !Dimension,
+        rect_height :: !Dimension
+        }
 #if __GLASGOW_HASKELL__
-	deriving (Eq, Show, Typeable, Data)
+        deriving (Eq, Show, Typeable, Data)
 #else
-	deriving (Eq, Show)
+        deriving (Eq, Show)
 #endif
 
 instance Storable Rectangle where
-	sizeOf _ = #{size XRectangle}
-	alignment _ = alignment (undefined::CInt)
-	peek p = do
-		x	<- peekPositionField p #{offset XRectangle,x}
-		y	<- peekPositionField p #{offset XRectangle,y}
-		width	<- peekDimensionField p #{offset XRectangle,width}
-		height	<- peekDimensionField p #{offset XRectangle,height}
-		return (Rectangle x y width height)
-	poke p (Rectangle x y width height) = do
-		pokePositionField p #{offset XRectangle,x} x
-		pokePositionField p #{offset XRectangle,y} y
-		pokeDimensionField p #{offset XRectangle,width} width
-		pokeDimensionField p #{offset XRectangle,height} height
+        sizeOf _ = #{size XRectangle}
+        alignment _ = alignment (undefined::CInt)
+        peek p = do
+                x       <- peekPositionField p #{offset XRectangle,x}
+                y       <- peekPositionField p #{offset XRectangle,y}
+                width   <- peekDimensionField p #{offset XRectangle,width}
+                height  <- peekDimensionField p #{offset XRectangle,height}
+                return (Rectangle x y width height)
+        poke p (Rectangle x y width height) = do
+                pokePositionField p #{offset XRectangle,x} x
+                pokePositionField p #{offset XRectangle,y} y
+                pokeDimensionField p #{offset XRectangle,width} width
+                pokeDimensionField p #{offset XRectangle,height} height
 
 ----------------------------------------------------------------
 -- Arc
@@ -197,37 +197,37 @@ instance Storable Rectangle where
 
 -- | counterpart of an X11 @XArc@ structure
 data Arc = Arc {
-	arc_x :: Position,
-	arc_y :: Position,
-	arc_width :: Dimension,
-	arc_height :: Dimension,
-	arc_angle1 :: Angle,
-	arc_angle2 :: Angle
-	}
+        arc_x :: Position,
+        arc_y :: Position,
+        arc_width :: Dimension,
+        arc_height :: Dimension,
+        arc_angle1 :: Angle,
+        arc_angle2 :: Angle
+        }
 #if __GLASGOW_HASKELL__
-	deriving (Eq, Show, Typeable)
+        deriving (Eq, Show, Typeable)
 #else
-	deriving (Eq, Show)
+        deriving (Eq, Show)
 #endif
 
 instance Storable Arc where
-	sizeOf _ = #{size XArc}
-	alignment _ = alignment (undefined::CInt)
-	peek p = do
-		x	<- peekPositionField p #{offset XArc,x}
-		y	<- peekPositionField p #{offset XArc,y}
-		width	<- peekDimensionField p #{offset XArc,width}
-		height	<- peekDimensionField p #{offset XArc,height}
-		angle1	<- peekAngleField p #{offset XArc,angle1}
-		angle2	<- peekAngleField p #{offset XArc,angle2}
-		return (Arc x y width height angle1 angle2)
-	poke p (Arc x y width height angle1 angle2) = do
-		pokePositionField p #{offset XArc,x} x
-		pokePositionField p #{offset XArc,y} y
-		pokeDimensionField p #{offset XArc,width} width
-		pokeDimensionField p #{offset XArc,height} height
-		pokeAngleField p #{offset XArc,angle1} angle1
-		pokeAngleField p #{offset XArc,angle2} angle2
+        sizeOf _ = #{size XArc}
+        alignment _ = alignment (undefined::CInt)
+        peek p = do
+                x       <- peekPositionField p #{offset XArc,x}
+                y       <- peekPositionField p #{offset XArc,y}
+                width   <- peekDimensionField p #{offset XArc,width}
+                height  <- peekDimensionField p #{offset XArc,height}
+                angle1  <- peekAngleField p #{offset XArc,angle1}
+                angle2  <- peekAngleField p #{offset XArc,angle2}
+                return (Arc x y width height angle1 angle2)
+        poke p (Arc x y width height angle1 angle2) = do
+                pokePositionField p #{offset XArc,x} x
+                pokePositionField p #{offset XArc,y} y
+                pokeDimensionField p #{offset XArc,width} width
+                pokeDimensionField p #{offset XArc,height} height
+                pokeAngleField p #{offset XArc,angle1} angle1
+                pokeAngleField p #{offset XArc,angle2} angle2
 
 ----------------------------------------------------------------
 -- Segment
@@ -235,31 +235,31 @@ instance Storable Arc where
 
 -- | counterpart of an X11 @XSegment@ structure
 data Segment = Segment {
-	seg_x1 :: Position,
-	seg_y1 :: Position,
-	seg_x2 :: Position,
-	seg_y2 :: Position
-	}
+        seg_x1 :: Position,
+        seg_y1 :: Position,
+        seg_x2 :: Position,
+        seg_y2 :: Position
+        }
 #if __GLASGOW_HASKELL__
-	deriving (Eq, Show, Typeable, Data)
+        deriving (Eq, Show, Typeable, Data)
 #else
-	deriving (Eq, Show)
+        deriving (Eq, Show)
 #endif
 
 instance Storable Segment where
-	sizeOf _ = #{size XSegment}
-	alignment _ = alignment (undefined::CInt)
-	peek p = do
-		x1 <- peekPositionField p #{offset XSegment,x1}
-		y1 <- peekPositionField p #{offset XSegment,y1}
-		x2 <- peekPositionField p #{offset XSegment,x2}
-		y2 <- peekPositionField p #{offset XSegment,y2}
-		return (Segment x1 y1 x2 y2)
-	poke p (Segment x1 y1 x2 y2) = do
-		pokePositionField p #{offset XSegment,x1} x1
-		pokePositionField p #{offset XSegment,y1} y1
-		pokePositionField p #{offset XSegment,x2} x2
-		pokePositionField p #{offset XSegment,y2} y2
+        sizeOf _ = #{size XSegment}
+        alignment _ = alignment (undefined::CInt)
+        peek p = do
+                x1 <- peekPositionField p #{offset XSegment,x1}
+                y1 <- peekPositionField p #{offset XSegment,y1}
+                x2 <- peekPositionField p #{offset XSegment,x2}
+                y2 <- peekPositionField p #{offset XSegment,y2}
+                return (Segment x1 y1 x2 y2)
+        poke p (Segment x1 y1 x2 y2) = do
+                pokePositionField p #{offset XSegment,x1} x1
+                pokePositionField p #{offset XSegment,y1} y1
+                pokePositionField p #{offset XSegment,x2} x2
+                pokePositionField p #{offset XSegment,y2} y2
 
 ----------------------------------------------------------------
 -- Color
@@ -267,34 +267,34 @@ instance Storable Segment where
 
 -- | counterpart of an X11 @XColor@ structure
 data Color = Color {
-	color_pixel :: Pixel,
-	color_red :: Word16,
-	color_green :: Word16,
-	color_blue :: Word16,
-	color_flags :: Word8
-	}
+        color_pixel :: Pixel,
+        color_red :: Word16,
+        color_green :: Word16,
+        color_blue :: Word16,
+        color_flags :: Word8
+        }
 #if __GLASGOW_HASKELL__
-	deriving (Eq, Show, Typeable, Data)
+        deriving (Eq, Show, Typeable, Data)
 #else
-	deriving (Eq, Show)
+        deriving (Eq, Show)
 #endif
 
 instance Storable Color where
-	sizeOf _ = #{size XColor}
-	alignment _ = alignment (undefined::CInt)
-	peek p = do
-		pixel	<- #{peek XColor,pixel}	p
-		red	<- #{peek XColor,red}	p
-		green	<- #{peek XColor,green}	p
-		blue	<- #{peek XColor,blue}	p
-		flags	<- #{peek XColor,flags}	p
-		return (Color pixel red green blue flags)
-	poke p (Color pixel red green blue flags) = do
-		#{poke XColor,pixel}	p pixel
-		#{poke XColor,red}	p red
-		#{poke XColor,green}	p green
-		#{poke XColor,blue}	p blue
-		#{poke XColor,flags}	p flags
+        sizeOf _ = #{size XColor}
+        alignment _ = alignment (undefined::CInt)
+        peek p = do
+                pixel   <- #{peek XColor,pixel} p
+                red     <- #{peek XColor,red}   p
+                green   <- #{peek XColor,green} p
+                blue    <- #{peek XColor,blue}  p
+                flags   <- #{peek XColor,flags} p
+                return (Color pixel red green blue flags)
+        poke p (Color pixel red green blue flags) = do
+                #{poke XColor,pixel}    p pixel
+                #{poke XColor,red}      p red
+                #{poke XColor,green}    p green
+                #{poke XColor,blue}     p blue
+                #{poke XColor,flags}    p flags
 
 ----------------------------------------------------------------
 -- End

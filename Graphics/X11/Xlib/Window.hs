@@ -62,21 +62,21 @@ import Foreign.C.Types
 -- | interface to the X11 library function @XStoreName()@.
 storeName :: Display -> Window -> String -> IO ()
 storeName display window name =
-	withCString name $ \ c_name ->
-	xStoreName display window c_name
+        withCString name $ \ c_name ->
+        xStoreName display window c_name
 foreign import ccall unsafe "HsXlib.h XStoreName"
-	xStoreName :: Display -> Window -> CString -> IO ()
+        xStoreName :: Display -> Window -> CString -> IO ()
 
 -- | interface to the X11 library function @XCreateSimpleWindow()@.
 foreign import ccall unsafe "HsXlib.h XCreateSimpleWindow"
-	createSimpleWindow :: Display -> Window -> Position -> Position ->
-		Dimension -> Dimension -> CInt -> Pixel -> Pixel -> IO Window
+        createSimpleWindow :: Display -> Window -> Position -> Position ->
+                Dimension -> Dimension -> CInt -> Pixel -> Pixel -> IO Window
 
 -- | interface to the X11 library function @XCreateWindow()@.
 foreign import ccall unsafe "HsXlib.h XCreateWindow"
-	createWindow :: Display -> Window -> Position -> Position ->
-		Dimension -> Dimension -> CInt -> CInt -> WindowClass ->
-		Visual -> AttributeMask -> Ptr SetWindowAttributes -> IO Window
+        createWindow :: Display -> Window -> Position -> Position ->
+                Dimension -> Dimension -> CInt -> CInt -> WindowClass ->
+                Visual -> AttributeMask -> Ptr SetWindowAttributes -> IO Window
 
 ----------------------------------------------------------------
 
@@ -84,140 +84,140 @@ foreign import ccall unsafe "HsXlib.h XCreateWindow"
 
 -- | interface to the X11 library function @XTranslateCoordinates()@.
 translateCoordinates :: Display -> Window -> Window -> Position -> Position ->
-	IO (Bool,Position,Position,Window)
+        IO (Bool,Position,Position,Window)
 translateCoordinates display src_w dest_w src_x src_y =
-	alloca $ \ dest_x_return ->
-	alloca $ \ dest_y_return ->
-	alloca $ \ child_return -> do
-	res <- xTranslateCoordinates display src_w dest_w src_x src_y
-			dest_x_return dest_y_return child_return
-	dest_x <- peek dest_x_return
-	dest_y <- peek dest_y_return
-	child  <- peek child_return
-	return (res, dest_x, dest_y, child)
+        alloca $ \ dest_x_return ->
+        alloca $ \ dest_y_return ->
+        alloca $ \ child_return -> do
+        res <- xTranslateCoordinates display src_w dest_w src_x src_y
+                        dest_x_return dest_y_return child_return
+        dest_x <- peek dest_x_return
+        dest_y <- peek dest_y_return
+        child  <- peek child_return
+        return (res, dest_x, dest_y, child)
 foreign import ccall unsafe "HsXlib.h XTranslateCoordinates"
-	xTranslateCoordinates :: Display -> Window -> Window ->
-		Position -> Position ->
-		Ptr Position -> Ptr Position -> Ptr Window -> IO Bool
+        xTranslateCoordinates :: Display -> Window -> Window ->
+                Position -> Position ->
+                Ptr Position -> Ptr Position -> Ptr Window -> IO Bool
 
 -- | interface to the X11 library function @XMoveResizeWindow()@.
 foreign import ccall unsafe "HsXlib.h XMoveResizeWindow"
-	moveResizeWindow             :: Display -> Window -> Position  -> Position  -> Dimension -> Dimension -> IO ()
+        moveResizeWindow             :: Display -> Window -> Position  -> Position  -> Dimension -> Dimension -> IO ()
 
 -- | interface to the X11 library function @XResizeWindow()@.
 foreign import ccall unsafe "HsXlib.h XResizeWindow"
-	resizeWindow                 :: Display -> Window -> Dimension -> Dimension -> IO ()
+        resizeWindow                 :: Display -> Window -> Dimension -> Dimension -> IO ()
 
 -- | interface to the X11 library function @XMoveWindow()@.
 foreign import ccall unsafe "HsXlib.h XMoveWindow"
-	moveWindow                   :: Display -> Window -> Position  -> Position  -> IO ()
+        moveWindow                   :: Display -> Window -> Position  -> Position  -> IO ()
 
 -- | interface to the X11 library function @XReparentWindow()@.
 foreign import ccall unsafe "HsXlib.h XReparentWindow"
-	reparentWindow               :: Display -> Window -> Window -> Position -> Position  -> IO ()
+        reparentWindow               :: Display -> Window -> Window -> Position -> Position  -> IO ()
 
 -- | interface to the X11 library function @XMapSubwindows()@.
 foreign import ccall unsafe "HsXlib.h XMapSubwindows"
-	mapSubwindows                :: Display -> Window -> IO ()
+        mapSubwindows                :: Display -> Window -> IO ()
 
 -- | interface to the X11 library function @XUnmapSubwindows()@.
 foreign import ccall unsafe "HsXlib.h XUnmapSubwindows"
-	unmapSubwindows              :: Display -> Window -> IO ()
+        unmapSubwindows              :: Display -> Window -> IO ()
 
 -- | interface to the X11 library function @XMapWindow()@.
 foreign import ccall unsafe "HsXlib.h XMapWindow"
-	mapWindow                    :: Display -> Window -> IO ()
+        mapWindow                    :: Display -> Window -> IO ()
 -- Disnae exist: %fun XUnmapWindows                :: Display -> Window -> IO ()
 -- Disnae exist: %fun XMapRaisedWindow             :: Display -> Window -> IO ()
 
 -- | interface to the X11 library function @XLowerWindow()@.
 foreign import ccall unsafe "HsXlib.h XLowerWindow"
-	lowerWindow                  :: Display -> Window -> IO ()
+        lowerWindow                  :: Display -> Window -> IO ()
 
 -- | interface to the X11 library function @XRaiseWindow()@.
 foreign import ccall unsafe "HsXlib.h XRaiseWindow"
-	raiseWindow                  :: Display -> Window -> IO ()
+        raiseWindow                  :: Display -> Window -> IO ()
 
 -- | interface to the X11 library function @XCirculateSubwindowsDown()@.
 foreign import ccall unsafe "HsXlib.h XCirculateSubwindowsDown"
-	circulateSubwindowsDown      :: Display -> Window -> IO ()
+        circulateSubwindowsDown      :: Display -> Window -> IO ()
 
 -- | interface to the X11 library function @XCirculateSubwindowsUp()@.
 foreign import ccall unsafe "HsXlib.h XCirculateSubwindowsUp"
-	circulateSubwindowsUp        :: Display -> Window -> IO ()
+        circulateSubwindowsUp        :: Display -> Window -> IO ()
 
 -- | interface to the X11 library function @XCirculateSubwindows()@.
 foreign import ccall unsafe "HsXlib.h XCirculateSubwindows"
-	circulateSubwindows          :: Display -> Window -> CirculationDirection -> IO ()
+        circulateSubwindows          :: Display -> Window -> CirculationDirection -> IO ()
 
 -- | interface to the X11 library function @XIconifyWindow()@.
 iconifyWindow  :: Display -> Window -> ScreenNumber -> IO ()
 iconifyWindow display window screenno =
-	throwIfZero "iconifyWindow"
-		(xIconifyWindow display window screenno)
+        throwIfZero "iconifyWindow"
+                (xIconifyWindow display window screenno)
 foreign import ccall unsafe "HsXlib.h XIconifyWindow"
-	xIconifyWindow  :: Display -> Window -> ScreenNumber -> IO Status
+        xIconifyWindow  :: Display -> Window -> ScreenNumber -> IO Status
 
 -- | interface to the X11 library function @XWithdrawWindow()@.
 withdrawWindow :: Display -> Window -> ScreenNumber -> IO ()
 withdrawWindow display window screenno =
-	throwIfZero "withdrawWindow"
-		(xWithdrawWindow display window screenno)
+        throwIfZero "withdrawWindow"
+                (xWithdrawWindow display window screenno)
 foreign import ccall unsafe "HsXlib.h XWithdrawWindow"
-	xWithdrawWindow :: Display -> Window -> ScreenNumber -> IO Status
+        xWithdrawWindow :: Display -> Window -> ScreenNumber -> IO Status
 
 -- | interface to the X11 library function @XDestroyWindow()@.
 foreign import ccall unsafe "HsXlib.h XDestroyWindow"
-	destroyWindow                :: Display -> Window -> IO ()
+        destroyWindow                :: Display -> Window -> IO ()
 
 -- | interface to the X11 library function @XDestroySubwindows()@.
 foreign import ccall unsafe "HsXlib.h XDestroySubwindows"
-	destroySubwindows            :: Display -> Window -> IO ()
+        destroySubwindows            :: Display -> Window -> IO ()
 
 -- | interface to the X11 library function @XSetWindowBorder()@.
 foreign import ccall unsafe "HsXlib.h XSetWindowBorder"
-	setWindowBorder              :: Display -> Window -> Pixel     -> IO ()
+        setWindowBorder              :: Display -> Window -> Pixel     -> IO ()
 
 -- | interface to the X11 library function @XSetWindowBorderPixmap()@.
 foreign import ccall unsafe "HsXlib.h XSetWindowBorderPixmap"
-	setWindowBorderPixmap        :: Display -> Window -> Pixmap    -> IO ()
+        setWindowBorderPixmap        :: Display -> Window -> Pixmap    -> IO ()
 
 -- | interface to the X11 library function @XSetWindowBorderWidth()@.
 foreign import ccall unsafe "HsXlib.h XSetWindowBorderWidth"
-	setWindowBorderWidth         :: Display -> Window -> Dimension -> IO ()
+        setWindowBorderWidth         :: Display -> Window -> Dimension -> IO ()
 
 -- | interface to the X11 library function @XSetWindowBackground()@.
 foreign import ccall unsafe "HsXlib.h XSetWindowBackground"
-	setWindowBackground          :: Display -> Window -> Pixel     -> IO ()
+        setWindowBackground          :: Display -> Window -> Pixel     -> IO ()
 
 -- | interface to the X11 library function @XSetWindowBackgroundPixmap()@.
 foreign import ccall unsafe "HsXlib.h XSetWindowBackgroundPixmap"
-	setWindowBackgroundPixmap    :: Display -> Window -> Pixmap    -> IO ()
+        setWindowBackgroundPixmap    :: Display -> Window -> Pixmap    -> IO ()
 
 -- | interface to the X11 library function @XSetWindowColormap()@.
 foreign import ccall unsafe "HsXlib.h XSetWindowColormap"
-	setWindowColormap            :: Display -> Window -> Colormap  -> IO ()
+        setWindowColormap            :: Display -> Window -> Colormap  -> IO ()
 
 -- | interface to the X11 library function @XAddToSaveSet()@.
 foreign import ccall unsafe "HsXlib.h XAddToSaveSet"
-	addToSaveSet                 :: Display -> Window -> IO ()
+        addToSaveSet                 :: Display -> Window -> IO ()
 
 -- | interface to the X11 library function @XRemoveFromSaveSet()@.
 foreign import ccall unsafe "HsXlib.h XRemoveFromSaveSet"
-	removeFromSaveSet            :: Display -> Window -> IO ()
+        removeFromSaveSet            :: Display -> Window -> IO ()
 
 -- | interface to the X11 library function @XChangeSaveSet()@.
 foreign import ccall unsafe "HsXlib.h XChangeSaveSet"
-	changeSaveSet                :: Display -> Window -> ChangeSaveSetMode -> IO ()
+        changeSaveSet                :: Display -> Window -> ChangeSaveSetMode -> IO ()
 
 -- | interface to the X11 library function @XClearWindow()@.
 foreign import ccall unsafe "HsXlib.h XClearWindow"
-	clearWindow                  :: Display -> Window -> IO ()
+        clearWindow                  :: Display -> Window -> IO ()
 
 -- | interface to the X11 library function @XClearArea()@.
 foreign import ccall unsafe "HsXlib.h XClearArea"
-	clearArea                    :: Display -> Window ->
-		Position -> Position -> Dimension -> Dimension -> Bool -> IO ()
+        clearArea                    :: Display -> Window ->
+                Position -> Position -> Dimension -> Dimension -> Bool -> IO ()
 
 -- This is almost good enough - but doesn't call XFree
 -- -- %errfun BadStatus XQueryTree :: Display -> Window -> IO (Window, Window, ListWindow) using err = XQueryTree(arg1,arg2,&res1,&res2,&res3,&res3_size)
@@ -234,10 +234,10 @@ foreign import ccall unsafe "HsXlib.h XClearArea"
 -- | interface to the X11 library function @XRestackWindows()@.
 restackWindows :: Display -> [Window] -> IO ()
 restackWindows display windows =
-	withArray windows $ \ window_array ->
-	xRestackWindows display window_array (fromIntegral (length windows))
+        withArray windows $ \ window_array ->
+        xRestackWindows display window_array (fromIntegral (length windows))
 foreign import ccall unsafe "HsXlib.h XRestackWindows"
-	xRestackWindows :: Display -> Ptr Window -> CInt -> IO ()
+        xRestackWindows :: Display -> Ptr Window -> CInt -> IO ()
 
 -- ToDo: I want to be able to write this
 -- -- %fun XListInstalledColormaps :: Display -> Window -> IO ListColormap using res1 = XListInstalledColormaps(arg1,arg2,&res1_size)

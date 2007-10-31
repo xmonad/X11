@@ -60,9 +60,9 @@ import Data.Generics
 
 newtype Region = Region (ForeignPtr Region)
 #if __GLASGOW_HASKELL__
-	deriving (Eq, Ord, Show, Typeable, Data)
+        deriving (Eq, Ord, Show, Typeable, Data)
 #else
-	deriving (Eq, Ord, Show)
+        deriving (Eq, Ord, Show)
 #endif
 
 withRegion :: Region -> (Ptr Region -> IO a) -> IO a
@@ -89,8 +89,8 @@ foreign import ccall unsafe "HsXlib.h &XDestroyRegion"
 
 makeRegion :: Ptr Region -> IO Region
 makeRegion rp = do
-	r <- newForeignPtr xDestroyRegionPtr rp
-	return (Region r)
+        r <- newForeignPtr xDestroyRegionPtr rp
+        return (Region r)
 
 -- an empty region
 -- (often used as "out argument" to binary operators which return regions)
@@ -98,19 +98,19 @@ makeRegion rp = do
 -- | interface to the X11 library function @XCreateRegion()@.
 createRegion :: IO Region
 createRegion = do
-	rp <- xCreateRegion
-	makeRegion rp
+        rp <- xCreateRegion
+        makeRegion rp
 foreign import ccall unsafe "HsXlib.h XCreateRegion"
         xCreateRegion :: IO (Ptr Region)
 
 -- | interface to the X11 library function @XPolygonRegion()@.
 polygonRegion :: [Point] -> FillRule -> IO Region
 polygonRegion points fill_rule =
-	withArrayLen points $ \ n point_arr -> do
-	rp <- xPolygonRegion point_arr (fromIntegral n) fill_rule
-	makeRegion rp
+        withArrayLen points $ \ n point_arr -> do
+        rp <- xPolygonRegion point_arr (fromIntegral n) fill_rule
+        makeRegion rp
 foreign import ccall unsafe "HsXlib.h XPolygonRegion"
-	xPolygonRegion :: Ptr Point -> CInt -> FillRule -> IO (Ptr Region)
+        xPolygonRegion :: Ptr Point -> CInt -> FillRule -> IO (Ptr Region)
 
 ----------------------------------------------------------------
 -- Combining Regions
@@ -125,57 +125,57 @@ foreign import ccall unsafe "HsXlib.h XPolygonRegion"
 -- | interface to the X11 library function @XIntersectRegion()@.
 intersectRegion     :: Region -> Region -> Region -> IO CInt
 intersectRegion src1 src2 dest =
-	withRegion src1 $ \ src1_ptr ->
-	withRegion src2 $ \ src2_ptr ->
-	withRegion dest $ \ dest_ptr ->
-	xIntersectRegion src1_ptr src2_ptr dest_ptr
+        withRegion src1 $ \ src1_ptr ->
+        withRegion src2 $ \ src2_ptr ->
+        withRegion dest $ \ dest_ptr ->
+        xIntersectRegion src1_ptr src2_ptr dest_ptr
 foreign import ccall unsafe
-	"HsXlib.h XIntersectRegion" xIntersectRegion ::
-	Ptr Region -> Ptr Region -> Ptr Region -> IO CInt
+        "HsXlib.h XIntersectRegion" xIntersectRegion ::
+        Ptr Region -> Ptr Region -> Ptr Region -> IO CInt
 
 -- | interface to the X11 library function @XSubtractRegion()@.
 subtractRegion     :: Region -> Region -> Region -> IO CInt
 subtractRegion src1 src2 dest =
-	withRegion src1 $ \ src1_ptr ->
-	withRegion src2 $ \ src2_ptr ->
-	withRegion dest $ \ dest_ptr ->
-	xSubtractRegion src1_ptr src2_ptr dest_ptr
+        withRegion src1 $ \ src1_ptr ->
+        withRegion src2 $ \ src2_ptr ->
+        withRegion dest $ \ dest_ptr ->
+        xSubtractRegion src1_ptr src2_ptr dest_ptr
 foreign import ccall unsafe
-	"HsXlib.h XSubtractRegion" xSubtractRegion ::
-	Ptr Region -> Ptr Region -> Ptr Region -> IO CInt
+        "HsXlib.h XSubtractRegion" xSubtractRegion ::
+        Ptr Region -> Ptr Region -> Ptr Region -> IO CInt
 
 -- | interface to the X11 library function @XUnionRectWithRegion()@.
 unionRectWithRegion     :: Rectangle -> Region -> Region -> IO CInt
 unionRectWithRegion rect src dest =
-	with rect $ \ rect_ptr ->
-	withRegion src $ \ src_ptr ->
-	withRegion dest $ \ dest_ptr ->
-	xUnionRectWithRegion rect_ptr src_ptr dest_ptr
+        with rect $ \ rect_ptr ->
+        withRegion src $ \ src_ptr ->
+        withRegion dest $ \ dest_ptr ->
+        xUnionRectWithRegion rect_ptr src_ptr dest_ptr
 foreign import ccall unsafe
-	"HsXlib.h XUnionRectWithRegion" xUnionRectWithRegion ::
-	Ptr Rectangle -> Ptr Region -> Ptr Region -> IO CInt
+        "HsXlib.h XUnionRectWithRegion" xUnionRectWithRegion ::
+        Ptr Rectangle -> Ptr Region -> Ptr Region -> IO CInt
 
 -- | interface to the X11 library function @XUnionRegion()@.
 unionRegion     :: Region -> Region -> Region -> IO CInt
 unionRegion src1 src2 dest =
-	withRegion src1 $ \ src1_ptr ->
-	withRegion src2 $ \ src2_ptr ->
-	withRegion dest $ \ dest_ptr ->
-	xUnionRegion src1_ptr src2_ptr dest_ptr
+        withRegion src1 $ \ src1_ptr ->
+        withRegion src2 $ \ src2_ptr ->
+        withRegion dest $ \ dest_ptr ->
+        xUnionRegion src1_ptr src2_ptr dest_ptr
 foreign import ccall unsafe
-	"HsXlib.h XUnionRegion" xUnionRegion ::
-	Ptr Region -> Ptr Region -> Ptr Region -> IO CInt
+        "HsXlib.h XUnionRegion" xUnionRegion ::
+        Ptr Region -> Ptr Region -> Ptr Region -> IO CInt
 
 -- | interface to the X11 library function @XXorRegion()@.
 xorRegion     :: Region -> Region -> Region -> IO CInt
 xorRegion src1 src2 dest =
-	withRegion src1 $ \ src1_ptr ->
-	withRegion src2 $ \ src2_ptr ->
-	withRegion dest $ \ dest_ptr ->
-	xXorRegion src1_ptr src2_ptr dest_ptr
+        withRegion src1 $ \ src1_ptr ->
+        withRegion src2 $ \ src2_ptr ->
+        withRegion dest $ \ dest_ptr ->
+        xXorRegion src1_ptr src2_ptr dest_ptr
 foreign import ccall unsafe
-	"HsXlib.h XXorRegion" xXorRegion ::
-	Ptr Region -> Ptr Region -> Ptr Region -> IO CInt
+        "HsXlib.h XXorRegion" xXorRegion ::
+        Ptr Region -> Ptr Region -> Ptr Region -> IO CInt
 
 ----------------------------------------------------------------
 -- Examining regions (tests, bounding boxes, etc)
@@ -185,46 +185,46 @@ foreign import ccall unsafe
 emptyRegion :: Region -> IO Bool
 emptyRegion r = withRegion r xEmptyRegion
 foreign import ccall unsafe "HsXlib.h XEmptyRegion"
-	xEmptyRegion :: Ptr Region -> IO Bool
+        xEmptyRegion :: Ptr Region -> IO Bool
 
 -- | interface to the X11 library function @XEqualRegion()@.
 equalRegion :: Region -> Region -> IO Bool
 equalRegion r1 r2 =
-	withRegion r1 $ \ rp1 ->
-	withRegion r2 $ \ rp2 ->
-	xEqualRegion rp1 rp2
+        withRegion r1 $ \ rp1 ->
+        withRegion r2 $ \ rp2 ->
+        xEqualRegion rp1 rp2
 foreign import ccall unsafe "HsXlib.h XEqualRegion"
-	xEqualRegion :: Ptr Region -> Ptr Region -> IO Bool
+        xEqualRegion :: Ptr Region -> Ptr Region -> IO Bool
 
 -- | interface to the X11 library function @XPointInRegion()@.
 pointInRegion :: Region -> Point -> IO Bool
 pointInRegion r (Point x y) =
-	withRegion r $ \ rp ->
-	xPointInRegion rp x y
+        withRegion r $ \ rp ->
+        xPointInRegion rp x y
 foreign import ccall unsafe "HsXlib.h XPointInRegion"
-	xPointInRegion :: Ptr Region -> Position -> Position -> IO Bool
+        xPointInRegion :: Ptr Region -> Position -> Position -> IO Bool
 
 -- | interface to the X11 library function @XRectInRegion()@.
 rectInRegion :: Region -> Rectangle -> IO RectInRegionResult
 rectInRegion r (Rectangle x y w h) =
-	withRegion r $ \ rp ->
-	xRectInRegion rp x y w h
+        withRegion r $ \ rp ->
+        xRectInRegion rp x y w h
 foreign import ccall unsafe "HsXlib.h XRectInRegion"
-	xRectInRegion :: Ptr Region -> Position -> Position ->
-		Dimension -> Dimension -> IO RectInRegionResult
+        xRectInRegion :: Ptr Region -> Position -> Position ->
+                Dimension -> Dimension -> IO RectInRegionResult
 
 -- I have no idea what the int is for
 
 -- | interface to the X11 library function @XClipBox()@.
 clipBox :: Region -> IO (Rectangle,CInt)
 clipBox r =
-	withRegion r $ \ rp ->
-	alloca $ \ rect_ptr -> do
-	res <- xClipBox rp rect_ptr
-	rect <- peek rect_ptr
-	return (rect, res)
+        withRegion r $ \ rp ->
+        alloca $ \ rect_ptr -> do
+        res <- xClipBox rp rect_ptr
+        rect <- peek rect_ptr
+        return (rect, res)
 foreign import ccall unsafe "HsXlib.h XClipBox"
-	xClipBox :: Ptr Region -> Ptr Rectangle -> IO CInt
+        xClipBox :: Ptr Region -> Ptr Rectangle -> IO CInt
 
 ----------------------------------------------------------------
 -- Modifying regions
@@ -237,10 +237,10 @@ foreign import ccall unsafe "HsXlib.h XClipBox"
 -- | interface to the X11 library function @XOffsetRegion()@.
 offsetRegion :: Region -> Point -> IO CInt
 offsetRegion r (Point x y) =
-	withRegion r $ \ rp ->
-	xOffsetRegion rp x y
+        withRegion r $ \ rp ->
+        xOffsetRegion rp x y
 foreign import ccall unsafe "HsXlib.h XOffsetRegion"
-	xOffsetRegion :: Ptr Region -> Position -> Position -> IO CInt
+        xOffsetRegion :: Ptr Region -> Position -> Position -> IO CInt
 
 -- increase size of region by +ve or -ve number of pixels
 -- while preserving the centre of the region (ie half the pixels
@@ -249,10 +249,10 @@ foreign import ccall unsafe "HsXlib.h XOffsetRegion"
 -- | interface to the X11 library function @XShrinkRegion()@.
 shrinkRegion :: Region -> Point -> IO CInt
 shrinkRegion r (Point x y) =
-	withRegion r $ \ rp ->
-	xShrinkRegion rp x y
+        withRegion r $ \ rp ->
+        xShrinkRegion rp x y
 foreign import ccall unsafe "HsXlib.h XShrinkRegion"
-	xShrinkRegion :: Ptr Region -> Position -> Position -> IO CInt
+        xShrinkRegion :: Ptr Region -> Position -> Position -> IO CInt
 
 ----------------------------------------------------------------
 -- Graphics Context
@@ -263,10 +263,10 @@ foreign import ccall unsafe "HsXlib.h XShrinkRegion"
 -- | interface to the X11 library function @XSetRegion()@.
 setRegion :: Display -> GC -> Region -> IO CInt
 setRegion disp gc r =
-	withRegion r $ \ rp ->
-	xSetRegion disp gc rp
+        withRegion r $ \ rp ->
+        xSetRegion disp gc rp
 foreign import ccall unsafe "HsXlib.h XSetRegion"
-	xSetRegion :: Display -> GC -> Ptr Region -> IO CInt
+        xSetRegion :: Display -> GC -> Ptr Region -> IO CInt
 
 ----------------------------------------------------------------
 -- End
