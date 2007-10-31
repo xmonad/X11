@@ -25,7 +25,7 @@ AC_TRY_CPP([#include <X11/Xlib.h>],,[no_x=yes])
 # If there's some oddball X11 include path, we need it to check there for
 # Xinerama headers.
 if test -n "$x_includes"; then
-    CPPFLAGS="$CPPFLAGS -I $x_includes"
+    CPPFLAGS="$CPPFLAGS -I$x_includes"
 fi
 
 # Build the package if we found X11 stuff
