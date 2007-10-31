@@ -1,4 +1,18 @@
--- | Interface to Xinerama API
+--------------------------------------------------------------------
+-- |
+-- Module    : Graphics.X11.Xinerama
+-- Copyright : (c) Haskell.org, 2007
+-- License   : BSD3
+--
+-- Maintainer: Don Stewart <dons@galois.com>
+-- Stability : provisional
+-- Portability: portable
+--
+--------------------------------------------------------------------
+--
+-- Interface to Xinerama API
+--
+
 module Graphics.X11.Xinerama
   (XineramaScreenInfo(..), 
    xineramaIsActive, 
