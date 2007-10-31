@@ -13,14 +13,15 @@
 -- Interface to Xinerama API
 --
 
-module Graphics.X11.Xinerama
-  (XineramaScreenInfo(..), 
-   xineramaIsActive, 
-   xineramaQueryExtension, 
-   xineramaQueryVersion, 
+module Graphics.X11.Xinerama (
+   XineramaScreenInfo(..),
+   xineramaIsActive,
+   xineramaQueryExtension,
+   xineramaQueryVersion,
    xineramaQueryScreens,
    compiledWithXinerama,
-   getScreenInfo) where
+   getScreenInfo
+ ) where
 
 #include <X11_extras_config.h>
 
@@ -31,12 +32,12 @@ import Graphics.X11.Xlib.Extras (WindowAttributes(..), getWindowAttributes)
 import Control.Monad
 
 -- | Representation of the XineramaScreenInfo struct
-data XineramaScreenInfo = XineramaScreenInfo 
-                          { xsi_screen_number :: CInt,
-                            xsi_x_org         :: CShort,
-                            xsi_y_org         :: CShort,
-                            xsi_width         :: CShort,
-                            xsi_height        :: CShort }
+data XineramaScreenInfo = XineramaScreenInfo
+                          { xsi_screen_number :: !CInt,
+                            xsi_x_org         :: !CShort,
+                            xsi_y_org         :: !CShort,
+                            xsi_width         :: !CShort,
+                            xsi_height        :: !CShort }
                             deriving (Show)
 
 -- | Wrapper around xineramaQueryScreens that fakes a single screen when
@@ -54,7 +55,7 @@ getScreenInfo dpy = do
                         , rect_y      = fromIntegral $ wa_y wa
                         , rect_width  = fromIntegral $ wa_width wa
                         , rect_height = fromIntegral $ wa_height wa }]
- where 
+ where
     xsiToRect xsi = Rectangle
                     { rect_x        = fromIntegral $ xsi_x_org xsi
                     , rect_y        = fromIntegral $ xsi_y_org xsi
@@ -117,15 +118,18 @@ xineramaQueryScreens dpy =
 
 foreign import ccall "XineramaQueryExtension"
   cXineramaQueryExtension :: Display -> Ptr CInt -> Ptr CInt -> IO Bool
+
 foreign import ccall "XineramaQueryVersion"
   cXineramaQueryVersion :: Display -> Ptr CInt -> Ptr CInt -> IO Bool
+
 foreign import ccall "XineramaQueryScreens"
   cXineramaQueryScreens :: Display -> Ptr CInt -> IO (Ptr XineramaScreenInfo)
+
 foreign import ccall "XFree"
   cXFree :: Ptr a -> IO CInt
 
 wrapPtr2 :: (Storable a, Storable b) => (Ptr a -> Ptr b -> IO c) -> (c -> a -> b -> d) -> IO d
-wrapPtr2 cfun f = 
+wrapPtr2 cfun f =
   withPool $ \pool -> do aptr <- pooledMalloc pool
                          bptr <- pooledMalloc pool
                          ret <- cfun aptr bptr
@@ -151,4 +155,5 @@ xineramaQueryVersion _ = return Nothing
 
 xineramaQueryScreens :: Display -> IO (Maybe [XineramaScreenInfo])
 xineramaQueryScreens _ = return Nothing
+
 #endif
