@@ -1083,30 +1083,30 @@ rawGetWindowProperty bits d atom w =
             xFree prop_ptr
             return $ Just retval
 
-getWindowProperty8 :: Display -> Atom -> Window -> IO (Maybe [Word8])
+getWindowProperty8 :: Display -> Atom -> Window -> IO (Maybe [CChar])
 getWindowProperty8 = rawGetWindowProperty 8
 
-getWindowProperty16 :: Display -> Atom -> Window -> IO (Maybe [Word16])
+getWindowProperty16 :: Display -> Atom -> Window -> IO (Maybe [CShort])
 getWindowProperty16 = rawGetWindowProperty 16
 
-getWindowProperty32 :: Display -> Atom -> Window -> IO (Maybe [Word32])
+getWindowProperty32 :: Display -> Atom -> Window -> IO (Maybe [CLong])
 getWindowProperty32 = rawGetWindowProperty 32
 
 -- this assumes bytes are 8 bits.  I hope X isn't more portable than that :(
 
-changeProperty8 :: Display -> Window -> Atom -> Atom -> CInt -> [Word8] -> IO ()
+changeProperty8 :: Display -> Window -> Atom -> Atom -> CInt -> [CChar] -> IO ()
 changeProperty8 dpy w prop typ mode dat =
     withArrayLen dat $ \ len ptr -> do
         xChangeProperty dpy w prop typ 8 mode (castPtr ptr) (fromIntegral len)
         return ()
 
-changeProperty16 :: Display -> Window -> Atom -> Atom -> CInt -> [Word16] -> IO ()
+changeProperty16 :: Display -> Window -> Atom -> Atom -> CInt -> [CShort] -> IO ()
 changeProperty16 dpy w prop typ mode dat =
     withArrayLen dat $ \ len ptr -> do
         xChangeProperty dpy w prop typ 16 mode (castPtr ptr) (fromIntegral len)
         return ()
 
-changeProperty32 :: Display -> Window -> Atom -> Atom -> CInt -> [Word32] -> IO ()
+changeProperty32 :: Display -> Window -> Atom -> Atom -> CInt -> [CLong] -> IO ()
 changeProperty32 dpy w prop typ mode dat =
     withArrayLen dat $ \ len ptr -> do
         xChangeProperty dpy w prop typ 32 mode (castPtr ptr) (fromIntegral len)
