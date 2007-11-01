@@ -3,19 +3,17 @@ To build this package using Cabal directly from darcs, you must run
 autoreconf is included in the GNU autoconf tools.  There is no need to run
 the "configure" script: the "setup configure" step will do this for you.
 
-
-
 If you are building from a source tarball, you can just use the standard cabal
 installation stanza:
 
-    runhaskell Setup.hs configure --prefix=$USER
+    runhaskell Setup.hs configure --prefix=$HOME
     runhaskell Setup.hs build
     runhaskell Setup.hs install --user
 
 Xinerama support is enabled by default if Xinerama headers are detected.  To
 disable Xinerama support, add the '--without-xinerama' flag to configure:
 
-    runhaskell Setup.hs configure --prefix=$USER --without-xinerama
+    runhaskell Setup.hs configure --prefix=$HOME --without-xinerama
 
 However, if you are building from darcs, X11 uses autoconf, so you need
 to have autoconf installed and run autoconf/autoheader before building:
