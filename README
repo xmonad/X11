@@ -11,9 +11,10 @@ installation stanza:
     runhaskell Setup.hs install --user
 
 Xinerama support is enabled by default if Xinerama headers are detected.  To
-disable Xinerama support, add the '--without-xinerama' flag to configure:
+disable Xinerama support, add the '--without-xinerama' flag to
+configure-option:
 
-    runhaskell Setup.hs configure --prefix=$HOME --without-xinerama
+    runhaskell Setup.hs configure --prefix=$HOME --configure-option="--without-xinerama"
 
 However, if you are building from darcs, X11 uses autoconf, so you need
 to have autoconf installed and run autoconf/autoheader before building:
@@ -21,6 +22,6 @@ to have autoconf installed and run autoconf/autoheader before building:
     autoconf
     autoheader
 
-or 
+or
 
     autoreconf
