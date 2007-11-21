@@ -1,11 +1,10 @@
 {-# OPTIONS -fglasgow-exts -fno-warn-name-shadowing #-}
 -----------------------------------------------------------------------------
 -- |
--- Module      :
--- Copyright   :  (c) Spencer Janssen
--- License     :  BSD3-style (see LICENSE)
--- 
--- Stability   :  stable
+-- Module      : Graphics.X11.Xlib.Extras
+-- Copyright   : 2007 (c) Spencer Janssen
+-- License     : BSD3-style (see LICENSE)
+-- Stability   : experimental
 --
 -----------------------------------------------------------------------------
 --
