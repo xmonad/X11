@@ -456,7 +456,7 @@ foreign import ccall unsafe "HsXlib.h XFlush"
         flush        :: Display ->               IO ()
 
 -- | interface to the X11 library function @XSync()@.
-foreign import ccall unsafe "HsXlib.h XSync"
+foreign import ccall safe "HsXlib.h XSync"
         sync         :: Display -> Bool ->       IO ()
 
 -- | interface to the X11 library function @XPending()@.

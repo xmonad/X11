@@ -1368,3 +1368,55 @@ foreign import ccall unsafe "HsXlib.h XGetSelectionOwner"
 
 foreign import ccall unsafe "HsXlib.h XConvertSelection"
     xConvertSelection :: Display -> Atom -> Atom -> Atom -> Window -> Time -> IO ()
+
+-------------------------------------------------------------------------------
+-- Error handling
+--
+-- NOTE:  This is pretty experimental because of safe vs. unsafe calls.  I
+-- changed sync to a safe call, but there *might* be other calls that cause a
+-- problem
+type XErrorEventPtr = Ptr ()
+type CXErrorHandler = Display -> XErrorEventPtr -> IO CInt
+type XErrorHandler = Display -> XErrorEventPtr -> IO ()
+
+data ErrorEvent = ErrorEvent {
+    ev_type :: !CInt,
+    ev_display :: Display,
+    ev_serialnum :: !CULong,
+    ev_error_code :: !CUChar,
+    ev_request_code :: !CUChar,
+    ev_minor_code :: !CUChar,
+    ev_resourceid :: !XID
+}
+
+foreign import ccall safe "wrapper"
+    mkXErrorHandler :: CXErrorHandler -> IO (FunPtr CXErrorHandler)
+foreign import ccall safe "dynamic"
+    getXErrorHandler :: FunPtr CXErrorHandler -> CXErrorHandler
+foreign import ccall safe "Xlib.h XSetErrorHandler"
+    _xSetErrorHandler :: FunPtr CXErrorHandler -> IO (FunPtr CXErrorHandler)
+
+setErrorHandler :: XErrorHandler -> IO ()
+setErrorHandler new_handler = do
+    _handler <- mkXErrorHandler (\d -> \e -> new_handler d e >> return 0)
+    _xSetErrorHandler _handler
+    return ()
+
+getErrorEvent :: XErrorEventPtr -> IO ErrorEvent
+getErrorEvent ev_ptr = do
+    _type <- #{peek XErrorEvent, type } ev_ptr
+    serial <- #{peek XErrorEvent, serial} ev_ptr
+    dsp <- fmap Display (#{peek XErrorEvent, display} ev_ptr)
+    error_code <- #{peek XErrorEvent, error_code} ev_ptr
+    request_code <- #{peek XErrorEvent, request_code} ev_ptr
+    minor_code <- #{peek XErrorEvent, minor_code} ev_ptr
+    resourceid <- #{peek XErrorEvent, resourceid} ev_ptr
+    return $ ErrorEvent {
+        ev_type = _type,
+        ev_display = dsp,
+        ev_serialnum = serial,
+        ev_error_code = error_code,
+        ev_request_code = request_code,
+        ev_minor_code = minor_code,
+        ev_resourceid = resourceid
+    }
