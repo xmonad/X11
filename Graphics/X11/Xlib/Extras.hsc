@@ -1393,7 +1393,7 @@ foreign import ccall safe "wrapper"
     mkXErrorHandler :: CXErrorHandler -> IO (FunPtr CXErrorHandler)
 foreign import ccall safe "dynamic"
     getXErrorHandler :: FunPtr CXErrorHandler -> CXErrorHandler
-foreign import ccall safe "Xlib.h XSetErrorHandler"
+foreign import ccall safe "HsXlib.h XSetErrorHandler"
     _xSetErrorHandler :: FunPtr CXErrorHandler -> IO (FunPtr CXErrorHandler)
 
 setErrorHandler :: XErrorHandler -> IO ()
