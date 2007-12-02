@@ -1372,9 +1372,6 @@ foreign import ccall unsafe "HsXlib.h XConvertSelection"
 -------------------------------------------------------------------------------
 -- Error handling
 --
--- NOTE:  This is pretty experimental because of safe vs. unsafe calls.  I
--- changed sync to a safe call, but there *might* be other calls that cause a
--- problem
 type XErrorEventPtr = Ptr ()
 type CXErrorHandler = Display -> XErrorEventPtr -> IO CInt
 type XErrorHandler = Display -> XErrorEventPtr -> IO ()
@@ -1396,12 +1393,18 @@ foreign import ccall safe "dynamic"
 foreign import ccall safe "HsXlib.h XSetErrorHandler"
     _xSetErrorHandler :: FunPtr CXErrorHandler -> IO (FunPtr CXErrorHandler)
 
+-- |A binding to XSetErrorHandler.
+--  NOTE:  This is pretty experimental because of safe vs. unsafe calls.  I
+--  changed sync to a safe call, but there *might* be other calls that cause a
+--  problem
 setErrorHandler :: XErrorHandler -> IO ()
 setErrorHandler new_handler = do
     _handler <- mkXErrorHandler (\d -> \e -> new_handler d e >> return 0)
     _xSetErrorHandler _handler
     return ()
 
+-- |Retrieves error event data from a pointer to an XErrorEvent and
+--  puts it into an ErrorEvent.
 getErrorEvent :: XErrorEventPtr -> IO ErrorEvent
 getErrorEvent ev_ptr = do
     _type <- #{peek XErrorEvent, type } ev_ptr
@@ -1420,3 +1423,11 @@ getErrorEvent ev_ptr = do
         ev_minor_code = minor_code,
         ev_resourceid = resourceid
     }
+
+-- |A binding to XIconifyWindow.
+foreign import ccall unsafe "HsXlib.h XIconifyWindow"
+    iconifyWindow :: Display -> Window -> ScreenNumber -> IO Status
+
+-- |A binding to XMapRaised.
+foreign import ccall unsafe "HsXlib.h XMapRaised"
+    mapRaised :: Display -> Window -> IO CInt
