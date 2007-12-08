@@ -1424,10 +1424,6 @@ getErrorEvent ev_ptr = do
         ev_resourceid = resourceid
     }
 
--- |A binding to XIconifyWindow.
-foreign import ccall unsafe "HsXlib.h XIconifyWindow"
-    iconifyWindow :: Display -> Window -> ScreenNumber -> IO Status
-
 -- |A binding to XMapRaised.
 foreign import ccall unsafe "HsXlib.h XMapRaised"
     mapRaised :: Display -> Window -> IO CInt
