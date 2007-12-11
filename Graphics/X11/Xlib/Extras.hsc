@@ -1062,17 +1062,20 @@ rawGetWindowProperty bits d atom w =
     alloca $ \nitems_return ->
     alloca $ \bytes_after_return ->
     alloca $ \prop_return -> do
-        xGetWindowProperty d w atom 0 0xFFFFFFFF False anyPropertyType
+        ret <- xGetWindowProperty d w atom 0 0xFFFFFFFF False anyPropertyType
                            actual_type_return
                            actual_format_return
                            nitems_return
                            bytes_after_return
                            prop_return
 
-        prop_ptr      <- peek prop_return
-        actual_format <- fromIntegral `liftM` peek actual_format_return
-        nitems        <- fromIntegral `liftM` peek nitems_return
-        getprop prop_ptr nitems actual_format
+        if ret /= 0
+            then return Nothing
+            else do
+                prop_ptr      <- peek prop_return
+                actual_format <- fromIntegral `fmap` peek actual_format_return
+                nitems        <- fromIntegral `fmap` peek nitems_return
+                getprop prop_ptr nitems actual_format
   where
     getprop prop_ptr nitems actual_format
         | actual_format == 0    = return Nothing -- Property not found
