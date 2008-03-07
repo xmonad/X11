@@ -58,6 +58,7 @@ foreign import ccall unsafe "HsXlib.h XLookupColor"
         xLookupColor :: Display -> Colormap -> CString ->
                 Ptr Color -> Ptr Color -> IO Status
 
+-- TODO don't throw an exception.
 -- | interface to the X11 library function @XAllocNamedColor()@.
 allocNamedColor :: Display -> Colormap -> String -> IO (Color, Color)
 allocNamedColor display colormap color_name =
