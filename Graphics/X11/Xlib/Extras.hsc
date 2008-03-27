@@ -1306,7 +1306,11 @@ foreign import ccall unsafe "XlibExtras.h XGetWMHints"
     xGetWMHints :: Display -> Window -> IO (Ptr WMHints)
 
 getWMHints :: Display -> Window -> IO WMHints
-getWMHints dpy w = xGetWMHints dpy w >>= peek
+getWMHints dpy w = do
+    p <- xGetWMHints dpy w
+    if p == nullPtr
+        then return $ WMHints 0 False 0 0 0 0 0 0 0
+        else peek p
 
 foreign import ccall unsafe "XlibExtras.h XAllocWMHints"
     xAllocWMHints :: IO (Ptr WMHints)
