@@ -996,6 +996,20 @@ setConfigureEvent p ev win x y w h bw abv org = do
     #{poke XConfigureEvent, above            } p abv
     #{poke XConfigureEvent, override_redirect} p (if org then 1 else 0 :: CInt)
 
+setKeyEvent :: XEventPtr -> Window -> Window -> Window -> KeyMask -> KeyCode -> Bool -> IO ()
+setKeyEvent p win root subwin state keycode sameScreen = do
+    #{poke XKeyEvent, window          } p win
+    #{poke XKeyEvent, root            } p root
+    #{poke XKeyEvent, subwindow       } p subwin
+    #{poke XKeyEvent, time            } p currentTime
+    #{poke XKeyEvent, x               } p (1 :: CInt)
+    #{poke XKeyEvent, y               } p (1 :: CInt)
+    #{poke XKeyEvent, x_root          } p (1 :: CInt)
+    #{poke XKeyEvent, y_root          } p (1 :: CInt)
+    #{poke XKeyEvent, state           } p state
+    #{poke XKeyEvent, keycode         } p keycode
+    #{poke XKeyEvent, same_screen     } p sameScreen
+    return ()
 
 {-
        typedef struct {
