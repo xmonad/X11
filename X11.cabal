@@ -50,3 +50,4 @@ install-includes:   HsXlib.h, XlibExtras.h
 build-depends:	    base
 build-type:         Configure
 ghc-options:        -funbox-strict-fields -Wall -fno-warn-unused-binds
+ghc-prof-options:   -prof -auto-all
