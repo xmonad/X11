@@ -49,6 +49,20 @@ module Graphics.X11.Types
         xK_Escape,
         xK_Delete,
         xK_Multi_key,
+
+	-- SunOS does not define these.
+#ifdef XK_Codeinput
+        xK_Codeinput,
+#endif
+#ifdef XK_SingleCandidate
+        xK_SingleCandidate,
+#endif
+#ifdef XK_MultipleCandidate
+        xK_MultipleCandidate,
+#endif
+#ifdef XK_PreviousCandidate
+        xK_PreviousCandidate,
+#endif
         xK_Home,
         xK_Left,
         xK_Up,
@@ -841,10 +855,24 @@ type KeySym   = XID
 #{enum KeySym,
  , xK_Multi_key         = XK_Multi_key
  }
--- xK_Codeinput         = XK_Codeinput          -- Not defined for SunOS.
--- xK_SingleCandidate   = XK_SingleCandidate    -- Not defined for SunOS.
--- xK_MultipleCandidate = XK_MultipleCandidate  -- Not defined for SunOS.
--- xK_PreviousCandidate = XK_PreviousCandidate  -- Not defined for SunOS.
+
+-- Not defined for SunOS
+#ifdef XK_Codeinput
+xK_Codeinput         :: KeySym
+xK_Codeinput         = #const XK_Codeinput
+#endif
+#ifdef XK_SingleCandidate
+xK_SingleCandidate   :: KeySym
+xK_SingleCandidate   = #const XK_SingleCandidate
+#endif
+#ifdef XK_MultipleCandidate
+xK_MultipleCandidate :: KeySym
+xK_MultipleCandidate = #const XK_MultipleCandidate
+#endif
+#ifdef XK_PreviousCandidate
+xK_PreviousCandidate :: KeySym
+xK_PreviousCandidate = #const XK_PreviousCandidate
+#endif
 
 -- Cursor control & motion
 #{enum KeySym,

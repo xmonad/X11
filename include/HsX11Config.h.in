@@ -27,8 +27,29 @@
 /* Define to 1 if you have the <unistd.h> header file. */
 #undef HAVE_UNISTD_H
 
+/* Define to 1 if you have the <X11/ap_keysym.h> header file. */
+#undef HAVE_X11_AP_KEYSYM_H
+
+/* Define to 1 if you have the <X11/DECkeysym.h> header file. */
+#undef HAVE_X11_DECKEYSYM_H
+
 /* Define to 1 if you have the <X11/extensions/Xinerama.h> header file. */
 #undef HAVE_X11_EXTENSIONS_XINERAMA_H
+
+/* Define to 1 if you have the <X11/HPkeysym.h> header file. */
+#undef HAVE_X11_HPKEYSYM_H
+
+/* Define to 1 if you have the <X11/keysymdef.h> header file. */
+#undef HAVE_X11_KEYSYMDEF_H
+
+/* Define to 1 if you have the <X11/keysym.h> header file. */
+#undef HAVE_X11_KEYSYM_H
+
+/* Define to 1 if you have the <X11/Sunkeysym.h> header file. */
+#undef HAVE_X11_SUNKEYSYM_H
+
+/* Define to 1 if you have the <X11/XF86keysym.h> header file. */
+#undef HAVE_X11_XF86KEYSYM_H
 
 /* Define to the address where bug reports for this package should be sent. */
 #undef PACKAGE_BUGREPORT

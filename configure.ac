@@ -39,6 +39,7 @@ fi
 AC_SUBST([X11_BUILD_PACKAGE])
 AC_SUBST([BUILD_PACKAGE_BOOL])
 
+
 # Define CPP variables used in package.conf.in
 if test "$X11_BUILD_PACKAGE" = yes; then
 
@@ -49,7 +50,6 @@ if test "$X11_BUILD_PACKAGE" = yes; then
   AC_DEFINE_UNQUOTED(X_LIBS,
     [`echo '' $X_LIBS | sed -e 's/-[[^ ]]*/,"&"/g' -e 's/^ *,//'`],
     [Library flags for X11, as a list of string literals.])
-
 fi
 
 
@@ -72,6 +72,52 @@ else
     EXTRA_LIBRARIES=""
     echo "WARNING: Building without Xinerama support per user request"
 fi
+
+AC_MSG_CHECKING([whether to include X.org keysyms])
+AC_ARG_WITH(xorg-keysym,
+            AS_HELP_STRING([--without-xorg-keysym], [do not build X.org keysym support]),
+            [],
+            [with_xorg_keysym=yes])
+AC_MSG_RESULT([$with_xorg_keysym])
+
+if test "$with_xorg_keysym" = yes; then
+    AC_CHECK_HEADERS([X11/keysym.h], [have_keysym=yes])
+    if ! test "$have_keysym" = yes; then
+        echo "WARNING: Couldn't find <X11/keysym.h> for X.org keysyms"
+    fi
+
+    AC_CHECK_HEADERS([X11/DECkeysym.h], [have_dec_keysym=yes])
+    if ! test "$have_dec_keysym" = yes; then
+        echo "WARNING: Couldn't find <X11/DECkeysym.h> for X.org keysyms"
+    fi
+
+    AC_CHECK_HEADERS([X11/Sunkeysym.h], [have_sun_keysym=yes])
+    if ! test "$have_sun_keysym" = yes; then
+        echo "WARNING: Couldn't find <X11/Sunkeysym.h> for X.org keysyms"
+    fi
+
+    AC_CHECK_HEADERS([X11/ap_keysym.h], [have_ap_keysym=yes])
+    if ! test "$have_ap_keysym" = yes; then
+        echo "WARNING: Couldn't find <X11/ap_keysym.h> for X.org keysyms"
+    fi
+
+    AC_CHECK_HEADERS([X11/HPkeysym.h], [have_hp_keysym=yes])
+    if ! test "$have_hp_keysym" = yes; then
+        echo "WARNING: Couldn't find <X11/HPkeysym.h> for X.org keysyms"
+    fi
+
+    AC_CHECK_HEADERS([X11/XF86keysym.h], [have_xf86_keysym=yes])
+    if ! test "$have_xf86_keysym" = yes; then
+        echo "WARNING: Couldn't find <X11/XF86keysym.h> for X.org keysyms"
+    fi
+
+    AC_CHECK_HEADERS([X11/keysymdef.h], [have_keysymdef=yes])
+    if ! test "$have_keysymdef" = yes; then
+        echo "WARNING: Couldn't find <X11/keysymdef.h> for X.org keysyms"
+    fi
+fi
+
+
 
 AC_SUBST([EXTRA_LIBRARIES])
 
