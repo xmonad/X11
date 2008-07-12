@@ -1448,3 +1448,20 @@ getErrorEvent ev_ptr = do
 -- |A binding to XMapRaised.
 foreign import ccall unsafe "HsXlib.h XMapRaised"
     mapRaised :: Display -> Window -> IO CInt
+
+foreign import ccall unsafe "HsXlib.h XGetCommand"
+    xGetCommand :: Display -> Window -> Ptr (Ptr CWString) -> Ptr CInt -> IO Status
+
+getCommand :: Display -> Window -> IO [String]
+getCommand d w =
+  alloca $
+  \argvp ->
+  alloca $
+  \argcp ->
+  do
+    throwIf (success >) (\status -> "xGetCommand returned status: " ++ show status) $ xGetCommand d w argvp argcp
+    argc <- peek argcp
+    argv <- peek argvp
+    texts <- flip mapM [0 .. fromIntegral $ pred argc] $ \i -> peekElemOff argv i >>= peekCWString
+    wcFreeStringList argv
+    return texts
