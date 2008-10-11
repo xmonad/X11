@@ -1,5 +1,5 @@
 name:		        X11
-version:	        1.4.3
+version:	        1.4.4
 license:	        BSD3
 license-file:	    LICENSE
 copyright:	        Alastair Reid, 1999-2003, libraries@haskell.org 2003-2007
@@ -55,7 +55,7 @@ extra-libraries:    "X11"
 include-dirs:	    include
 includes:           HsXlib.h, HsAllKeysyms.h
 install-includes:   HsXlib.h, XlibExtras.h, HsAllKeysyms.h
-build-depends:	    base
+build-depends:	    base >= 3 && < 4
 build-type:         Configure
 ghc-options:        -funbox-strict-fields -Wall -fno-warn-unused-binds
 ghc-prof-options:   -prof -auto-all
