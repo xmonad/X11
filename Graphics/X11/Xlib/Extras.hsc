@@ -1324,7 +1324,7 @@ getWMHints dpy w = do
     p <- xGetWMHints dpy w
     if p == nullPtr
         then return $ WMHints 0 False 0 0 0 0 0 0 0
-        else peek p
+        else do x <- peek p; xFree p; return x
 
 foreign import ccall unsafe "XlibExtras.h XAllocWMHints"
     xAllocWMHints :: IO (Ptr WMHints)
