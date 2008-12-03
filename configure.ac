@@ -1,4 +1,4 @@
-AC_INIT([Haskell X11 package], [1.4.4], [dons@galois.com], [X11])
+AC_INIT([Haskell X11 package], [1.4.5], [dons@galois.com], [X11])
 
 FP_ARG_X11
 
