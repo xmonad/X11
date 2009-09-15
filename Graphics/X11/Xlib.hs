@@ -37,6 +37,7 @@ module Graphics.X11.Xlib
           module Graphics.X11.Xlib.Window,
           module Graphics.X11.Xlib.Context,
           module Graphics.X11.Xlib.Color,
+          module Graphics.X11.Xlib.Cursor,
           module Graphics.X11.Xlib.Font,
           module Graphics.X11.Xlib.Atom,
           module Graphics.X11.Xlib.Region,
@@ -53,6 +54,7 @@ import Graphics.X11.Xlib.Screen
 import Graphics.X11.Xlib.Window
 import Graphics.X11.Xlib.Context
 import Graphics.X11.Xlib.Color
+import Graphics.X11.Xlib.Cursor
 import Graphics.X11.Xlib.Font
 import Graphics.X11.Xlib.Atom
 import Graphics.X11.Xlib.Region
