@@ -1,8 +1,8 @@
 name:		        X11
-version:	        1.4.5
+version:	        1.4.6
 license:	        BSD3
 license-file:	    LICENSE
-copyright:	        Alastair Reid, 1999-2003, libraries@haskell.org 2003-2007
+copyright:	        Alastair Reid, 1999-2003, libraries@haskell.org 2003-2007, Don Stewart 2007-2009.
 maintainer:	        Don Stewart <dons@galois.com>
 homepage:           http://darcs.haskell.org/X11
 category:	        Graphics
