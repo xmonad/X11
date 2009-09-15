@@ -37,6 +37,8 @@
 #define XK_LATIN1
 #include <X11/keysymdef.h>
 
+#include <X11/cursorfont.h>
+
 /* This error handler is used from FFI code.
  * It generates a slightly better error message than the one
  * that comes with Xlib.

@@ -9,6 +9,7 @@ SRCS	= \
 	Graphics/X11/Xlib/Atom.hsc \
 	Graphics/X11/Xlib/Color.hs \
 	Graphics/X11/Xlib/Context.hs \
+	Graphics/X11/Xlib/Cursor.hsc \
 	Graphics/X11/Xlib/Display.hs \
 	Graphics/X11/Xlib/Event.hsc \
 	Graphics/X11/Xlib/Font.hsc \

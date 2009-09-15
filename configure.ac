@@ -115,6 +115,11 @@ if test "$with_xorg_keysym" = yes; then
     if ! test "$have_keysymdef" = yes; then
         echo "WARNING: Couldn't find <X11/keysymdef.h> for X.org keysyms"
     fi
+
+    AC_CHECK_HEADERS([X11/cursorfont.h], [have_cursorfont=yes])
+    if ! test "$have_cursorfont" = yes; then
+        AC_MSG_ERROR([X11/cursorfont.h (from libx11) is required])
+    fi
 fi
 
 

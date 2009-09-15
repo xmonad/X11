@@ -28,6 +28,7 @@ exposed-modules:
 	Graphics.X11.Xlib.Atom,
 	Graphics.X11.Xlib.Color,
 	Graphics.X11.Xlib.Context,
+	Graphics.X11.Xlib.Cursor,
 	Graphics.X11.Xlib.Display,
 	Graphics.X11.Xlib.Event,
 	Graphics.X11.Xlib.Font,
