@@ -56,7 +56,7 @@ extra-libraries:    "X11"
 include-dirs:	    include
 includes:           HsXlib.h, HsAllKeysyms.h
 install-includes:   HsXlib.h, XlibExtras.h, HsAllKeysyms.h
-build-depends:	    base >= 3 && < 4
+build-depends:	    base >= 3 && < 5
 build-type:         Configure
 ghc-options:        -funbox-strict-fields -Wall -fno-warn-unused-binds
 ghc-prof-options:   -prof -auto-all
