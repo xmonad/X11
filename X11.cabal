@@ -21,6 +21,7 @@ extra-tmp-files:
     config.mk X11.buildinfo include/HsX11Config.h
     include/X11_extras_config.h
 Cabal-Version: >= 1.2
+build-type:         Configure
 
 flag smaller_base
     description: Build with the even smaller base.
@@ -65,6 +66,5 @@ library
       build-depends: base >= 4 && < 5, syb
   else
       build-depends: base >= 3 && < 4
-  build-type:         Configure
   ghc-options:        -funbox-strict-fields -Wall -fno-warn-unused-binds
   ghc-prof-options:   -prof -auto-all
