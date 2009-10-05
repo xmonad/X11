@@ -20,6 +20,7 @@ extra-tmp-files:
     config.log config.status autom4te.cache
     config.mk X11.buildinfo include/HsX11Config.h
     include/X11_extras_config.h
+Cabal-Version: >= 1.2
 
 flag smaller_base
     description: Build with the even smaller base.
