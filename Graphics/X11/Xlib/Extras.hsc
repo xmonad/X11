@@ -1465,3 +1465,21 @@ getCommand d w =
     texts <- flip mapM [0 .. fromIntegral $ pred argc] $ \i -> peekElemOff argv i >>= peekCWString
     wcFreeStringList argv
     return texts
+
+foreign import ccall unsafe "HsXlib.h XGetModifierMapping"
+    xGetModifierMapping :: Display -> IO (Ptr ())
+
+foreign import ccall unsafe "HsXlib.h XFreeModifiermap"
+    xFreeModifiermap :: Ptr () -> IO (Ptr CInt)
+
+getModifierMapping :: Display -> IO [(Modifier, [KeyCode])]
+getModifierMapping d = do
+    p <- xGetModifierMapping d
+    m' <- #{peek XModifierKeymap, max_keypermod} p :: IO CInt
+    let m = fromIntegral m'
+    pks <- #{peek XModifierKeymap, modifiermap} p :: IO (Ptr KeyCode)
+    ks <- peekArray (m * 8) pks
+    xFreeModifiermap p
+    return . zip masks . map fst . tail . iterate (splitAt m . snd) $ ([], ks)
+ where
+    masks = [shiftMapIndex .. mod5MapIndex]
