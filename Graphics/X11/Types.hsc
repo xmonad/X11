@@ -826,7 +826,7 @@ type Cursor   = XID
 type Colormap = XID
 type GContext = XID
 
-type KeyCode  = Char
+type KeyCode  = #{type KeyCode}
 
 type KeySym   = XID
 
