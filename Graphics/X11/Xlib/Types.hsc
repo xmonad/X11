@@ -15,7 +15,7 @@
 
 -- #hide
 module Graphics.X11.Xlib.Types(
-        Display(..), Screen, Visual, GC, GCValues, SetWindowAttributes,
+        Display(..), Screen(..), Visual, GC, GCValues, SetWindowAttributes,
         Image(..), Point(..), Rectangle(..), Arc(..), Segment(..), Color(..),
         Pixel, Position, Dimension, Angle, ScreenNumber, Buffer
         ) where
