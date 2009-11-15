@@ -8,7 +8,7 @@
 -- Stability   :  provisional
 -- Portability :  portable
 --
--- A collection of cursor types defined by /usr/include/X11/cursorfont.h.
+-- A collection of cursor types defined by \/usr/include/X11/cursorfont.h.
 --
 -----------------------------------------------------------------------------
 
