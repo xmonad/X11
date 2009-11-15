@@ -171,9 +171,9 @@ data Rectangle = Rectangle {
         rect_height :: !Dimension
         }
 #if __GLASGOW_HASKELL__
-        deriving (Eq, Show, Typeable, Data)
+        deriving (Eq, Read, Show, Typeable, Data)
 #else
-        deriving (Eq, Show)
+        deriving (Eq, Read, Show)
 #endif
 
 instance Storable Rectangle where
