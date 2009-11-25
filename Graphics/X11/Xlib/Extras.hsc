@@ -913,8 +913,8 @@ foreign import ccall unsafe "HsXlib.h XSetWMProtocols"
 -}
 
 -- | The XGetWMProtocols function returns the list of atoms
--- stored in the WM_PROTOCOLS property on the specified win­
--- dow.  These atoms describe window manager protocols in
+-- stored in the WM_PROTOCOLS property on the specified window.
+-- These atoms describe window manager protocols in
 -- which the owner of this window is willing to participate.
 -- If the property exists, is of type ATOM, is of format 32,
 -- and the atom WM_PROTOCOLS can be interned, XGetWMProtocols
