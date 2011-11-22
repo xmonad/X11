@@ -141,11 +141,11 @@ peekXKeyEvent p = do
         y               <- #{peek XKeyEvent,y} p
         x_root          <- #{peek XKeyEvent,x_root} p
         y_root          <- #{peek XKeyEvent,y_root} p
-        state           <- #{peek XKeyEvent,state} p
-        keycode         <- #{peek XKeyEvent,keycode} p
+        state           <- (#{peek XKeyEvent,state} p) :: IO CUInt
+        keycode         <- (#{peek XKeyEvent,keycode} p) :: IO CUInt
         same_screen     <- #{peek XKeyEvent,same_screen} p
         return (root, subwindow, time, x, y, x_root, y_root,
-                state, keycode, same_screen)
+                fromIntegral state, fromIntegral keycode, same_screen)
 
 get_KeyEvent :: XEventPtr -> IO XKeyEvent
 get_KeyEvent p = peekXKeyEvent (castPtr p)

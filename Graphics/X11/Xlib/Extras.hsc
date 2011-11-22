@@ -378,7 +378,7 @@ getEvent p = do
             x_root      <- #{peek XKeyEvent, x_root     } p
             y_root      <- #{peek XKeyEvent, y_root     } p
             state       <- (#{peek XKeyEvent, state     } p) :: IO CUInt
-            keycode     <- #{peek XKeyEvent, keycode    } p
+            keycode     <- (#{peek XKeyEvent, keycode   } p) :: IO CUInt
             same_screen <- #{peek XKeyEvent, same_screen} p
             return $ KeyEvent
                         { ev_event_type    = type_
@@ -394,7 +394,7 @@ getEvent p = do
                         , ev_x_root        = x_root
                         , ev_y_root        = y_root
                         , ev_state         = fromIntegral state
-                        , ev_keycode       = keycode
+                        , ev_keycode       = fromIntegral keycode
                         , ev_same_screen   = same_screen
                         }
 
