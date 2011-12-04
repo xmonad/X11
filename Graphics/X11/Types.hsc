@@ -475,6 +475,7 @@ module Graphics.X11.Types
 
         -- ** Key masks
         KeyMask,
+        noModMask,
         shiftMask,
         lockMask,
         controlMask,
