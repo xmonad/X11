@@ -1309,6 +1309,7 @@ type Modifier           = CUInt
 
 type KeyMask            = Modifier
 #{enum KeyMask,
+ , noModMask            = 0
  , shiftMask            = ShiftMask
  , lockMask             = LockMask
  , controlMask          = ControlMask
