@@ -58,7 +58,7 @@ library
       cbits/auxiliaries.c,
       cbits/XUtils.c
   extensions:         ForeignFunctionInterface, CPP
-  extra-libraries:    "X11"
+  extra-libraries:    "X11", "Xrandr", "Xext"
   include-dirs:       include
   includes:           HsXlib.h, HsAllKeysyms.h
   install-includes:   HsXlib.h, XlibExtras.h, HsAllKeysyms.h
