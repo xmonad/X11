@@ -1224,8 +1224,10 @@ getWMNormalHints d w
     = alloca $ \sh -> do
         alloca $ \supplied_return -> do
           -- what's the purpose of supplied_return?
-          xGetWMNormalHints d w sh supplied_return
-          peek sh
+          status <- xGetWMNormalHints d w sh supplied_return
+          case status of
+            0 -> return (SizeHints Nothing Nothing Nothing Nothing Nothing Nothing)
+            _ -> peek sh
 
 
 data ClassHint = ClassHint
