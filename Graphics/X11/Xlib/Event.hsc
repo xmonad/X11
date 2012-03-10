@@ -388,6 +388,7 @@ get_ConfigureEvent p = peekXConfigureEvent (castPtr p)
 -- -- getSelectionClearEvent omitted
 -- -- getSelectionRequestEvent omitted
 -- -- getSelectionEvent omitted
+-- -- xrrScreenChangeNotifyEvent omitted
 
 -- functions
 

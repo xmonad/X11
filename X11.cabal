@@ -46,6 +46,7 @@ library
       Graphics.X11.Xlib.Image,
       Graphics.X11.Xlib.Extras,
       Graphics.X11.Xinerama
+      Graphics.X11.Xrandr
       Graphics.X11.ExtraTypes,
       Graphics.X11.ExtraTypes.AP,
       Graphics.X11.ExtraTypes.DEC,
@@ -58,7 +59,7 @@ library
       cbits/auxiliaries.c,
       cbits/XUtils.c
   extensions:         ForeignFunctionInterface, CPP
-  extra-libraries:    "X11"
+  extra-libraries:    "X11", "Xrandr", "Xext"
   include-dirs:       include
   includes:           HsXlib.h, HsAllKeysyms.h
   install-includes:   HsXlib.h, XlibExtras.h, HsAllKeysyms.h

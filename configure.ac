@@ -73,6 +73,12 @@ else
     echo "WARNING: Building without Xinerama support per user request"
 fi
 
+AC_CHECK_HEADERS([X11/extensions/Xrandr.h], [have_xrandr=yes])
+if ! test "$have_xrandr" = yes; then
+else
+    AC_MSG_ERROR([X11/extensions/Xrandr.h (from libXrandr) is required])
+fi
+
 AC_MSG_CHECKING([whether to include X.org keysyms])
 AC_ARG_WITH(xorg-keysym,
             AS_HELP_STRING([--without-xorg-keysym], [do not build X.org keysym support]),
