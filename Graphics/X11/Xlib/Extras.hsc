@@ -1219,17 +1219,8 @@ instance Storable SizeHints where
 foreign import ccall unsafe "XlibExtras.h XGetWMNormalHints"
     xGetWMNormalHints :: Display -> Window -> Ptr SizeHints -> Ptr CLong -> IO Status
 
-getWMNormalHints :: Display -> Window -> IO SizeHints
+getWMNormalHints :: Display -> Window -> IO (Maybe SizeHints)
 getWMNormalHints d w
-    = alloca $ \sh -> do
-        alloca $ \supplied_return -> do
-          -- what's the purpose of supplied_return?
-          xGetWMNormalHints d w sh supplied_return
-          peek sh
-
-
-getMaybeWMNormalHints :: Display -> Window -> IO (Maybe SizeHints)
-getMaybeWMNormalHints d w
     = alloca $ \sh -> do
         alloca $ \supplied_return -> do
           -- what's the purpose of supplied_return?
