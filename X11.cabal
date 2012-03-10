@@ -46,6 +46,7 @@ library
       Graphics.X11.Xlib.Image,
       Graphics.X11.Xlib.Extras,
       Graphics.X11.Xinerama
+      Graphics.X11.Xrandr
       Graphics.X11.ExtraTypes,
       Graphics.X11.ExtraTypes.AP,
       Graphics.X11.ExtraTypes.DEC,
