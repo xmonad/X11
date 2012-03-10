@@ -1228,6 +1228,17 @@ getWMNormalHints d w
           peek sh
 
 
+getMaybeWMNormalHints :: Display -> Window -> IO (Maybe SizeHints)
+getMaybeWMNormalHints d w
+    = alloca $ \sh -> do
+        alloca $ \supplied_return -> do
+          -- what's the purpose of supplied_return?
+          status <- xGetWMNormalHints d w sh supplied_return
+          case status of
+            0 -> return Nothing
+            _ -> peek sh >>= return . Just
+
+
 data ClassHint = ClassHint
                         { resName  :: String
                         , resClass :: String
