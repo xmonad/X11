@@ -601,7 +601,7 @@ getEvent p = do
                         16 -> do a <- peekArray 10 datPtr
                                  return $ map fromIntegral (a::[Word16])
                         32 -> do a <- peekArray 5 datPtr
-                                 return $ map fromIntegral (a::[Word32])
+                                 return $ map fromIntegral (a::[CLong])
                         _  -> error "X11.Extras.clientMessage: illegal value"
             return $ ClientMessageEvent
                         { ev_event_type    = type_
