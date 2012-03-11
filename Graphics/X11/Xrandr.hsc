@@ -66,23 +66,7 @@ data XRRScreenSize = XRRScreenSize
 compiledWithXrandr :: Bool
 compiledWithXrandr = True
 
-#include <X11/extensions/Xrandr.h>
-
-type Rotation   = #{type Rotation}
-type Reflection = #{type Rotation}
-type SizeID     = #{type SizeID}
-
-#{enum Rotation,
-  , xRR_Rotate_0   = RR_Rotate_0
-  , xRR_Rotate_90  = RR_Rotate_90
-  , xRR_Rotate_180 = RR_Rotate_180
-  , xRR_Rotate_270 = RR_Rotate_270
-  }
-
-#{enum Reflection,
-  , xRR_Reflect_X = RR_Reflect_X
-  , xRR_Reflect_Y = RR_Reflect_Y
-  }
+#include "HsXlib.h"
 
 newtype XRRScreenConfiguration = XRRScreenConfiguration (Ptr XRRScreenConfiguration)
 #if __GLASGOW_HASKELL__
