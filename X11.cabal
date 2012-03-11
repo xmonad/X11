@@ -1,5 +1,5 @@
 name:               X11
-version:            1.5.1.0
+version:            1.6.0
 license:            BSD3
 license-file:       LICENSE
 copyright:          Alastair Reid, 1999-2003, libraries@haskell.org 2003-2007, Don Stewart 2007-2009, Spencer Janssen 2007-2009, Daniel Wagner 2009-2011.
