@@ -30,6 +30,10 @@ module Graphics.X11.Types
         KeyCode,
         SizeID,
         SubpixelOrder,
+        Connection,
+        RROutput,
+        RRCrtc,
+        RRMode,
 
         -- * Enumeration types
         -- | These types were introduced to make function types clearer.
@@ -426,6 +430,9 @@ module Graphics.X11.Types
         colormapChangeMask,
         ownerGrabButtonMask,
         rrScreenChangeNotifyMask,
+        rrCrtcChangeNotifyMask,
+        rrOutputChangeNotifyMask,
+        rrOutputPropertyNotifyMask,
 
         -- ** Event types
         EventType,
@@ -462,6 +469,11 @@ module Graphics.X11.Types
         colormapNotify,
         clientMessage,
         mappingNotify,
+        rrScreenChangeNotify,
+        rrNotify,
+        rrNotifyCrtcChange,
+        rrNotifyOutputChange,
+        rrNotifyOutputProperty,
         lASTEvent,
 
         -- ** Modifiers
@@ -1269,6 +1281,9 @@ type EventMask                  = Mask
  , colormapChangeMask           = ColormapChangeMask
  , ownerGrabButtonMask          = OwnerGrabButtonMask
  , rrScreenChangeNotifyMask     = RRScreenChangeNotifyMask
+ , rrCrtcChangeNotifyMask       = RRCrtcChangeNotifyMask
+ , rrOutputChangeNotifyMask     = RROutputChangeNotifyMask
+ , rrOutputPropertyNotifyMask   = RROutputPropertyNotifyMask
  }
 
 type EventType          = Word32
@@ -1308,6 +1323,9 @@ type EventType          = Word32
  , mappingNotify        = MappingNotify
  , rrScreenChangeNotify = RRScreenChangeNotify
  , rrNotify             = RRNotify
+ , rrNotifyCrtcChange   = RRNotify_CrtcChange
+ , rrNotifyOutputChange = RRNotify_OutputChange
+ , rrNotifyOutputProperty=RRNotify_OutputProperty
  , lASTEvent            = LASTEvent
  }
 
@@ -1742,6 +1760,10 @@ type Rotation      = #{type Rotation}
 type Reflection    = #{type Rotation}
 type SizeID        = #{type SizeID}
 type SubpixelOrder = #{type SubpixelOrder}
+type Connection    = #{type Connection}
+type RROutput      = #{type RROutput}
+type RRCrtc        = #{type RRCrtc}
+type RRMode        = #{type RRMode}
 
 #{enum Rotation,
   , xRR_Rotate_0   = RR_Rotate_0
