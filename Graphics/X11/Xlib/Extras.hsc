@@ -212,6 +212,23 @@ data Event
         , ev_message_type          :: !Atom
         , ev_data                  :: ![CInt]
         }
+    | RRScreenChangeNotifyEvent
+        { ev_event_type            :: !EventType
+        , ev_serial                :: !CULong
+        , ev_send_event            :: !Bool
+        , ev_event_display         :: Display
+        , ev_window                :: !Window
+        , ev_root                  :: !Window
+        , ev_timestamp             :: !Time
+        , ev_config_timestamp      :: !Time
+        , ev_size_index            :: !SizeID
+        , ev_subpixel_order        :: !SubpixelOrder
+        , ev_rotation              :: !Rotation
+        , ev_width                 :: !CInt
+        , ev_height                :: !CInt
+        , ev_mwidth                :: !CInt
+        , ev_mheight               :: !CInt
+        }
 
     deriving ( Show, Typeable )
 
@@ -611,6 +628,39 @@ getEvent p = do
                         , ev_window        = window
                         , ev_message_type  = message_type
                         , ev_data          = dat
+                        }
+
+          -------------------------
+          -- RRScreenChangeNotify
+          -------------------------
+          | type_ == propertyNotify -> do
+            window           <- #{peek XRRScreenChangeNotifyEvent, window           } p
+            root             <- #{peek XRRScreenChangeNotifyEvent, root             } p
+            timestamp        <- #{peek XRRScreenChangeNotifyEvent, timestamp        } p
+            config_timestamp <- #{peek XRRScreenChangeNotifyEvent, config_timestamp } p
+            size_index       <- #{peek XRRScreenChangeNotifyEvent, config_timestamp } p
+            subpixel_order   <- #{peek XRRScreenChangeNotifyEvent, subpixel_order   } p
+            rotation         <- #{peek XRRScreenChangeNotifyEvent, rotation         } p
+            width            <- #{peek XRRScreenChangeNotifyEvent, width            } p
+            height           <- #{peek XRRScreenChangeNotifyEvent, height           } p
+            mwidth           <- #{peek XRRScreenChangeNotifyEvent, mwidth           } p
+            mheight          <- #{peek XRRScreenChangeNotifyEvent, mheight            } p
+            return $ RRScreenChangeNotifyEvent
+                        { ev_event_type       = type_
+                        , ev_serial           = serial
+                        , ev_send_event       = send_event
+                        , ev_event_display    = display
+                        , ev_window           = window
+                        , ev_root             = root
+                        , ev_timestamp        = timestamp
+                        , ev_config_timestamp = config_timestamp
+                        , ev_size_index       = size_index
+                        , ev_subpixel_order   = subpixel_order
+                        , ev_rotation         = rotation
+                        , ev_width            = width
+                        , ev_height           = height
+                        , ev_mwidth           = mwidth
+                        , ev_mheight          = mheight
                         }
 
           -- We don't handle this event specifically, so return the generic

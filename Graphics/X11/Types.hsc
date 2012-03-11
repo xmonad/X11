@@ -1304,6 +1304,8 @@ type EventType          = Word32
  , colormapNotify       = ColormapNotify
  , clientMessage        = ClientMessage
  , mappingNotify        = MappingNotify
+ , rrScreenChangeNotify = RRScreenChangeNotify
+ , rrNotify             = RRNotify
  , lASTEvent            = LASTEvent
  }
 
