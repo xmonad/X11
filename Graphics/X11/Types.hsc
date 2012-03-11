@@ -28,6 +28,8 @@ module Graphics.X11.Types
         Colormap,
         GContext,
         KeyCode,
+        SizeID,
+        SubpixelOrder,
 
         -- * Enumeration types
         -- | These types were introduced to make function types clearer.
@@ -800,7 +802,17 @@ module Graphics.X11.Types
         ImageFormat,
         xyBitmap,
         xyPixmap,
-        zPixmap
+        zPixmap,
+
+        -- ** Reflection and Rotation
+        Rotation,
+        Reflection,
+        xRR_Rotate_0,
+        xRR_Rotate_90,
+        xRR_Rotate_180,
+        xRR_Rotate_270,
+        xRR_Reflect_X,
+        xRR_Reflect_Y
         ) where
 
 -- import Data.Int
@@ -1720,3 +1732,22 @@ type   ImageFormat    = CInt
  , xyPixmap     = XYPixmap
  , zPixmap      = ZPixmap
  }
+
+-- Xrandr types
+type Rotation      = #{type Rotation}
+type Reflection    = #{type Rotation}
+type SizeID        = #{type SizeID}
+type SubpixelOrder = #{type SubpixelOrder}
+
+#{enum Rotation,
+  , xRR_Rotate_0   = RR_Rotate_0
+  , xRR_Rotate_90  = RR_Rotate_90
+  , xRR_Rotate_180 = RR_Rotate_180
+  , xRR_Rotate_270 = RR_Rotate_270
+  }
+
+#{enum Reflection,
+  , xRR_Reflect_X = RR_Reflect_X
+  , xRR_Reflect_Y = RR_Reflect_Y
+  }
+
