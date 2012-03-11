@@ -644,7 +644,7 @@ getEvent p = do
             width            <- #{peek XRRScreenChangeNotifyEvent, width            } p
             height           <- #{peek XRRScreenChangeNotifyEvent, height           } p
             mwidth           <- #{peek XRRScreenChangeNotifyEvent, mwidth           } p
-            mheight          <- #{peek XRRScreenChangeNotifyEvent, mheight            } p
+            mheight          <- #{peek XRRScreenChangeNotifyEvent, mheight          } p
             return $ RRScreenChangeNotifyEvent
                         { ev_event_type       = type_
                         , ev_serial           = serial

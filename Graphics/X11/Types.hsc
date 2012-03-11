@@ -425,6 +425,7 @@ module Graphics.X11.Types
         propertyChangeMask,
         colormapChangeMask,
         ownerGrabButtonMask,
+        rrScreenChangeNotifyMask,
 
         -- ** Event types
         EventType,
@@ -1267,6 +1268,7 @@ type EventMask                  = Mask
  , propertyChangeMask           = PropertyChangeMask
  , colormapChangeMask           = ColormapChangeMask
  , ownerGrabButtonMask          = OwnerGrabButtonMask
+ , rrScreenChangeNotifyMask     = RRScreenChangeNotifyMask
  }
 
 type EventType          = Word32
