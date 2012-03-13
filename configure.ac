@@ -75,7 +75,6 @@ fi
 
 AC_CHECK_HEADERS([X11/extensions/Xrandr.h], [have_xrandr=yes])
 if ! test "$have_xrandr" = yes; then
-else
     AC_MSG_ERROR([X11/extensions/Xrandr.h (from libXrandr) is required])
 fi
 
