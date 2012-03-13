@@ -197,8 +197,8 @@ xrrRootToScreen = cXRRRootToScreen
 foreign import ccall "XRRRootToScreen"
   cXRRRootToScreen :: Display -> Window -> IO CInt
 
-xrrSelectInput :: Display -> Window -> CInt -> IO ()
-xrrSelectInput = cXRRSelectInput
+xrrSelectInput :: Display -> Window -> EventMask -> IO ()
+xrrSelectInput dpy window mask = cXRRSelectInput dpy window (fromIntegral mask)
 foreign import ccall "XRRSelectInput"
   cXRRSelectInput :: Display -> Window -> CInt -> IO ()
 
