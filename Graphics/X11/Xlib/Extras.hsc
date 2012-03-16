@@ -13,7 +13,9 @@
 
 module Graphics.X11.Xlib.Extras where
 
+import Data.Maybe
 import Data.Typeable ( Typeable )
+import Graphics.X11.Xrandr
 import Graphics.X11.Xlib
 import Graphics.X11.Xlib.Types
 import Graphics.X11.Xlib.Misc
@@ -229,6 +231,55 @@ data Event
         , ev_mwidth                :: !CInt
         , ev_mheight               :: !CInt
         }
+    | RRNotifyEvent
+        { ev_event_type            :: !EventType
+        , ev_serial                :: !CULong
+        , ev_send_event            :: !Bool
+        , ev_event_display         :: Display
+        , ev_window                :: !Window
+        , ev_subtype               :: !CInt
+        }
+    | RRCrtcChangeNotifyEvent
+        { ev_event_type            :: !EventType
+        , ev_serial                :: !CULong
+        , ev_send_event            :: !Bool
+        , ev_event_display         :: Display
+        , ev_window                :: !Window
+        , ev_subtype               :: !CInt
+        , ev_crtc                  :: !RRCrtc
+        , ev_rr_mode               :: !RRMode
+        , ev_rotation              :: !Rotation
+        , ev_x                     :: !CInt
+        , ev_y                     :: !CInt
+        , ev_rr_width              :: !CUInt
+        , ev_rr_height             :: !CUInt
+        }
+    | RROutputChangeNotifyEvent
+        { ev_event_type            :: !EventType
+        , ev_serial                :: !CULong
+        , ev_send_event            :: !Bool
+        , ev_event_display         :: Display
+        , ev_window                :: !Window
+        , ev_subtype               :: !CInt
+        , ev_output                :: !RROutput
+        , ev_crtc                  :: !RRCrtc
+        , ev_rr_mode               :: !RRMode
+        , ev_rotation              :: !Rotation
+        , ev_connection            :: !Connection
+        , ev_subpixel_order        :: !SubpixelOrder
+        }
+    | RROutputPropertyNotifyEvent
+        { ev_event_type            :: !EventType
+        , ev_serial                :: !CULong
+        , ev_send_event            :: !Bool
+        , ev_event_display         :: Display
+        , ev_window                :: !Window
+        , ev_subtype               :: !CInt
+        , ev_output                :: !RROutput
+        , ev_property              :: !Atom
+        , ev_timestamp             :: !Time
+        , ev_rr_state              :: !CInt
+        }
 
     deriving ( Show, Typeable )
 
@@ -282,6 +333,9 @@ getEvent p = do
     serial     <- #{peek XAnyEvent, serial} p
     send_event <- #{peek XAnyEvent, send_event} p
     display    <- fmap Display (#{peek XAnyEvent, display} p)
+    rrData     <- xrrQueryExtension display
+    let rrHasExtension = isJust rrData
+    let rrEventBase    = fromIntegral $ fst $ fromMaybe (0, 0) rrData
     case () of
 
         -------------------------
@@ -633,7 +687,8 @@ getEvent p = do
           -------------------------
           -- RRScreenChangeNotify
           -------------------------
-          | type_ == propertyNotify -> do
+          | rrHasExtension &&
+            type_ == rrEventBase + rrScreenChangeNotify -> do
             window           <- #{peek XRRScreenChangeNotifyEvent, window           } p
             root             <- #{peek XRRScreenChangeNotifyEvent, root             } p
             timestamp        <- #{peek XRRScreenChangeNotifyEvent, timestamp        } p
@@ -644,7 +699,7 @@ getEvent p = do
             width            <- #{peek XRRScreenChangeNotifyEvent, width            } p
             height           <- #{peek XRRScreenChangeNotifyEvent, height           } p
             mwidth           <- #{peek XRRScreenChangeNotifyEvent, mwidth           } p
-            mheight          <- #{peek XRRScreenChangeNotifyEvent, mheight            } p
+            mheight          <- #{peek XRRScreenChangeNotifyEvent, mheight          } p
             return $ RRScreenChangeNotifyEvent
                         { ev_event_type       = type_
                         , ev_serial           = serial
@@ -662,6 +717,91 @@ getEvent p = do
                         , ev_mwidth           = mwidth
                         , ev_mheight          = mheight
                         }
+
+          -------------------------
+          -- RRNotify
+          -------------------------
+          | rrHasExtension &&
+            type_ == rrEventBase + rrNotify -> do
+            window   <- #{peek XRRNotifyEvent, window  } p
+            subtype  <- #{peek XRRNotifyEvent, subtype } p
+            let subtype_ = fromIntegral subtype_
+            case () of
+                _ | subtype_ == rrNotifyCrtcChange -> do
+                    crtc           <- #{peek XRRCrtcChangeNotifyEvent, crtc     } p
+                    mode           <- #{peek XRRCrtcChangeNotifyEvent, mode     } p
+                    rotation       <- #{peek XRRCrtcChangeNotifyEvent, rotation } p
+                    x              <- #{peek XRRCrtcChangeNotifyEvent, x        } p
+                    y              <- #{peek XRRCrtcChangeNotifyEvent, y        } p
+                    width          <- #{peek XRRCrtcChangeNotifyEvent, width    } p
+                    height         <- #{peek XRRCrtcChangeNotifyEvent, height   } p
+                    return $ RRCrtcChangeNotifyEvent
+                             { ev_event_type    = type_
+                             , ev_serial        = serial
+                             , ev_send_event    = send_event
+                             , ev_event_display = display
+                             , ev_window        = window
+                             , ev_subtype       = subtype
+                             , ev_crtc          = crtc
+                             , ev_rr_mode       = mode
+                             , ev_rotation      = rotation
+                             , ev_x             = x
+                             , ev_y             = y
+                             , ev_rr_width      = width
+                             , ev_rr_height     = height
+                             }
+
+                  | subtype_ == rrNotifyOutputChange -> do
+                    output         <- #{peek XRROutputChangeNotifyEvent, output         } p
+                    crtc           <- #{peek XRROutputChangeNotifyEvent, crtc           } p
+                    mode           <- #{peek XRROutputChangeNotifyEvent, mode           } p
+                    rotation       <- #{peek XRROutputChangeNotifyEvent, rotation       } p
+                    connection     <- #{peek XRROutputChangeNotifyEvent, connection     } p
+                    subpixel_order <- #{peek XRROutputChangeNotifyEvent, subpixel_order } p
+                    return $ RROutputChangeNotifyEvent
+                             { ev_event_type     = type_
+                             , ev_serial         = serial
+                             , ev_send_event     = send_event
+                             , ev_event_display  = display
+                             , ev_window         = window
+                             , ev_subtype        = subtype
+                             , ev_output         = output
+                             , ev_crtc           = crtc
+                             , ev_rr_mode        = mode
+                             , ev_rotation       = rotation
+                             , ev_connection     = connection
+                             , ev_subpixel_order = subpixel_order
+                             }
+
+                  | subtype_ == rrNotifyOutputProperty -> do
+                    output         <- #{peek XRROutputPropertyNotifyEvent, output    } p
+                    property       <- #{peek XRROutputPropertyNotifyEvent, property  } p
+                    timestamp      <- #{peek XRROutputPropertyNotifyEvent, timestamp } p
+                    state          <- #{peek XRROutputPropertyNotifyEvent, state     } p
+                    return $ RROutputPropertyNotifyEvent
+                             { ev_event_type    = type_
+                             , ev_serial        = serial
+                             , ev_send_event    = send_event
+                             , ev_event_display = display
+                             , ev_window        = window
+                             , ev_subtype       = subtype
+                             , ev_output        = output
+                             , ev_property      = property
+                             , ev_timestamp     = timestamp
+                             , ev_rr_state      = state
+                             }
+
+                  -- We don't handle this event specifically, so return the generic
+                  -- RRNotifyEvent.
+                  | otherwise -> do
+                    return $ RRNotifyEvent
+                                { ev_event_type    = type_
+                                , ev_serial        = serial
+                                , ev_send_event    = send_event
+                                , ev_event_display = display
+                                , ev_window        = window
+                                , ev_subtype       = subtype
+                                }
 
           -- We don't handle this event specifically, so return the generic
           -- AnyEvent.
