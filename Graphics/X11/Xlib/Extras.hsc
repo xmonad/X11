@@ -1,4 +1,4 @@
-{-# OPTIONS -fglasgow-exts -fno-warn-name-shadowing #-}
+{-# LANGUAGE DeriveDataTypeable #-}
 -----------------------------------------------------------------------------
 -- |
 -- Module      : Graphics.X11.Xlib.Extras
