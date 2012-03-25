@@ -461,7 +461,7 @@ foreign import ccall unsafe "HsXlib.h &defaultErrorHandler"
 -- textual representation of the error.
 setDefaultErrorHandler :: IO ()
 setDefaultErrorHandler = do
-        xSetErrorHandler defaultErrorHandler
+        _ <- xSetErrorHandler defaultErrorHandler
         return ()
 
 -- %fun XSetIOErrorHandler :: IOErrorHandler -> IO IOErrorHandler

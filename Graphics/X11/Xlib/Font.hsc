@@ -164,7 +164,7 @@ textExtents font_struct string = unsafePerformIO $
 	alloca $ \ font_ascent_return ->
 	alloca $ \ font_descent_return ->
 	allocaBytes #{size XCharStruct} $ \ overall_return -> do
-	xTextExtents font_struct c_string (fromIntegral nchars) direction_return
+	_ <- xTextExtents font_struct c_string (fromIntegral nchars) direction_return
 		font_ascent_return font_descent_return overall_return
 	direction <- peek direction_return
 	ascent <- peek font_ascent_return
