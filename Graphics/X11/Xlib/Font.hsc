@@ -35,8 +35,10 @@ module Graphics.X11.Xlib.Font(
 import Graphics.X11.Types
 import Graphics.X11.Xlib.Types
 
-import Foreign
+import Foreign (Ptr, Int32, alloca, allocaBytes, peekByteOff, Word16, Word64, peek, throwIfNull)
 import Foreign.C
+
+import System.IO.Unsafe
 
 #if __GLASGOW_HASKELL__
 import Data.Generics
