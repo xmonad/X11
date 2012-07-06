@@ -51,7 +51,7 @@ import Foreign.Marshal.Array
 import Foreign.Marshal.Utils
 
 #if __GLASGOW_HASKELL__
-import Data.Generics
+import Data.Data
 #endif
 
 ----------------------------------------------------------------

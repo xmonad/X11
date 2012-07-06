@@ -51,7 +51,7 @@ import Graphics.X11.Xlib.Types
 import Graphics.X11.Types
 
 #if __GLASGOW_HASKELL__
-import Data.Generics
+import Data.Data
 #endif
 
 -- | Representation of the XRRScreenSize struct
