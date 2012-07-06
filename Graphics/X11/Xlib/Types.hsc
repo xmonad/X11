@@ -29,7 +29,7 @@ import Foreign.Ptr
 import Foreign.Storable( Storable(..) )
 
 #if __GLASGOW_HASKELL__
-import Data.Generics
+import Data.Data
 #endif
 
 #include "HsXlib.h"

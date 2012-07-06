@@ -39,7 +39,7 @@ import Foreign
 import Foreign.C
 
 #if __GLASGOW_HASKELL__
-import Data.Generics
+import Data.Data
 #endif
 
 ----------------------------------------------------------------
