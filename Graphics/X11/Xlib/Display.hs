@@ -53,8 +53,10 @@ module Graphics.X11.Xlib.Display(
 import Graphics.X11.Types
 import Graphics.X11.Xlib.Types
 
-import Foreign
+import Foreign (throwIfNull, Ptr)
 import Foreign.C
+
+import System.IO.Unsafe
 
 ----------------------------------------------------------------
 -- Display

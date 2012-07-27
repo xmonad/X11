@@ -1,4 +1,4 @@
-{-# OPTIONS -fglasgow-exts -fno-warn-name-shadowing #-}
+{-# LANGUAGE DeriveDataTypeable #-}
 -----------------------------------------------------------------------------
 -- |
 -- Module      : Graphics.X11.Xlib.Extras
@@ -18,11 +18,12 @@ import Data.Typeable ( Typeable )
 import Graphics.X11.Xrandr
 import Graphics.X11.Xlib
 import Graphics.X11.Xlib.Types
-import Graphics.X11.Xlib.Misc
-import Foreign
+import Foreign (Storable, Ptr, peek, poke, peekElemOff, pokeElemOff, peekByteOff, pokeByteOff, peekArray, throwIfNull, nullPtr, sizeOf, alignment, alloca, with, throwIf, Word8, Word16, Word64, Int32, plusPtr, castPtr, withArrayLen, setBit, testBit, allocaBytes, FunPtr)
 import Foreign.C.Types
 import Foreign.C.String
 import Control.Monad
+
+import System.IO.Unsafe
 
 #include "XlibExtras.h"
 
@@ -877,7 +878,7 @@ foreign import ccall unsafe "XlibExtras.h XKillClient"
 
 configureWindow :: Display -> Window -> CULong -> WindowChanges -> IO ()
 configureWindow d w m c = do
-    with c (xConfigureWindow d w m)
+    _ <- with c (xConfigureWindow d w m)
     return ()
 
 foreign import ccall unsafe "XlibExtras.h XFree"
@@ -892,11 +893,11 @@ queryTree d w =
     alloca $ \parent_return ->
     alloca $ \children_return ->
     alloca $ \nchildren_return -> do
-        xQueryTree d w root_return parent_return children_return nchildren_return
+        _ <- xQueryTree d w root_return parent_return children_return nchildren_return
         p <- peek children_return
         n <- fmap fromIntegral $ peek nchildren_return
         ws <- peekArray n p
-        xFree p
+        _ <- xFree p
         liftM3 (,,) (peek root_return) (peek parent_return) (return ws)
 
 -- TODO: this data type is incomplete wrt. the C struct
@@ -940,7 +941,7 @@ foreign import ccall unsafe "XlibExtras.h XGetWindowAttributes"
 
 getWindowAttributes :: Display -> Window -> IO WindowAttributes
 getWindowAttributes d w = alloca $ \p -> do
-    xGetWindowAttributes d w p
+    _ <- xGetWindowAttributes d w p
     peek p
 
 -- | interface to the X11 library function @XChangeWindowAttributes()@.
@@ -980,7 +981,7 @@ foreign import ccall unsafe "XlibExtras.h XGetTextProperty"
 getTextProperty :: Display -> Window -> Atom -> IO TextProperty
 getTextProperty d w a =
     alloca $ \textp -> do
-        throwIf (0==) (const "getTextProperty") $ xGetTextProperty d w textp a
+        _ <- throwIf (0==) (const "getTextProperty") $ xGetTextProperty d w textp a
         peek textp
 
 foreign import ccall unsafe "XlibExtras.h XwcTextPropertyToTextList"
@@ -991,7 +992,7 @@ wcTextPropertyToTextList d prop =
     alloca    $ \listp  ->
     alloca    $ \countp ->
     with prop $ \propp  -> do
-        throwIf (success>) (const "wcTextPropertyToTextList") $
+        _ <- throwIf (success>) (const "wcTextPropertyToTextList") $
             xwcTextPropertyToTextList d propp listp countp
         count <- peek countp
         list  <- peek listp
@@ -1039,7 +1040,7 @@ wcTextExtents fs text = unsafePerformIO $
     withCWStringLen text $ \(textp, len) ->
     alloca               $ \inkp          ->
     alloca               $ \logicalp      -> do
-        xwcTextExtents fs textp (fromIntegral len) inkp logicalp
+        _ <- xwcTextExtents fs textp (fromIntegral len) inkp logicalp
         (,) `fmap` peek inkp `ap` peek logicalp
 
 foreign import ccall unsafe "XlibExtras.h XwcDrawString"
@@ -1071,13 +1072,13 @@ foreign import ccall unsafe "XlibExtras.h XFetchName"
 
 fetchName :: Display -> Window -> IO (Maybe String)
 fetchName d w = alloca $ \p -> do
-    xFetchName d w p
+    _ <- xFetchName d w p
     cstr <- peek p
     if cstr == nullPtr
         then return Nothing
         else do
             str <- peekCString cstr
-            xFree cstr
+            _ <- xFree cstr
             return $ Just str
 
 foreign import ccall unsafe "XlibExtras.h XGetTransientForHint"
@@ -1125,7 +1126,7 @@ getWMProtocols display w = do
             else do sz       <- peek count_ptr
                     atom_ptr <- peek atom_ptr_ptr
                     atoms    <- peekArray (fromIntegral sz) atom_ptr
-                    xFree atom_ptr
+                    _ <- xFree atom_ptr
                     return atoms
 
 foreign import ccall unsafe "HsXlib.h XGetWMProtocols"
@@ -1241,7 +1242,7 @@ refreshKeyboardMapping ev@(MappingNotifyEvent {ev_event_display = (Display d)})
     #{poke XMappingEvent, request       } p $ ev_request       ev
     #{poke XMappingEvent, first_keycode } p $ ev_first_keycode ev
     #{poke XMappingEvent, count         } p $ ev_count         ev
-    xRefreshKeyboardMapping p
+    _ <- xRefreshKeyboardMapping p
     return ()
 refreshKeyboardMapping _ = return ()
 
@@ -1286,7 +1287,7 @@ rawGetWindowProperty bits d atom w =
         | actual_format /= bits = xFree prop_ptr >> return Nothing
         | otherwise = do
             retval <- peekArray nitems (castPtr prop_ptr)
-            xFree prop_ptr
+            _ <- xFree prop_ptr
             return $ Just retval
 
 getWindowProperty8 :: Display -> Atom -> Window -> IO (Maybe [CChar])
@@ -1303,19 +1304,19 @@ getWindowProperty32 = rawGetWindowProperty 32
 changeProperty8 :: Display -> Window -> Atom -> Atom -> CInt -> [CChar] -> IO ()
 changeProperty8 dpy w prop typ mode dat =
     withArrayLen dat $ \ len ptr -> do
-        xChangeProperty dpy w prop typ 8 mode (castPtr ptr) (fromIntegral len)
+        _ <- xChangeProperty dpy w prop typ 8 mode (castPtr ptr) (fromIntegral len)
         return ()
 
 changeProperty16 :: Display -> Window -> Atom -> Atom -> CInt -> [CShort] -> IO ()
 changeProperty16 dpy w prop typ mode dat =
     withArrayLen dat $ \ len ptr -> do
-        xChangeProperty dpy w prop typ 16 mode (castPtr ptr) (fromIntegral len)
+        _ <- xChangeProperty dpy w prop typ 16 mode (castPtr ptr) (fromIntegral len)
         return ()
 
 changeProperty32 :: Display -> Window -> Atom -> Atom -> CInt -> [CLong] -> IO ()
 changeProperty32 dpy w prop typ mode dat =
     withArrayLen dat $ \ len ptr -> do
-        xChangeProperty dpy w prop typ 32 mode (castPtr ptr) (fromIntegral len)
+        _ <- xChangeProperty dpy w prop typ 32 mode (castPtr ptr) (fromIntegral len)
         return ()
 
 propModeReplace, propModePrepend, propModeAppend :: CInt
@@ -1433,8 +1434,8 @@ getClassHint d w =  allocaBytes (#{size XClassHint}) $ \ p -> do
             res_name_p <- #{peek XClassHint, res_name} p
             res_class_p <- #{peek XClassHint, res_class} p
             res <- liftM2 ClassHint (peekCString res_name_p) (peekCString res_class_p)
-            xFree res_name_p
-            xFree res_class_p
+            _ <- xFree res_name_p
+            _ <- xFree res_class_p
             return res
         else return $ ClassHint "" ""
 
@@ -1516,7 +1517,7 @@ getWMHints dpy w = do
     p <- xGetWMHints dpy w
     if p == nullPtr
         then return $ WMHints 0 False 0 0 0 0 0 0 0
-        else do x <- peek p; xFree p; return x
+        else do x <- peek p; _ <- xFree p; return x
 
 foreign import ccall unsafe "XlibExtras.h XAllocWMHints"
     xAllocWMHints :: IO (Ptr WMHints)
@@ -1529,7 +1530,7 @@ setWMHints dpy w wmh = do
     p_wmh <- xAllocWMHints
     poke p_wmh wmh
     res <- xSetWMHints dpy w p_wmh
-    xFree p_wmh
+    _ <- xFree p_wmh
     return res
 
 ------------------------------------------------------------------------
@@ -1595,7 +1596,7 @@ foreign import ccall safe "HsXlib.h XSetErrorHandler"
 setErrorHandler :: XErrorHandler -> IO ()
 setErrorHandler new_handler = do
     _handler <- mkXErrorHandler (\d -> \e -> new_handler d e >> return 0)
-    _xSetErrorHandler _handler
+    _ <- _xSetErrorHandler _handler
     return ()
 
 -- |Retrieves error event data from a pointer to an XErrorEvent and
@@ -1633,7 +1634,7 @@ getCommand d w =
   alloca $
   \argcp ->
   do
-    throwIf (success >) (\status -> "xGetCommand returned status: " ++ show status) $ xGetCommand d w argvp argcp
+    _ <- throwIf (success >) (\status -> "xGetCommand returned status: " ++ show status) $ xGetCommand d w argvp argcp
     argc <- peek argcp
     argv <- peek argvp
     texts <- flip mapM [0 .. fromIntegral $ pred argc] $ \i -> peekElemOff argv i >>= peekCWString
@@ -1653,7 +1654,7 @@ getModifierMapping d = do
     let m = fromIntegral m'
     pks <- #{peek XModifierKeymap, modifiermap} p :: IO (Ptr KeyCode)
     ks <- peekArray (m * 8) pks
-    xFreeModifiermap p
+    _ <- xFreeModifiermap p
     return . zip masks . map fst . tail . iterate (splitAt m . snd) $ ([], ks)
  where
     masks = [shiftMapIndex .. mod5MapIndex]
