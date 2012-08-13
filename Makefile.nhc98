@@ -20,6 +20,7 @@ SRCS	= \
 	Graphics/X11/Xlib/Window.hs \
     Graphics.X11.Xlib.Extras \
     Graphics.X11.Xinerama \
+    Graphics.X11.XScreenSaver \
 	fdset.c \
     XUtils.c \
 	auxiliaries.c
