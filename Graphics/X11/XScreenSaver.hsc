@@ -1,4 +1,4 @@
-{-# LANGUAGE  ForeignFunctionInterface #-}
+{-# LANGUAGE DeriveDataTypeable, ForeignFunctionInterface #-}
 --------------------------------------------------------------------
 -- |
 -- Module    : Graphics.X11.XScreenSaver
@@ -19,9 +19,11 @@ module Graphics.X11.XScreenSaver (
     XScreenSaverState(..),
     XScreenSaverKind(..),
     XScreenSaverInfo(..),
+    XScreenSaverNotifyEvent,
     xScreenSaverQueryExtension,
     xScreenSaverQueryVersion,
     xScreenSaverQueryInfo,
+    get_XScreenSaverNotifyEvent,
     compiledWithXScreenSaver
  ) where
 
@@ -150,6 +152,38 @@ instance Storable XScreenSaverInfo where
                 `ap` (#{peek XScreenSaverInfo, idle} p)
                 `ap` (#{peek XScreenSaverInfo, eventMask} p)
 
+type XScreenSaverNotifyEvent =
+    ( Window      -- screen saver window
+    , Window      -- root window of event screen
+    , CInt        -- State: ScreenSaver{Off,On,Cycle}
+    , CInt        -- Kind:  ScreenSaver{Blanked,Internal,External}
+    , Bool        -- extents of new region
+    , Time        -- event timestamp
+    )
+
+pokeXScreenSaverNotifyEvent :: Ptr XScreenSaverNotifyEvent
+                            -> XScreenSaverNotifyEvent -> IO ()
+pokeXScreenSaverNotifyEvent p (window, root, state, kind, forced, time) = do
+        #{poke XScreenSaverNotifyEvent, window     } p window
+        #{poke XScreenSaverNotifyEvent, root       } p root
+        #{poke XScreenSaverNotifyEvent, state      } p state
+        #{poke XScreenSaverNotifyEvent, kind       } p kind
+        #{poke XScreenSaverNotifyEvent, forced     } p forced
+        #{poke XScreenSaverNotifyEvent, time       } p time
+
+peekXScreenSaverNotifyEvent :: Ptr XScreenSaverNotifyEvent
+                            -> IO XScreenSaverNotifyEvent
+peekXScreenSaverNotifyEvent p = do
+        window <- (#{peek XScreenSaverNotifyEvent, window     } p )
+        root   <- (#{peek XScreenSaverNotifyEvent, root       } p )
+        state  <- (#{peek XScreenSaverNotifyEvent, state      } p )
+        kind   <- (#{peek XScreenSaverNotifyEvent, kind       } p )
+        forced <- (#{peek XScreenSaverNotifyEvent, forced     } p )
+        time   <- (#{peek XScreenSaverNotifyEvent, time       } p )
+        return (window, root, state, kind, forced, time)
+
+get_XScreenSaverNotifyEvent :: XEventPtr -> IO XScreenSaverNotifyEvent
+get_XScreenSaverNotifyEvent p = peekXScreenSaverNotifyEvent (castPtr p)
 
 xScreenSaverQueryExtension :: Display -> IO (Maybe (CInt, CInt))
 xScreenSaverQueryExtension dpy = wrapPtr2 (cXScreenSaverQueryExtension dpy) go
