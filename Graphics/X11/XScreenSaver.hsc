@@ -113,7 +113,8 @@ cInt2XScreenSaverState (#const ScreenSaverOn) = ScreenSaverOn
 cInt2XScreenSaverState (#const ScreenSaverOff) = ScreenSaverOff
 cInt2XScreenSaverState (#const ScreenSaverCycle) = ScreenSaverCycle
 cInt2XScreenSaverState (#const ScreenSaverDisabled) = ScreenSaverDisabled
-cInt2XScreenSaverState _ = error "Unknown state in xScreenSaverQueryInfo"
+cInt2XScreenSaverState s = error $
+    "Unknown state in xScreenSaverQueryInfo for XScreenSaverState: " ++ show s
 
 instance Storable XScreenSaverState where
     sizeOf    _ = sizeOf (undefined :: CInt)
@@ -131,7 +132,8 @@ cInt2XScreenSaverKind :: CInt -> XScreenSaverKind
 cInt2XScreenSaverKind (#const ScreenSaverBlanked) = ScreenSaverBlanked
 cInt2XScreenSaverKind (#const ScreenSaverInternal) = ScreenSaverInternal
 cInt2XScreenSaverKind (#const ScreenSaverExternal) = ScreenSaverExternal
-cInt2XScreenSaverKind _ = error "Unknown kind in xScreenSaverQueryInfo"
+cInt2XScreenSaverKind s = error $
+    "Unknown kind in xScreenSaverQueryInfo for XScreenSaverKind: " ++ show s
 
 instance Storable XScreenSaverKind where
     sizeOf    _ = sizeOf (undefined :: CInt)
