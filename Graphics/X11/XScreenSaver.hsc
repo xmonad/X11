@@ -40,14 +40,39 @@ import Graphics.X11.Xlib.Types
 import Foreign
 import Foreign.C.Types
 import Graphics.X11.Xlib
+
 import Control.Monad
 
-                       | ScreenSaverCycle
+-- | XScreenSaverState is for use in both XScreenSaverNotifyEvent and
+-- XScreenSaverInfo
+-- ScreenSaverCycle is not a valid value for use in XScreenSaverInfo
+-- ScreenSaverDisabled will not occur in an XScreenSaverNotifyEvent
+data XScreenSaverState
+    -- | The  screen is not currently being saved; til-or-since specifies the
+    -- number of milliseconds until the screen saver is expected to activate.
+    = ScreenSaverOff
+    -- | The screen is currently being saved; til-or-since specifies the number
+    -- of milliseconds since the screen saver activated.
+    | ScreenSaverOn
+    -- | If  this  bit  is  set,  ScreenSaverNotify events are generated
+    -- whenever the screen saver cycle interval passes.
+    | ScreenSaverCycle
+    -- | The screen saver is currently disabled; til-or-since is zero.
+    | ScreenSaverDisabled
+    deriving Show
 
-data XScreenSaverKind = ScreenSaverBlanked
-                      | ScreenSaverInternal
-                      | ScreenSaverExternal
-                      deriving Show
+-- | Data type for use in a XScreenSaverInfo struct
+data XScreenSaverKind
+    -- | The video signal to the display monitor was disabled.
+    = ScreenSaverBlanked
+    -- | A server-dependent, built-in screen saver image was displayed; either
+    -- no client had set the screen saver window attributes or a different
+    -- client had the server grabbed when the screen saver activated.
+    | ScreenSaverInternal
+    -- | The screen saver window was mapped with attributes set by a client
+    -- using the ScreenSaverSetAttributes request.
+    | ScreenSaverExternal
+    deriving Show
 
 -- | Representation of the XScreenSaverInfo struct.
 data XScreenSaverInfo = XScreenSaverInfo
@@ -55,28 +80,10 @@ data XScreenSaverInfo = XScreenSaverInfo
     , xssi_state         :: !XScreenSaverState
 -- ^ The state field specified whether or not the screen saver is currently
 -- active and how the til-or-since value should be interpreted:
---
--- ['ScreenSaverOff'] The  screen is not currently being saved; til-or-since
--- specifies the number of milliseconds until the screen saver is expected to
--- activate.
---
--- ['ScreenSaverOn'] The screen is currently being saved; til-or-since specifies
--- the number of milliseconds since the screen saver activated.
---
--- ['ScreenSaverDisabled'] The screen saver is currently disabled; til-or-since
--- is zero.
     , xssi_kind          :: !XScreenSaverKind
 -- ^ The kind field specifies the mechanism that either is currently being used
 -- or would have been were the screen being saved:
 --
--- ['ScreenSaverBlanked'] The video signal to the display monitor was disabled.
---
--- ['ScreenSaverInternal'] A server-dependent, built-in screen saver image was
--- displayed; either no client had set the screen saver window attributes or a
--- different client had the server grabbed when the screen saver activated.
---
--- ['ScreenSaverExternal'] The screen saver window was mapped with attributes
--- set by a client using the ScreenSaverSetAttributes request.
     , xssi_til_or_since  :: !CULong
     , xssi_idle          :: !CULong
 -- ^ The idle field specifies the number of milliseconds since the last input
