@@ -23,9 +23,19 @@ module Graphics.X11.XScreenSaver (
     xScreenSaverQueryExtension,
     xScreenSaverQueryVersion,
     xScreenSaverQueryInfo,
+    xScreenSaverSelectInput,
+    xScreenSaverSetAttributes,
+    xScreenSaverUnsetAttributes,
+    xScreenSaverSaverRegister,
+    xScreenSaverUnregister,
+    xScreenSaverGetRegistered,
+    xScreenSaverSuspend,
     get_XScreenSaverNotifyEvent,
     compiledWithXScreenSaver
  ) where
+
+import Graphics.X11.Types
+import Graphics.X11.Xlib.Types
 
 import Foreign
 import Foreign.C.Types
@@ -216,8 +226,51 @@ xScreenSaverQueryInfo dpy = do
     s <- cXScreenSaverQueryInfo dpy (defaultRootWindow dpy) p
     if s == 0 then return Nothing else do
     xssi <- peek p
-    cXFree p
+    _ <- cXFree p
     return (Just xssi)
+
+-- | xScreenSaverSelectInput asks that events related to the screen saver be
+-- generated for this client.  If no bits are set in event-mask,  then no events
+-- will be generated.
+xScreenSaverSelectInput :: Display -> EventMask -> IO ()
+xScreenSaverSelectInput dpy xssem = do
+    p <- cXScreenSaverAllocInfo
+    if p == nullPtr then return () else do
+    cXScreenSaverSelectInput dpy (defaultRootWindow dpy) xssem
+
+xScreenSaverSetAttributes :: Display
+                          -> Position       -- ^ x
+                          -> Position       -- ^ y
+                          -> Dimension      -- ^ width
+                          -> Dimension      -- ^ height
+                          -> Dimension      -- ^ border width
+                          -> CInt           -- ^ depth ('defaultDepthOfScreen')
+                          -> WindowClass    -- ^ class
+                          -> Visual         -- ^ visual ('defaultVisualOfScreen')
+                          -> AttributeMask  -- ^ valuemask
+                          -> Ptr SetWindowAttributes
+                          -> IO ()
+xScreenSaverSetAttributes dpy x y w h bw d wc v am pswa = do
+    cXScreenSaverSetAttributes dpy (defaultRootWindow dpy)
+                                    x y w h bw d wc v am pswa
+
+xScreenSaverUnsetAttributes :: Display -> IO ()
+xScreenSaverUnsetAttributes dpy =
+    cXScreenSaverUnsetAttributes dpy (defaultRootWindow dpy)
+
+xScreenSaverSaverRegister :: Display -> ScreenNumber -> XID -> Atom -> IO ()
+xScreenSaverSaverRegister = cXScreenSaverSaverRegister
+
+xScreenSaverUnregister :: Display -> ScreenNumber -> IO Status
+xScreenSaverUnregister = cXScreenSaverUnregister
+
+
+xScreenSaverGetRegistered :: Display -> ScreenNumber -> XID -> Atom -> IO Status
+xScreenSaverGetRegistered = cXScreenSaverGetRegistered
+
+xScreenSaverSuspend :: Display -> Bool -> IO ()
+xScreenSaverSuspend = cXScreenSaverSuspend
+
 
 foreign import ccall "XScreenSaverQueryExtension"
     cXScreenSaverQueryExtension :: Display -> Ptr CInt -> Ptr CInt -> IO Bool
@@ -231,6 +284,36 @@ foreign import ccall "XScreenSaverAllocInfo"
 foreign import ccall "XScreenSaverQueryInfo"
     cXScreenSaverQueryInfo :: Display -> Drawable -> Ptr XScreenSaverInfo
                            -> IO Status
+
+foreign import ccall "XScreenSaverSelectInput"
+    cXScreenSaverSelectInput :: Display -> Drawable -> EventMask -> IO ()
+
+foreign import ccall "XScreenSaverSetAttributes"
+    cXScreenSaverSetAttributes :: Display -> Drawable -> Position -> Position
+                               -> Dimension -> Dimension -> Dimension
+                               -> CInt
+                               -> WindowClass
+                               -> Visual
+                               -> AttributeMask
+                               -> Ptr SetWindowAttributes
+                               -> IO ()
+
+foreign import ccall "XScreenSaverUnsetAttributes"
+    cXScreenSaverUnsetAttributes :: Display -> Drawable -> IO ()
+
+foreign import ccall "XScreenSaverRegister"
+    cXScreenSaverSaverRegister :: Display -> ScreenNumber -> XID -> Atom
+                               -> IO ()
+
+foreign import ccall "XScreenSaverUnregister"
+    cXScreenSaverUnregister :: Display -> ScreenNumber -> IO Status
+
+foreign import ccall "XScreenSaverGetRegistered"
+    cXScreenSaverGetRegistered :: Display -> ScreenNumber -> XID -> Atom
+                               -> IO Status
+
+foreign import ccall "XScreenSaverSuspend"
+    cXScreenSaverSuspend :: Display -> Bool -> IO ()
 
 foreign import ccall "XFree"
     cXFree :: Ptr a -> IO CInt
