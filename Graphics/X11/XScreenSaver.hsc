@@ -77,21 +77,21 @@ data XScreenSaverKind
 -- | Representation of the XScreenSaverInfo struct.
 data XScreenSaverInfo = XScreenSaverInfo
     { xssi_window        :: !Window
+        -- | The state field specified whether or not the screen saver is
+        -- currently active and how the til-or-since value should be interpreted
     , xssi_state         :: !XScreenSaverState
--- ^ The state field specified whether or not the screen saver is currently
--- active and how the til-or-since value should be interpreted:
+        -- | The kind field specifies the mechanism that either is currently
+        -- being used or would have been were the screen being saved
     , xssi_kind          :: !XScreenSaverKind
--- ^ The kind field specifies the mechanism that either is currently being used
--- or would have been were the screen being saved:
---
     , xssi_til_or_since  :: !CULong
+        -- | The idle field specifies the number of milliseconds since the last
+        -- input was received from the user on any of the input devices.
     , xssi_idle          :: !CULong
--- ^ The idle field specifies the number of milliseconds since the last input
--- was received from the user on any of the input devices.
+        -- | The event-mask field specifies which, if any, screen saver events
+        -- this client has requested using ScreenSaverSelectInput.
     , xssi_event_mask    :: !CULong
--- ^ The event-mask field specifies which, if any, screen saver events this
--- client has requested using ScreenSaverSelectInput.
     } deriving (Show)
+
 
 -- | Simple wrapper around 'xScreenSaverQueryInfo' if you are only interested in
 -- the idle time, in milliseconds. Returns 0 if the XScreenSaver extension is
