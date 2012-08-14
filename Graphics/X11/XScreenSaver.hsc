@@ -42,10 +42,7 @@ import Foreign.C.Types
 import Graphics.X11.Xlib
 import Control.Monad
 
-data XScreenSaverState = ScreenSaverOff
-                       | ScreenSaverOn
-                       | ScreenSaverDisabled
-                       deriving Show
+                       | ScreenSaverCycle
 
 data XScreenSaverKind = ScreenSaverBlanked
                       | ScreenSaverInternal
@@ -108,11 +105,13 @@ compiledWithXScreenSaver = True
 xScreenSaverState2CInt :: XScreenSaverState -> CInt
 xScreenSaverState2CInt ScreenSaverOn = #const ScreenSaverOn
 xScreenSaverState2CInt ScreenSaverOff = #const ScreenSaverOff
+xScreenSaverState2CInt ScreenSaverCycle = #const ScreenSaverCycle
 xScreenSaverState2CInt ScreenSaverDisabled = #const ScreenSaverDisabled
 
 cInt2XScreenSaverState :: CInt -> XScreenSaverState
 cInt2XScreenSaverState (#const ScreenSaverOn) = ScreenSaverOn
 cInt2XScreenSaverState (#const ScreenSaverOff) = ScreenSaverOff
+cInt2XScreenSaverState (#const ScreenSaverCycle) = ScreenSaverCycle
 cInt2XScreenSaverState (#const ScreenSaverDisabled) = ScreenSaverDisabled
 cInt2XScreenSaverState _ = error "Unknown state in xScreenSaverQueryInfo"
 
