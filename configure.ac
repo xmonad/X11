@@ -78,6 +78,11 @@ if ! test "$have_xrandr" = yes; then
     AC_MSG_ERROR([X11/extensions/Xrandr.h (from libXrandr) is required])
 fi
 
+AC_CHECK_HEADERS([X11/extensions/scrnsaver.h], [have_xrandr=yes])
+if ! test "$have_xrandr" = yes; then
+    AC_MSG_ERROR([X11/extensions/scrnsaver.h (XScreenSaver) is required])
+fi
+
 AC_MSG_CHECKING([whether to include X.org keysyms])
 AC_ARG_WITH(xorg-keysym,
             AS_HELP_STRING([--without-xorg-keysym], [do not build X.org keysym support]),
