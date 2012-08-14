@@ -247,6 +247,58 @@ xScreenSaverSelectInput dpy xssem = do
     if p == nullPtr then return () else do
     cXScreenSaverSelectInput dpy (defaultRootWindow dpy) xssem
 
+-- | XScreenSaverSetAttributes sets the attributes to be used the next  time
+-- the  external  screen  saver is activated.  If another client currently
+-- has the attributes set, a BadAccess error is generated and the  request
+-- is ignored.
+--
+-- Otherwise,  the specified window attributes are checked as if they were
+-- used in a core CreateWindow request whose  parent  is  the  root.   The
+-- override-redirect field is ignored as it is implicitly set to True.  If
+-- the window attributes result in an error according  to  the  rules  for
+-- CreateWindow, the request is ignored.
+--
+-- Otherwise,  the  attributes are stored and will take effect on the next
+-- activation that occurs when  the  server  is  not  grabbed  by  another
+-- client.   Any  resources  specified for the background-pixmap or cursor
+-- attributes may be freed immediately.  The server is free  to  copy  the
+-- background-pixmap  or  cursor resources or to use them in place; therefore,
+-- the effect of changing the contents of those resources  is  undefined.
+-- If  the  specified  colormap  no longer exists when the screen
+-- saver activates, the parent's colormap is used instead.  If  no  errors
+-- are  generated  by  this  request,  any  previous  screen  saver window
+-- attributes set by this client are released.
+--
+-- When the screen saver next activates and the server is not  grabbed  by
+-- another  client,  the screen saver window is created, if necessary, and
+-- set to the specified attributes and events are generated as usual.  The
+-- colormap   associated  with  the  screen  saver  window  is  installed.
+-- Finally, the screen saver window is mapped.
+--
+-- The window remains mapped and at the top of the  stacking  order  until
+-- the  screen  saver is deactivated in response to activity on any of the
+-- user input devices, a ForceScreenSaver request with a value  of  Reset,
+-- or any request that would cause the window to be unmapped.
+--
+-- If  the  screen  saver activates while the server is grabbed by another
+-- client, the internal saver mechanism  is  used.   The  ForceScreenSaver
+-- request  may  be used with a value of Active to deactivate the internal
+-- saver and activate the external saver.
+--
+-- If the screen saver client's connection to the server is  broken  while
+-- the  screen saver is activated and the client's close down mode has not
+-- been RetainPermanent or RetainTemporary, the current  screen  saver  is
+-- deactivated and the internal screen saver is immediately activated.
+--
+-- When  the  screen saver deactivates, the screen saver window's colormap
+-- is uninstalled and the window is unmapped (except as described  below).
+-- The  screen  saver  XID is disassociated with the window and the server
+-- may, but is not required to, destroy the window along  with  any  children.
+--
+-- When the screen saver is being deactivated and then immediately reactivated
+-- (such as when switching screen savers), the server may leave  the
+-- screen saver window mapped (typically to avoid generating exposures).
+
 xScreenSaverSetAttributes :: Display
                           -> Position       -- ^ x
                           -> Position       -- ^ y
@@ -263,19 +315,64 @@ xScreenSaverSetAttributes dpy x y w h bw d wc v am pswa = do
     cXScreenSaverSetAttributes dpy (defaultRootWindow dpy)
                                     x y w h bw d wc v am pswa
 
+-- | XScreenSaverUnsetAttributes  instructs the server to discard any previ‐
+-- ous screen saver window attributes set by this client.
+
 xScreenSaverUnsetAttributes :: Display -> IO ()
 xScreenSaverUnsetAttributes dpy =
     cXScreenSaverUnsetAttributes dpy (defaultRootWindow dpy)
 
+-- | XScreenSaverRegister stores the given XID in the _SCREEN_SAVER_ID prop‐
+-- erty  (of  the  given type) on the root window of the specified screen.
+-- It returns zero if an error is encountered  and  the  property  is  not
+-- changed, otherwise it returns non-zero.
+
 xScreenSaverSaverRegister :: Display -> ScreenNumber -> XID -> Atom -> IO ()
 xScreenSaverSaverRegister = cXScreenSaverSaverRegister
+
+-- | XScreenSaverUnregister  removes any _SCREEN_SAVER_ID from the root win‐
+-- dow of the specified screen.  It returns zero if an  error  is  encoun‐
+-- tered and the property is changed, otherwise it returns non-zero.
 
 xScreenSaverUnregister :: Display -> ScreenNumber -> IO Status
 xScreenSaverUnregister = cXScreenSaverUnregister
 
+-- | XScreenSaverGetRegistered  returns  the  XID  and  type  stored  in the
+-- _SCREEN_SAVER_ID property on the root window of the  specified  screen.
+-- It  returns zero if an error is encountered or if the property does not
+-- exist or is not of the correct format; otherwise it returns non-zero.
 
 xScreenSaverGetRegistered :: Display -> ScreenNumber -> XID -> Atom -> IO Status
 xScreenSaverGetRegistered = cXScreenSaverGetRegistered
+
+-- | XScreenSaverSuspend temporarily suspends the screensaver and DPMS timer
+-- if suspend is 'True', and restarts the timer if suspend is 'False'.
+-- This  function  should  be  used  by  applications  that don't want the
+-- screensaver or DPMS to become activated while they're  for  example  in
+-- the  process of playing a media sequence, or are otherwise continuously
+-- presenting visual information to the user while  in  a  non-interactive
+-- state.  This  function  is  not  intended  to  be called by an external
+-- screensaver application.
+--
+-- If XScreenSaverSuspend is called multiple times  with  suspend  set  to
+-- 'True',  it must be called an equal number of times with suspend set to
+-- 'False' in order for  the  screensaver  timer  to  be  restarted.  This
+-- request has no affect if a client tries to resume the screensaver with‐
+-- out first having suspended it.  XScreenSaverSuspend  can  thus  not  be
+-- used  by one client to resume the screensaver if it's been suspended by
+-- another client.
+--
+-- If a client that has suspended  the  screensaver  becomes  disconnected
+-- from  the  X  server,  the  screensaver  timer  will  automatically  be
+-- restarted, unless it's still suspended by  another  client.  Suspending
+-- the screensaver timer doesn't prevent the screensaver from being forceably
+-- activated with the ForceScreenSaver request, or a DPMS  mode  from
+-- being set with the DPMSForceLevel request.
+--
+-- XScreenSaverSuspend  also doesn't deactivate the screensaver or DPMS if
+-- either is active at the time the request to suspend them is received by
+-- the  X  server. But once they've been deactivated, they won't automatically
+-- be activated again, until the client has canceled the suspension.
 
 xScreenSaverSuspend :: Display -> Bool -> IO ()
 xScreenSaverSuspend = cXScreenSaverSuspend
