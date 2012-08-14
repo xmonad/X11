@@ -16,6 +16,7 @@ module Graphics.X11.Xlib.Extras where
 import Data.Maybe
 import Data.Typeable ( Typeable )
 import Graphics.X11.Xrandr
+import Graphics.X11.XScreenSaver
 import Graphics.X11.Xlib
 import Graphics.X11.Xlib.Types
 import Foreign (Storable, Ptr, peek, poke, peekElemOff, pokeElemOff, peekByteOff, pokeByteOff, peekArray, throwIfNull, nullPtr, sizeOf, alignment, alloca, with, throwIf, Word8, Word16, Word64, Int32, plusPtr, castPtr, withArrayLen, setBit, testBit, allocaBytes, FunPtr)
@@ -281,7 +282,18 @@ data Event
         , ev_timestamp             :: !Time
         , ev_rr_state              :: !CInt
         }
-
+    | ScreenSaverNotifyEvent
+        { ev_event_type            :: !EventType
+        , ev_serial                :: !CULong
+        , ev_send_event            :: !Bool
+        , ev_event_display         :: Display
+        , ev_window                :: !Window
+        , ev_root                  :: !Window
+        , ev_ss_state              :: !XScreenSaverState
+        , ev_ss_kind               :: !XScreenSaverKind
+        , ev_forced                :: !Bool
+        , ev_time                  :: !Time
+        }
     deriving ( Show, Typeable )
 
 eventTable :: [(EventType, String)]
@@ -320,6 +332,7 @@ eventTable =
     , (clientMessage        , "ClientMessage")
     , (mappingNotify        , "MappingNotify")
     , (lASTEvent            , "LASTEvent")
+    , (screenSaverNotify    , "ScreenSaverNotify")
     ]
 
 eventName :: Event -> String
@@ -803,6 +816,18 @@ getEvent p = do
                                 , ev_window        = window
                                 , ev_subtype       = subtype
                                 }
+
+          -----------------
+          -- ScreenSaverNotifyEvent:
+          -----------------
+          | type_ == screenSaverNotify -> do
+            return (ScreenSaverNotifyEvent type_ serial send_event display)
+                `ap` (#{peek XScreenSaverNotifyEvent, window     } p )
+                `ap` (#{peek XScreenSaverNotifyEvent, root       } p )
+                `ap` (#{peek XScreenSaverNotifyEvent, state      } p )
+                `ap` (#{peek XScreenSaverNotifyEvent, kind       } p )
+                `ap` (#{peek XScreenSaverNotifyEvent, forced     } p )
+                `ap` (#{peek XScreenSaverNotifyEvent, time       } p )
 
           -- We don't handle this event specifically, so return the generic
           -- AnyEvent.
