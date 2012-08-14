@@ -3,9 +3,10 @@
 -- |
 -- Module    : Graphics.X11.XScreenSaver
 -- Copyright : (c) Joachim Breitner
+--             (c) Jochen Keil
 -- License   : GPL2
 --
--- Maintainer: Joachim Breitner <mail@joachim-breitner.de>
+-- Maintainer: Jochen Keil <jochen dot keil at gmail dot com>
 -- Stability : provisional
 -- Portability: portable
 --
