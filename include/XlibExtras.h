@@ -18,6 +18,7 @@
 #include <X11/Xproto.h>
 
 #include <X11/extensions/Xrandr.h>
+#include <X11/extensions/scrnsaver.h>
 
 /* Xutil.h overrides some functions with macros.
  * In recent versions of X this can be turned off with
