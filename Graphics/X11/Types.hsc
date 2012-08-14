@@ -434,6 +434,8 @@ module Graphics.X11.Types
         rrCrtcChangeNotifyMask,
         rrOutputChangeNotifyMask,
         rrOutputPropertyNotifyMask,
+        screenSaverCycleMask,
+        screenSaverNotifyMask,
 
         -- ** Event types
         EventType,
@@ -476,6 +478,7 @@ module Graphics.X11.Types
         rrNotifyOutputChange,
         rrNotifyOutputProperty,
         lASTEvent,
+        screenSaverNotify,
 
         -- ** Modifiers
         Modifier,
@@ -1285,6 +1288,8 @@ type EventMask                  = Mask
  , rrCrtcChangeNotifyMask       = RRCrtcChangeNotifyMask
  , rrOutputChangeNotifyMask     = RROutputChangeNotifyMask
  , rrOutputPropertyNotifyMask   = RROutputPropertyNotifyMask
+ , screenSaverCycleMask         = ScreenSaverCycleMask
+ , screenSaverNotifyMask        = ScreenSaverNotifyMask
  }
 
 type EventType          = Word32
@@ -1328,6 +1333,7 @@ type EventType          = Word32
  , rrNotifyOutputChange = RRNotify_OutputChange
  , rrNotifyOutputProperty=RRNotify_OutputProperty
  , lASTEvent            = LASTEvent
+ , screenSaverNotify    = ScreenSaverNotify
  }
 
 type Modifier           = CUInt
