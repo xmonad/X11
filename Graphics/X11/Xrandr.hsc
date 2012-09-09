@@ -203,9 +203,9 @@ foreign import ccall "XRRSelectInput"
   cXRRSelectInput :: Display -> Window -> CInt -> IO ()
 
 xrrUpdateConfiguration :: XEvent -> IO CInt
-xrrUpdateConfiguration = cXRRUpdateConfiguration
+xrrUpdateConfiguration (XEvent e) = cXRRUpdateConfiguration e
 foreign import ccall "XRRUpdateConfiguration"
-  cXRRUpdateConfiguration :: XEvent -> IO CInt
+  cXRRUpdateConfiguration :: XEventPtr -> IO CInt
 
 xrrRotations :: Display -> CInt -> IO (Rotation, Rotation)
 xrrRotations dpy screen =
