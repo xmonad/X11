@@ -18,7 +18,7 @@ module Graphics.X11.Xlib.Event(
         queuedAlready,
         queuedAfterFlush,
         queuedAfterReading,
-        XEvent,
+        XEvent(..),
         XEventPtr,
         allocaXEvent,
         get_EventType,
