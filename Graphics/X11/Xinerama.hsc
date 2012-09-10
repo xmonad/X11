@@ -113,7 +113,7 @@ xineramaQueryScreens dpy =
                             then return Nothing
                             else do nscreens <- peek intp
                                     screens <- peekArray (fromIntegral nscreens) p
-                                    cXFree p
+                                    _ <- cXFree p
                                     return (Just screens)
 
 foreign import ccall "XineramaQueryExtension"
