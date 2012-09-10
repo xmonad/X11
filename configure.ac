@@ -78,9 +78,24 @@ if ! test "$have_xrandr" = yes; then
     AC_MSG_ERROR([X11/extensions/Xrandr.h (from libXrandr) is required])
 fi
 
-AC_CHECK_HEADERS([X11/extensions/scrnsaver.h], [have_xrandr=yes])
-if ! test "$have_xrandr" = yes; then
-    AC_MSG_ERROR([X11/extensions/scrnsaver.h (XScreenSaver) is required])
+AC_MSG_CHECKING([whether to build XScreenSaver])
+AC_ARG_WITH(xscreensaver,
+            AS_HELP_STRING([--without-xscreensaver], [do not build XScreenSaver support]),
+            [],
+            [with_xscreensaver=yes])
+AC_MSG_RESULT([$with_xscreensaver])
+
+if test "$with_xscreensaver" = yes; then
+    AC_CHECK_HEADERS([X11/extensions/scrnsaver.h], [have_xscreensaver=yes])
+    if test "$have_xscreensaver" = yes; then
+        EXTRA_LIBRARIES="extra-libraries: Xss"
+    else
+        EXTRA_LIBRARIES=""
+        echo "WARNING: XScreenSaver headers not found. Building without XScreenSaver support"
+    fi
+else
+    EXTRA_LIBRARIES=""
+    echo "WARNING: Building without XScreenSaver support per user request"
 fi
 
 AC_MSG_CHECKING([whether to include X.org keysyms])

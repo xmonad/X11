@@ -15,6 +15,10 @@
 -- Interface to XScreenSaver API
 --
 
+#include <HsX11Config.h>
+
+#ifdef HAVE_X11_EXTENSIONS_SCRNSAVER_H
+
 module Graphics.X11.XScreenSaver (
     getXIdleTime,
     XScreenSaverState(..),
@@ -423,3 +427,10 @@ foreign import ccall "XScreenSaverSuspend"
 
 foreign import ccall "XFree"
     cXFree :: Ptr a -> IO CInt
+
+#else
+module Graphics.X11.XScreenSaver where
+
+compiledWithXScreenSaver :: Bool
+compiledWithXScreenSaver = False
+#endif
