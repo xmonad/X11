@@ -1,4 +1,4 @@
-{-# OPTIONS_GHC -fglasgow-exts #-}
+{-# LANGUAGE DeriveDataTypeable #-}
 -----------------------------------------------------------------------------
 -- |
 -- Module      :  Graphics.X11.Xlib.Misc
@@ -167,8 +167,10 @@ import Graphics.X11.Xlib.Atom
 import Graphics.X11.Xlib.Event
 import Graphics.X11.Xlib.Font
 
-import Foreign
+import Foreign (Storable, Ptr, alloca, peek, throwIfNull, with, withArrayLen, allocaBytes, pokeByteOff, withArray, FunPtr, nullPtr, Word32)
 import Foreign.C
+
+import System.IO.Unsafe
 
 #if __GLASGOW_HASKELL__
 import Data.Data
@@ -461,7 +463,7 @@ foreign import ccall unsafe "HsXlib.h &defaultErrorHandler"
 -- textual representation of the error.
 setDefaultErrorHandler :: IO ()
 setDefaultErrorHandler = do
-        xSetErrorHandler defaultErrorHandler
+        _ <- xSetErrorHandler defaultErrorHandler
         return ()
 
 -- %fun XSetIOErrorHandler :: IOErrorHandler -> IO IOErrorHandler

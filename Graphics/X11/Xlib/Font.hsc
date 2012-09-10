@@ -1,4 +1,4 @@
-{-# OPTIONS_GHC -fglasgow-exts #-}
+{-# LANGUAGE DeriveDataTypeable #-}
 -----------------------------------------------------------------------------
 -- |
 -- Module      :  Graphics.X11.Xlib.Font
@@ -35,8 +35,10 @@ module Graphics.X11.Xlib.Font(
 import Graphics.X11.Types
 import Graphics.X11.Xlib.Types
 
-import Foreign
+import Foreign (Ptr, Int32, alloca, allocaBytes, peekByteOff, Word16, Word64, peek, throwIfNull)
 import Foreign.C
+
+import System.IO.Unsafe
 
 #if __GLASGOW_HASKELL__
 import Data.Data
@@ -164,7 +166,7 @@ textExtents font_struct string = unsafePerformIO $
 	alloca $ \ font_ascent_return ->
 	alloca $ \ font_descent_return ->
 	allocaBytes #{size XCharStruct} $ \ overall_return -> do
-	xTextExtents font_struct c_string (fromIntegral nchars) direction_return
+	_ <- xTextExtents font_struct c_string (fromIntegral nchars) direction_return
 		font_ascent_return font_descent_return overall_return
 	direction <- peek direction_return
 	ascent <- peek font_ascent_return
