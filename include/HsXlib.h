@@ -20,6 +20,10 @@
 
 #include <X11/extensions/Xrandr.h>
 
+#ifdef HAVE_X11_EXTENSIONS_SCRNSAVER_H
+#include <X11/extensions/scrnsaver.h>
+#endif
+
 /* Xutil.h overrides some functions with macros.
  * In recent versions of X this can be turned off with
  *
