@@ -18,7 +18,7 @@ import Data.Typeable ( Typeable )
 import Graphics.X11.Xrandr
 import Graphics.X11.Xlib
 import Graphics.X11.Xlib.Types
-import Foreign (Storable, Ptr, peek, poke, peekElemOff, pokeElemOff, peekByteOff, pokeByteOff, peekArray, throwIfNull, nullPtr, sizeOf, alignment, alloca, with, throwIf, Word8, Word16, Word64, Int32, plusPtr, castPtr, withArrayLen, setBit, testBit, allocaBytes, FunPtr)
+import Foreign (Storable, Ptr, peek, poke, peekElemOff, pokeElemOff, peekByteOff, pokeByteOff, peekArray, throwIfNull, nullPtr, sizeOf, alignment, alloca, with, throwIf, Word8, Word16, #{type unsigned long}, Int32, plusPtr, castPtr, withArrayLen, setBit, testBit, allocaBytes, FunPtr)
 import Foreign.C.Types
 import Foreign.C.String
 import Control.Monad
