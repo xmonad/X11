@@ -17,6 +17,7 @@
 module Graphics.X11.Xrandr (
   XRRScreenSize(..),
   XRRModeInfo(..),
+  XRRScreenResources(..),
   compiledWithXrandr,
   Rotation,
   Reflection,
@@ -40,8 +41,10 @@ module Graphics.X11.Xrandr (
   xrrRotations,
   xrrSizes,
   xrrRates,
-  xrrTimes
- ) where
+  xrrTimes,
+  xrrGetScreenResources,
+  xrrGetScreenResourcesCurrent,
+  ) where
 
 import Foreign
 import Foreign.C.Types
@@ -79,6 +82,15 @@ data XRRModeInfo = XRRModeInfo
     , xrr_mi_vTotal     :: !CUInt
     , xrr_mi_name       :: !String
     , xrr_mi_modeFlags  :: !XRRModeFlags
+    } deriving (Eq, Show)
+
+-- | Representation of the XRRScreenResources struct
+data XRRScreenResources = XRRScreenResources
+    { xrr_sr_timestamp       :: !Time
+    , xrr_sr_configTimestamp :: !Time
+    , xrr_sr_crtcs           :: [RRCrtc]
+    , xrr_sr_outputs         :: [RROutput]
+    , xrr_sr_modes           :: [XRRModeInfo]
     } deriving (Eq, Show)
 
 -- We have Xrandr, so the library will actually work
@@ -148,6 +160,45 @@ instance Storable XRRModeInfo where
         `ap` peekCStringLenIO (#{peek XRRModeInfo, nameLength } p)
                               (#{peek XRRModeInfo, name       } p)
         `ap` ( #{peek XRRModeInfo, modeFlags  } p )
+
+
+instance Storable XRRScreenResources where
+    sizeOf _ = #{size XRRScreenResources}
+    -- FIXME: Is this right?
+    alignment _ = alignment (undefined :: CInt)
+
+    poke p xrr_sr = do
+        #{poke XRRScreenResources, timestamp       } p $ xrr_sr_timestamp       xrr_sr
+        #{poke XRRScreenResources, configTimestamp } p $ xrr_sr_configTimestamp xrr_sr
+        -- there is no simple way to handle ptrs to arrays or struct through ffi
+        -- Using plain malloc will result in a memory leak, unless the poking
+        -- function will free the memory manually
+        -- Unfortunately a ForeignPtr with a Finalizer is not going to work
+        -- either, because the Finalizer will be run after poke returns, making
+        -- the allocated memory unusable.
+        -- The safest option is therefore probably to have the calling function
+        -- handle this issue for itself
+        -- e.g.
+        -- #{poke XRRScreenResources, ncrtc} p ( fromIntegral $ length $ xrr_sr_crtcs xrr_sr :: CInt )
+        -- crtcp <- mallocArray $ length $ xrr_sr_crtcs xrr_sr
+        -- pokeArray crtcp $ xrr_sr_crtcs xrr_sr
+        -- #{poke XRRScreenResources, crtcs} p crtcp
+        #{poke XRRScreenResources, ncrtc           } p ( 0 :: CInt )
+        #{poke XRRScreenResources, noutput         } p ( 0 :: CInt )
+        #{poke XRRScreenResources, nmode           } p ( 0 :: CInt )
+        #{poke XRRScreenResources, crtcs           } p ( nullPtr :: Ptr RRCrtc      )
+        #{poke XRRScreenResources, outputs         } p ( nullPtr :: Ptr RROutput    )
+        #{poke XRRScreenResources, modes           } p ( nullPtr :: Ptr XRRModeInfo )
+
+    peek p = return XRRScreenResources
+        `ap` ( #{peek XRRScreenResources, timestamp       } p )
+        `ap` ( #{peek XRRScreenResources, configTimestamp } p )
+        `ap` peekCArrayIO (#{peek XRRScreenResources, ncrtc   } p)
+                          (#{peek XRRScreenResources, crtcs   } p)
+        `ap` peekCArrayIO (#{peek XRRScreenResources, noutput } p)
+                          (#{peek XRRScreenResources, outputs } p)
+        `ap` peekCArrayIO (#{peek XRRScreenResources, nmode   } p)
+                          (#{peek XRRScreenResources, modes   } p)
 
 
 xrrQueryExtension :: Display -> IO (Maybe (CInt, CInt))
@@ -313,6 +364,35 @@ xrrTimes dpy screen =
 foreign import ccall "XRRTimes"
   cXRRTimes :: Display -> CInt -> Ptr Time -> IO Time
 
+xrrGetScreenResources :: Display -> Window -> IO (Maybe XRRScreenResources)
+xrrGetScreenResources dpy win = do
+    srp <- cXRRGetScreenResources dpy win
+    if srp == nullPtr
+        then return Nothing
+        else do
+            res <- peek srp
+            cXRRFreeScreenResources srp
+            return $ Just res
+
+foreign import ccall "XRRGetScreenResources"
+    cXRRGetScreenResources :: Display -> Window -> IO (Ptr XRRScreenResources)
+
+foreign import ccall "XRRFreeScreenResources"
+    cXRRFreeScreenResources :: Ptr XRRScreenResources -> IO ()
+
+xrrGetScreenResourcesCurrent :: Display -> Window -> IO (Maybe XRRScreenResources)
+xrrGetScreenResourcesCurrent dpy win = do
+    srcp <- cXRRGetScreenResourcesCurrent dpy win
+    if srcp == nullPtr
+        then return Nothing
+        else do
+            res <- peek srcp
+            cXRRFreeScreenResources srcp
+            return $ Just res
+
+foreign import ccall "XRRGetScreenResourcesCurrent"
+    cXRRGetScreenResourcesCurrent :: Display -> Window -> IO (Ptr XRRScreenResources)
+
 foreign import ccall "XFree"
   cXFree :: Ptr a -> IO CInt
 
@@ -324,6 +404,12 @@ wrapPtr2 cfun f =
                          a <- peek aptr
                          b <- peek bptr
                          return (f ret a b)
+
+peekCArray :: Storable a => CInt -> Ptr a -> IO [a]
+peekCArray n = peekArray (fromIntegral n)
+
+peekCArrayIO :: Storable a => IO CInt -> IO (Ptr a) -> IO [a]
+peekCArrayIO n = join . liftM2 peekCArray n
 
 peekCStringLenIO :: IO CInt -> IO (Ptr CChar) -> IO String
 peekCStringLenIO n p = liftM2 (,) p (fmap fromIntegral n) >>= peekCStringLen
