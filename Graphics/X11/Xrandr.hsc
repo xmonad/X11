@@ -143,21 +143,21 @@ newtype XRRScreenConfiguration = XRRScreenConfiguration (Ptr XRRScreenConfigurat
 #endif
 
 instance Storable XRRScreenSize where
-  sizeOf _ = #{size XRRScreenSize}
-  -- FIXME: Is this right?
-  alignment _ = alignment (undefined :: CInt)
+    sizeOf _ = #{size XRRScreenSize}
+    -- FIXME: Is this right?
+    alignment _ = alignment (undefined :: CInt)
 
-  poke p xrr_ss = do
-    #{poke XRRScreenSize, width   } p $ xrr_ss_width xrr_ss
-    #{poke XRRScreenSize, height  } p $ xrr_ss_height xrr_ss
-    #{poke XRRScreenSize, mwidth  } p $ xrr_ss_mwidth xrr_ss
-    #{poke XRRScreenSize, mheight } p $ xrr_ss_mheight xrr_ss
+    poke p xrr_ss = do
+        #{poke XRRScreenSize, width   } p $ xrr_ss_width xrr_ss
+        #{poke XRRScreenSize, height  } p $ xrr_ss_height xrr_ss
+        #{poke XRRScreenSize, mwidth  } p $ xrr_ss_mwidth xrr_ss
+        #{poke XRRScreenSize, mheight } p $ xrr_ss_mheight xrr_ss
 
-  peek p = return XRRScreenSize
-            `ap` (#{peek XRRScreenSize, width} p)
-            `ap` (#{peek XRRScreenSize, height} p)
-            `ap` (#{peek XRRScreenSize, mwidth} p)
-            `ap` (#{peek XRRScreenSize, mheight} p)
+    peek p = return XRRScreenSize
+        `ap` (#{peek XRRScreenSize, width} p)
+        `ap` (#{peek XRRScreenSize, height} p)
+        `ap` (#{peek XRRScreenSize, mwidth} p)
+        `ap` (#{peek XRRScreenSize, mheight} p)
 
 instance Storable XRRModeInfo where
     sizeOf _ = #{size XRRModeInfo}
