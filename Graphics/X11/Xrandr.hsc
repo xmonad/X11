@@ -19,6 +19,7 @@ module Graphics.X11.Xrandr (
   XRRModeInfo(..),
   XRRScreenResources(..),
   XRROutputInfo(..),
+  XRRCrtcInfo(..),
   compiledWithXrandr,
   Rotation,
   Reflection,
@@ -45,6 +46,7 @@ module Graphics.X11.Xrandr (
   xrrTimes,
   xrrGetScreenResources,
   xrrGetOutputInfo,
+  xrrGetCrtcInfo,
   xrrGetScreenResourcesCurrent,
   xrrSetOutputPrimary,
   xrrGetOutputPrimary,
@@ -110,6 +112,20 @@ data XRROutputInfo = XRROutputInfo
     , xrr_oi_clones         :: [RROutput]
     , xrr_oi_npreferred     :: !CInt
     , xrr_oi_modes          :: [RRMode]
+    } deriving (Eq, Show)
+
+-- | Representation of the XRRCrtcInfo struct
+data XRRCrtcInfo = XRRCrtcInfo
+    { xrr_ci_timestamp    :: !Time
+    , xrr_ci_x            :: !CInt
+    , xrr_ci_y            :: !CInt
+    , xrr_ci_width        :: !CUInt
+    , xrr_ci_height       :: !CUInt
+    , xrr_ci_mode         :: !RRMode
+    , xrr_ci_rotation     :: !Rotation
+    , xrr_ci_outputs      :: [RROutput]
+    , xrr_ci_rotations    :: !Rotation
+    , xrr_ci_possible     :: [RROutput]
     } deriving (Eq, Show)
 
 -- We have Xrandr, so the library will actually work
@@ -259,6 +275,41 @@ instance Storable XRROutputInfo where
             `ap` ( #{peek XRROutputInfo, npreferred     } p )
             `ap` peekCArrayIO (#{peek XRROutputInfo, nmode   } p)
                               (#{peek XRROutputInfo, modes   } p)
+
+
+instance Storable XRRCrtcInfo where
+    sizeOf _ = #{size XRRCrtcInfo}
+    -- FIXME: Is this right?
+    alignment _ = alignment (undefined :: CInt)
+
+    poke p xrr_ci = do
+        #{poke XRRCrtcInfo, timestamp } p $ xrr_ci_timestamp xrr_ci
+        #{poke XRRCrtcInfo, x         } p $ xrr_ci_x         xrr_ci
+        #{poke XRRCrtcInfo, y         } p $ xrr_ci_y         xrr_ci
+        #{poke XRRCrtcInfo, width     } p $ xrr_ci_width     xrr_ci
+        #{poke XRRCrtcInfo, height    } p $ xrr_ci_height    xrr_ci
+        #{poke XRRCrtcInfo, mode      } p $ xrr_ci_mode      xrr_ci
+        #{poke XRRCrtcInfo, rotation  } p $ xrr_ci_rotation  xrr_ci
+        #{poke XRRCrtcInfo, rotations } p $ xrr_ci_rotations xrr_ci
+        -- see comment in Storable XRRScreenResources about dynamic resource allocation
+        #{poke XRRCrtcInfo, noutput   } p ( 0 :: CInt )
+        #{poke XRRCrtcInfo, npossible } p ( 0 :: CInt )
+        #{poke XRRCrtcInfo, outputs   } p ( nullPtr :: Ptr RROutput )
+        #{poke XRRCrtcInfo, possible  } p ( nullPtr :: Ptr RROutput )
+
+    peek p = return XRRCrtcInfo
+        `ap` ( #{peek XRRCrtcInfo, timestamp } p )
+        `ap` ( #{peek XRRCrtcInfo, x         } p )
+        `ap` ( #{peek XRRCrtcInfo, y         } p )
+        `ap` ( #{peek XRRCrtcInfo, width     } p )
+        `ap` ( #{peek XRRCrtcInfo, height    } p )
+        `ap` ( #{peek XRRCrtcInfo, mode      } p )
+        `ap` ( #{peek XRRCrtcInfo, rotation  } p )
+        `ap` peekCArrayIO (#{peek XRRCrtcInfo, noutput  } p)
+                          (#{peek XRRCrtcInfo, outputs  } p)
+        `ap` ( #{peek XRRCrtcInfo, rotations } p )
+        `ap` peekCArrayIO (#{peek XRRCrtcInfo, npossible } p)
+                          (#{peek XRRCrtcInfo, possible  } p)
 
 
 xrrQueryExtension :: Display -> IO (Maybe (CInt, CInt))
@@ -469,6 +520,29 @@ foreign import ccall "XRRGetOutputInfo"
 
 foreign import ccall "XRRFreeOutputInfo"
     cXRRFreeOutputInfo :: Ptr XRROutputInfo -> IO ()
+
+xrrGetCrtcInfo :: Display -> XRRScreenResources -> RRCrtc -> IO (Maybe XRRCrtcInfo)
+xrrGetCrtcInfo dpy xrr_sr crtc = withPool $ \pool -> do
+    -- XRRGetCrtcInfo only uses the timestamp field from the
+    -- XRRScreenResources struct, so it's probably ok to pass the incomplete
+    -- structure here (see also the poke implementation for the Storable
+    -- instance of XRRScreenResources)
+    cip <- pooledMalloc pool >>= \srp -> do
+        poke srp xrr_sr
+        cXRRGetCrtcInfo dpy srp crtc -- no need to free srp, because pool mem
+
+    if cip == nullPtr
+        then return Nothing
+        else do
+            ci <- peek cip
+            cXRRFreeCrtcInfo cip
+            return $ Just ci
+
+foreign import ccall "XRRGetCrtcInfo"
+    cXRRGetCrtcInfo :: Display -> Ptr XRRScreenResources -> RRCrtc -> IO (Ptr XRRCrtcInfo)
+
+foreign import ccall "XRRFreeCrtcInfo"
+    cXRRFreeCrtcInfo :: Ptr XRRCrtcInfo -> IO ()
 
 foreign import ccall "XRRSetOutputPrimary"
     xrrSetOutputPrimary :: Display -> Window -> RROutput -> IO ()
