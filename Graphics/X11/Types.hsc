@@ -35,6 +35,7 @@ module Graphics.X11.Types
         RROutput,
         RRCrtc,
         RRMode,
+        XRRModeFlags,
 
         -- * Enumeration types
         -- | These types were introduced to make function types clearer.
@@ -1779,6 +1780,7 @@ type Connection    = #{type Connection}
 type RROutput      = #{type RROutput}
 type RRCrtc        = #{type RRCrtc}
 type RRMode        = #{type RRMode}
+type XRRModeFlags  = #{type XRRModeFlags}
 
 #{enum Rotation,
   , xRR_Rotate_0   = RR_Rotate_0

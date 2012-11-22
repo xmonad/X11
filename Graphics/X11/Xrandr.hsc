@@ -16,6 +16,7 @@
 
 module Graphics.X11.Xrandr (
   XRRScreenSize(..),
+  XRRModeInfo(..),
   compiledWithXrandr,
   Rotation,
   Reflection,
@@ -44,6 +45,7 @@ module Graphics.X11.Xrandr (
 
 import Foreign
 import Foreign.C.Types
+import Foreign.C.String
 import Control.Monad
 
 import Graphics.X11.Xlib.Event
@@ -62,7 +64,24 @@ data XRRScreenSize = XRRScreenSize
                        xrr_ss_mheight :: !CInt }
                        deriving (Show)
 
--- We have Xinerama, so the library will actually work
+-- | Representation of the XRRModeInfo struct
+data XRRModeInfo = XRRModeInfo
+    { xrr_mi_id         :: !RRMode
+    , xrr_mi_width      :: !CUInt
+    , xrr_mi_height     :: !CUInt
+    , xrr_mi_dotClock   :: !CUInt
+    , xrr_mi_hSyncStart :: !CUInt
+    , xrr_mi_hSyncEnd   :: !CUInt
+    , xrr_mi_hTotal     :: !CUInt
+    , xrr_mi_hSkew      :: !CUInt
+    , xrr_mi_vSyncStart :: !CUInt
+    , xrr_mi_vSyncEnd   :: !CUInt
+    , xrr_mi_vTotal     :: !CUInt
+    , xrr_mi_name       :: !String
+    , xrr_mi_modeFlags  :: !XRRModeFlags
+    } deriving (Eq, Show)
+
+-- We have Xrandr, so the library will actually work
 compiledWithXrandr :: Bool
 compiledWithXrandr = True
 
@@ -91,6 +110,45 @@ instance Storable XRRScreenSize where
             `ap` (#{peek XRRScreenSize, height} p)
             `ap` (#{peek XRRScreenSize, mwidth} p)
             `ap` (#{peek XRRScreenSize, mheight} p)
+
+instance Storable XRRModeInfo where
+    sizeOf _ = #{size XRRModeInfo}
+    -- FIXME: Is this right?
+    alignment _ = alignment (undefined :: CInt)
+
+    poke p xrr_mi = do
+        #{poke XRRModeInfo, id         } p $ xrr_mi_id         xrr_mi
+        #{poke XRRModeInfo, width      } p $ xrr_mi_width      xrr_mi
+        #{poke XRRModeInfo, height     } p $ xrr_mi_height     xrr_mi
+        #{poke XRRModeInfo, dotClock   } p $ xrr_mi_dotClock   xrr_mi
+        #{poke XRRModeInfo, hSyncStart } p $ xrr_mi_hSyncStart xrr_mi
+        #{poke XRRModeInfo, hSyncEnd   } p $ xrr_mi_hSyncEnd   xrr_mi
+        #{poke XRRModeInfo, hTotal     } p $ xrr_mi_hTotal     xrr_mi
+        #{poke XRRModeInfo, hSkew      } p $ xrr_mi_hSkew      xrr_mi
+        #{poke XRRModeInfo, vSyncStart } p $ xrr_mi_vSyncStart xrr_mi
+        #{poke XRRModeInfo, vSyncEnd   } p $ xrr_mi_vSyncEnd   xrr_mi
+        #{poke XRRModeInfo, vTotal     } p $ xrr_mi_vTotal     xrr_mi
+        #{poke XRRModeInfo, modeFlags  } p $ xrr_mi_modeFlags  xrr_mi
+        -- see comment in Storable XRRScreenResources about dynamic resource allocation
+        #{poke XRRModeInfo, nameLength } p ( 0 :: CInt )
+        #{poke XRRModeInfo, name       } p ( nullPtr :: Ptr CChar )
+
+    peek p = return XRRModeInfo
+        `ap` ( #{peek XRRModeInfo, id         } p )
+        `ap` ( #{peek XRRModeInfo, width      } p )
+        `ap` ( #{peek XRRModeInfo, height     } p )
+        `ap` ( #{peek XRRModeInfo, dotClock   } p )
+        `ap` ( #{peek XRRModeInfo, hSyncStart } p )
+        `ap` ( #{peek XRRModeInfo, hSyncEnd   } p )
+        `ap` ( #{peek XRRModeInfo, hTotal     } p )
+        `ap` ( #{peek XRRModeInfo, hSkew      } p )
+        `ap` ( #{peek XRRModeInfo, vSyncStart } p )
+        `ap` ( #{peek XRRModeInfo, vSyncEnd   } p )
+        `ap` ( #{peek XRRModeInfo, vTotal     } p )
+        `ap` peekCStringLenIO (#{peek XRRModeInfo, nameLength } p)
+                              (#{peek XRRModeInfo, name       } p)
+        `ap` ( #{peek XRRModeInfo, modeFlags  } p )
+
 
 xrrQueryExtension :: Display -> IO (Maybe (CInt, CInt))
 xrrQueryExtension dpy = wrapPtr2 (cXRRQueryExtension dpy) go
@@ -266,3 +324,6 @@ wrapPtr2 cfun f =
                          a <- peek aptr
                          b <- peek bptr
                          return (f ret a b)
+
+peekCStringLenIO :: IO CInt -> IO (Ptr CChar) -> IO String
+peekCStringLenIO n p = liftM2 (,) p (fmap fromIntegral n) >>= peekCStringLen
