@@ -50,6 +50,7 @@ module Graphics.X11.Xrandr (
   xrrGetScreenResourcesCurrent,
   xrrSetOutputPrimary,
   xrrGetOutputPrimary,
+  xrrListOutputProperties
   ) where
 
 import Foreign
@@ -562,6 +563,21 @@ xrrGetScreenResourcesCurrent dpy win = do
 
 foreign import ccall "XRRGetScreenResourcesCurrent"
     cXRRGetScreenResourcesCurrent :: Display -> Window -> IO (Ptr XRRScreenResources)
+
+xrrListOutputProperties :: Display -> RROutput -> IO (Maybe [Atom])
+xrrListOutputProperties dpy rro = withPool $ \pool -> do
+    intp <- pooledMalloc pool
+    p <- cXRRListOutputProperties dpy rro intp
+    if p == nullPtr
+        then return Nothing
+        else do
+            nprop <- peek intp
+            res <- fmap Just $ peekCArray nprop p
+            _ <- cXFree p
+            return res
+
+foreign import ccall "XRRListOutputProperties"
+    cXRRListOutputProperties :: Display -> RROutput -> Ptr CInt -> IO (Ptr Atom)
 
 foreign import ccall "XFree"
   cXFree :: Ptr a -> IO CInt
