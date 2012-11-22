@@ -3,9 +3,12 @@
 -- |
 -- Module    : Graphics.X11.Xrandr
 -- Copyright : (c) Haskell.org, 2012
+--             (c) Jochen Keil, 2012
 -- License   : BSD3
 --
 -- Maintainer: Ben Boeckel <mathstuf@gmail.com>
+-- Maintainer: Jochen Keil <jochen dot keil at gmail dot com>
+--
 -- Stability : provisional
 -- Portability: portable
 --
