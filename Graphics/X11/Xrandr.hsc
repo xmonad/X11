@@ -18,6 +18,7 @@ module Graphics.X11.Xrandr (
   XRRScreenSize(..),
   XRRModeInfo(..),
   XRRScreenResources(..),
+  XRROutputInfo(..),
   compiledWithXrandr,
   Rotation,
   Reflection,
@@ -43,7 +44,10 @@ module Graphics.X11.Xrandr (
   xrrRates,
   xrrTimes,
   xrrGetScreenResources,
+  xrrGetOutputInfo,
   xrrGetScreenResourcesCurrent,
+  xrrSetOutputPrimary,
+  xrrGetOutputPrimary,
   ) where
 
 import Foreign
@@ -91,6 +95,21 @@ data XRRScreenResources = XRRScreenResources
     , xrr_sr_crtcs           :: [RRCrtc]
     , xrr_sr_outputs         :: [RROutput]
     , xrr_sr_modes           :: [XRRModeInfo]
+    } deriving (Eq, Show)
+
+-- | Representation of the XRROutputInfo struct
+data XRROutputInfo = XRROutputInfo
+    { xrr_oi_timestamp      :: !Time
+    , xrr_oi_crtc           :: !RRCrtc
+    , xrr_oi_name           :: !String
+    , xrr_oi_mm_width       :: !CULong
+    , xrr_oi_mm_height      :: !CULong
+    , xrr_oi_connection     :: !Connection
+    , xrr_oi_subpixel_order :: !SubpixelOrder
+    , xrr_oi_crtcs          :: [RRCrtc]
+    , xrr_oi_clones         :: [RROutput]
+    , xrr_oi_npreferred     :: !CInt
+    , xrr_oi_modes          :: [RRMode]
     } deriving (Eq, Show)
 
 -- We have Xrandr, so the library will actually work
@@ -199,6 +218,47 @@ instance Storable XRRScreenResources where
                           (#{peek XRRScreenResources, outputs } p)
         `ap` peekCArrayIO (#{peek XRRScreenResources, nmode   } p)
                           (#{peek XRRScreenResources, modes   } p)
+
+
+instance Storable XRROutputInfo where
+    sizeOf _ = #{size XRROutputInfo}
+    -- FIXME: Is this right?
+    alignment _ = alignment (undefined :: CInt)
+
+    poke p xrr_oi = do
+        #{poke XRROutputInfo, timestamp      } p $ xrr_oi_timestamp      xrr_oi
+        #{poke XRROutputInfo, crtc           } p $ xrr_oi_crtc           xrr_oi
+        #{poke XRROutputInfo, mm_width       } p $ xrr_oi_mm_width       xrr_oi
+        #{poke XRROutputInfo, mm_height      } p $ xrr_oi_mm_height      xrr_oi
+        #{poke XRROutputInfo, connection     } p $ xrr_oi_connection     xrr_oi
+        #{poke XRROutputInfo, subpixel_order } p $ xrr_oi_subpixel_order xrr_oi
+        #{poke XRROutputInfo, npreferred     } p $ xrr_oi_npreferred     xrr_oi
+        -- see comment in Storable XRRScreenResources about dynamic resource allocation
+        #{poke XRROutputInfo, nameLen        } p ( 0 :: CInt )
+        #{poke XRROutputInfo, ncrtc          } p ( 0 :: CInt )
+        #{poke XRROutputInfo, nclone         } p ( 0 :: CInt )
+        #{poke XRROutputInfo, nmode          } p ( 0 :: CInt )
+        #{poke XRROutputInfo, name           } p ( nullPtr :: Ptr CChar    )
+        #{poke XRROutputInfo, crtcs          } p ( nullPtr :: Ptr RRCrtc   )
+        #{poke XRROutputInfo, clones         } p ( nullPtr :: Ptr RROutput )
+        #{poke XRROutputInfo, modes          } p ( nullPtr :: Ptr RRMode   )
+
+    peek p = return XRROutputInfo
+            `ap` ( #{peek XRROutputInfo, timestamp      } p )
+            `ap` ( #{peek XRROutputInfo, crtc           } p )
+            `ap` peekCStringLenIO (#{peek XRROutputInfo, nameLen } p)
+                                  (#{peek XRROutputInfo, name    } p)
+            `ap` ( #{peek XRROutputInfo, mm_width       } p )
+            `ap` ( #{peek XRROutputInfo, mm_height      } p )
+            `ap` ( #{peek XRROutputInfo, connection     } p )
+            `ap` ( #{peek XRROutputInfo, subpixel_order } p )
+            `ap` peekCArrayIO (#{peek XRROutputInfo, ncrtc   } p)
+                              (#{peek XRROutputInfo, crtcs   } p)
+            `ap` peekCArrayIO (#{peek XRROutputInfo, nclone  } p)
+                              (#{peek XRROutputInfo, clones  } p)
+            `ap` ( #{peek XRROutputInfo, npreferred     } p )
+            `ap` peekCArrayIO (#{peek XRROutputInfo, nmode   } p)
+                              (#{peek XRROutputInfo, modes   } p)
 
 
 xrrQueryExtension :: Display -> IO (Maybe (CInt, CInt))
@@ -379,6 +439,42 @@ foreign import ccall "XRRGetScreenResources"
 
 foreign import ccall "XRRFreeScreenResources"
     cXRRFreeScreenResources :: Ptr XRRScreenResources -> IO ()
+
+xrrGetOutputInfo :: Display -> XRRScreenResources -> RROutput -> IO (Maybe XRROutputInfo)
+xrrGetOutputInfo dpy xrr_sr rro = withPool $ \pool -> do
+    -- XRRGetOutputInfo only uses the timestamp field from the
+    -- XRRScreenResources struct, so it's probably ok to pass the incomplete
+    -- structure here (see also the poke implementation for the Storable
+    -- instance of XRRScreenResources)
+    -- Alternative version below; This is extremely slow, though!
+    {- xrrGetOutputInfo :: Display -> Window -> RROutput -> IO (Maybe XRROutputInfo)
+       xrrGetOutputInfo dpy win rro = do
+           srp <- cXRRGetScreenResources dpy win
+           oip <- cXRRGetOutputInfo dpy srp rro
+           cXRRFreeScreenResources srp
+    -}
+    oip <- pooledMalloc pool >>= \srp -> do
+        poke srp xrr_sr
+        cXRRGetOutputInfo dpy srp rro -- no need to free srp, because pool mem
+
+    if oip == nullPtr
+        then return Nothing
+        else do
+            oi <- peek oip
+            _ <- cXRRFreeOutputInfo oip
+            return $ Just oi
+
+foreign import ccall "XRRGetOutputInfo"
+    cXRRGetOutputInfo :: Display -> Ptr XRRScreenResources -> RROutput -> IO (Ptr XRROutputInfo)
+
+foreign import ccall "XRRFreeOutputInfo"
+    cXRRFreeOutputInfo :: Ptr XRROutputInfo -> IO ()
+
+foreign import ccall "XRRSetOutputPrimary"
+    xrrSetOutputPrimary :: Display -> Window -> RROutput -> IO ()
+
+foreign import ccall "XRRGetOutputPrimary"
+    xrrGetOutputPrimary :: Display -> Window -> RROutput
 
 xrrGetScreenResourcesCurrent :: Display -> Window -> IO (Maybe XRRScreenResources)
 xrrGetScreenResourcesCurrent dpy win = do
