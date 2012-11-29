@@ -834,7 +834,10 @@ module Graphics.X11.Types
         xRR_Rotate_180,
         xRR_Rotate_270,
         xRR_Reflect_X,
-        xRR_Reflect_Y
+        xRR_Reflect_Y,
+        xRR_Connected,
+        xRR_Disconnected,
+        xRR_UnknownConnection
         ) where
 
 -- import Data.Int
@@ -1794,3 +1797,8 @@ type XRRModeFlags  = #{type XRRModeFlags}
   , xRR_Reflect_Y = RR_Reflect_Y
   }
 
+#{enum Connection,
+ , xRR_Connected         = RR_Connected
+ , xRR_Disconnected      = RR_Disconnected
+ , xRR_UnknownConnection = RR_UnknownConnection
+ }
