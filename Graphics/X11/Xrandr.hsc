@@ -7,7 +7,7 @@
 -- License   : BSD3
 --
 -- Maintainer: Ben Boeckel <mathstuf@gmail.com>
--- Maintainer: Jochen Keil <jochen dot keil at gmail dot com>
+--           , Jochen Keil <jochen dot keil at gmail dot com>
 --
 -- Stability : provisional
 -- Portability: portable
