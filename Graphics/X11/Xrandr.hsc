@@ -552,7 +552,7 @@ foreign import ccall "XRRSetOutputPrimary"
     xrrSetOutputPrimary :: Display -> Window -> RROutput -> IO ()
 
 foreign import ccall "XRRGetOutputPrimary"
-    xrrGetOutputPrimary :: Display -> Window -> RROutput
+    xrrGetOutputPrimary :: Display -> Window -> IO RROutput
 
 xrrGetScreenResourcesCurrent :: Display -> Window -> IO (Maybe XRRScreenResources)
 xrrGetScreenResourcesCurrent dpy win = do
