@@ -73,6 +73,9 @@ module Graphics.X11.Xlib.Misc(
         getPointerControl,
         warpPointer,
 
+        -- * Visuals
+        visualIDFromVisual,
+
         -- * Threads
         initThreads,
         lockDisplay,
@@ -675,8 +678,8 @@ foreign import ccall unsafe "HsXlib.h XWarpPointer"
 ----------------------------------------------------------------
 
 -- | see @XVisualIDFromVisual()@
---foreign import ccall unsafe "HsXlib.h XVisualIDFromVisual"
---    visualIDFromVisual :: Visual -> IO VisualID
+foreign import ccall unsafe "HsXlib.h XVisualIDFromVisual"
+        visualIDFromVisual :: Visual -> IO VisualID
 
 -- XGetVisualInfo omitted
 -- XMatchVisualInfo omitted
