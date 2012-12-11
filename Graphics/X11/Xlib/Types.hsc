@@ -16,9 +16,12 @@
 -- #hide
 module Graphics.X11.Xlib.Types(
         Display(..), Screen(..), Visual(..), GC(..), GCValues, SetWindowAttributes,
+        VisualInfo(..),
         Image(..), Point(..), Rectangle(..), Arc(..), Segment(..), Color(..),
         Pixel, Position, Dimension, Angle, ScreenNumber, Buffer
         ) where
+
+import Graphics.X11.Types
 
 -- import Control.Monad( zipWithM_ )
 import Data.Int
@@ -85,6 +88,67 @@ newtype SetWindowAttributes = SetWindowAttributes (Ptr SetWindowAttributes)
 #else
         deriving (Eq, Ord, Show)
 #endif
+
+-- | counterpart of an X11 @XVisualInfo@ structure
+data VisualInfo = VisualInfo {
+        visualInfo_visual :: Visual,
+        visualInfo_visualID :: VisualID,
+        visualInfo_screen :: ScreenNumber,
+        visualInfo_depth :: CInt,
+        visualInfo_class :: CInt,
+        visualInfo_redMask :: CULong,
+        visualInfo_greenMask :: CULong,
+        visualInfo_blueMask :: CULong,
+        visualInfo_colormapSize :: CInt,
+        visualInfo_bitsPerRGB :: CInt
+        }
+#if __GLASGOW_HASKELL__
+        deriving (Eq, Show, Typeable)
+#else
+        deriving (Eq, Show)
+#endif
+
+instance Storable VisualInfo where
+        sizeOf _ = #size XVisualInfo
+        alignment _ = alignment (undefined::CInt)
+        peek p = do
+                visual <- Visual `fmap` #{peek XVisualInfo, visual} p
+                visualID <- #{peek XVisualInfo, visualid} p
+                screen <- #{peek XVisualInfo, screen} p
+                depth <- #{peek XVisualInfo, depth} p
+                class_ <- #{peek XVisualInfo, class} p
+                redMask <- #{peek XVisualInfo, red_mask} p
+                greenMask <- #{peek XVisualInfo, green_mask} p
+                blueMask <- #{peek XVisualInfo, blue_mask} p
+                colormapSize <- #{peek XVisualInfo, colormap_size} p
+                bitsPerRGB <- #{peek XVisualInfo, bits_per_rgb} p
+                return $ VisualInfo {
+                        visualInfo_visual = visual,
+                        visualInfo_visualID = visualID,
+                        visualInfo_screen = screen,
+                        visualInfo_depth = depth,
+                        visualInfo_class = class_,
+                        visualInfo_redMask = redMask,
+                        visualInfo_greenMask = greenMask,
+                        visualInfo_blueMask = blueMask,
+                        visualInfo_colormapSize = colormapSize,
+                        visualInfo_bitsPerRGB = bitsPerRGB
+                        }
+        poke p info = do
+                #{poke XVisualInfo, visual} p visualPtr
+                #{poke XVisualInfo, visualid} p $ visualInfo_visualID info
+                #{poke XVisualInfo, screen} p $ visualInfo_screen info
+                #{poke XVisualInfo, depth} p $ visualInfo_depth info
+                #{poke XVisualInfo, class} p $ visualInfo_class info
+                #{poke XVisualInfo, red_mask} p $ visualInfo_redMask info
+                #{poke XVisualInfo, green_mask} p $ visualInfo_greenMask info
+                #{poke XVisualInfo, blue_mask} p $ visualInfo_blueMask info
+                #{poke XVisualInfo, colormap_size} p $
+                        visualInfo_colormapSize info
+                #{poke XVisualInfo, bits_per_rgb} p $
+                        visualInfo_bitsPerRGB info
+                where
+                        ~(Visual visualPtr) = visualInfo_visual info
 
 -- | pointer to an X11 @XImage@ structure
 newtype Image    = Image    (Ptr Image)
