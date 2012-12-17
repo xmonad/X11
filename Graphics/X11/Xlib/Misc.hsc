@@ -75,6 +75,7 @@ module Graphics.X11.Xlib.Misc(
 
         -- * Visuals
         visualIDFromVisual,
+        emptyVisualInfo,
         VisualInfoMask,
         visualNoMask,
         visualIDMask,
@@ -694,6 +695,21 @@ foreign import ccall unsafe "HsXlib.h XWarpPointer"
 -- | see @XVisualIDFromVisual()@
 foreign import ccall unsafe "HsXlib.h XVisualIDFromVisual"
         visualIDFromVisual :: Visual -> IO VisualID
+
+-- | An empty 'VisualInfo' structure
+emptyVisualInfo :: VisualInfo
+emptyVisualInfo = VisualInfo {
+        visualInfo_visual = Visual nullPtr,
+        visualInfo_visualID = 0,
+        visualInfo_screen = 0,
+        visualInfo_depth = 0,
+        visualInfo_class = 0,
+        visualInfo_redMask = 0,
+        visualInfo_greenMask = 0,
+        visualInfo_blueMask = 0,
+        visualInfo_colormapSize = 0,
+        visualInfo_bitsPerRGB = 0
+        }
 
 type VisualInfoMask = CLong
 #{enum VisualInfoMask,
