@@ -11,7 +11,10 @@
 -- missing functionality from the X11 library
 --
 
-module Graphics.X11.Xlib.Extras where
+module Graphics.X11.Xlib.Extras (
+  module Graphics.X11.Xlib.Extras,
+  module Graphics.X11.Xlib.Internal
+  ) where
 
 import Data.Maybe
 import Data.Typeable ( Typeable )
