@@ -63,13 +63,11 @@ AC_MSG_RESULT([$with_xinerama])
 if test "$with_xinerama" = yes; then
     AC_CHECK_HEADERS([X11/extensions/Xinerama.h], [have_xinerama=yes])
     if test "$have_xinerama" = yes; then
-        EXTRA_LIBRARIES="extra-libraries: Xinerama Xext"
+        EXTRA_LIBRARIES="Xinerama Xext"
     else
-        EXTRA_LIBRARIES=""
         echo "WARNING: Xinerama headers not found. Building without Xinerama support"
     fi
 else
-    EXTRA_LIBRARIES=""
     echo "WARNING: Building without Xinerama support per user request"
 fi
 
@@ -88,13 +86,11 @@ AC_MSG_RESULT([$with_xscreensaver])
 if test "$with_xscreensaver" = yes; then
     AC_CHECK_HEADERS([X11/extensions/scrnsaver.h], [have_xscreensaver=yes])
     if test "$have_xscreensaver" = yes; then
-        EXTRA_LIBRARIES="extra-libraries: Xss"
+        EXTRA_LIBRARIES="Xss $EXTRA_LIBRARIES"
     else
-        EXTRA_LIBRARIES=""
         echo "WARNING: XScreenSaver headers not found. Building without XScreenSaver support"
     fi
 else
-    EXTRA_LIBRARIES=""
     echo "WARNING: Building without XScreenSaver support per user request"
 fi
 
