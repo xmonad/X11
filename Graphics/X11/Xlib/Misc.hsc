@@ -102,6 +102,7 @@ module Graphics.X11.Xlib.Misc(
         bitmapBitOrder,
         bitmapUnit,
         bitmapPad,
+        readBitmapFile,
 
         -- * Keycodes
         displayKeycodes,
@@ -822,7 +823,7 @@ foreign import ccall unsafe "HsXlib.h XBitmapPad"
 -- IN Maybe Int y_hot = -1
 -- POST: RETVAL == BitmapSuccess
 
--- omitted
+-- added: unstable
 -- IMPURE void  XReadBitmapFile(display, d, filename, bitmap, width, height, x_hot, y_hot) RAISES Either
 -- RETURNTYPE   BitmapFileStatus
 -- GLOBAL ERROR BitmapFileStatus        RETVAL
@@ -835,6 +836,37 @@ foreign import ccall unsafe "HsXlib.h XBitmapPad"
 -- OUT Int              x_hot RAISES Maybe IF x_hot == -1
 -- OUT Int              y_hot RAISES Maybe IF x_hot == -1
 -- POST: RETVAL == BitmapSuccess
+
+-- | interface to the X11 library function @XReadBitmapFile@.
+readBitmapFile :: Display -> Drawable -> String
+                  -> IO (Either String (Dimension, Dimension, Pixmap, Maybe CInt, Maybe CInt))
+readBitmapFile display d filename =
+  withCString filename $ \ c_filename ->
+  alloca $ \ width_return ->
+  alloca $ \ height_return ->
+  alloca $ \ bitmap_return ->
+  alloca $ \ x_hot_return ->
+  alloca $ \ y_hot_return -> do
+    rv <- xReadBitmapFile display d c_filename width_return height_return
+         bitmap_return x_hot_return y_hot_return
+    width <- peek width_return
+    height <- peek height_return
+    bitmap <- peek bitmap_return
+    x_hot <- peek x_hot_return
+    y_hot <- peek y_hot_return
+    let m_x_hot | x_hot == -1 = Nothing
+                | otherwise  = Just x_hot
+        m_y_hot | y_hot == -1 = Nothing
+                | otherwise  = Just y_hot
+    case rv of
+        0 -> return $ Right (fromIntegral width, fromIntegral height, bitmap, m_x_hot, m_y_hot)
+        1 -> return $ Left "readBitmapFile: BitmapOpenFailed"
+        2 -> return $ Left "readBitmapFile: BitmapFileInvalid"
+        3 -> return $ Left "readBitmapFile: BitmapNoMemory"
+        _ -> return $ Left "readBitmapFile: BitmapUnknownError"
+foreign import ccall unsafe "X11/Xlib.h XReadBitmapFile"
+  xReadBitmapFile :: Display -> Drawable -> CString -> Ptr CInt -> Ptr CInt
+                     -> Ptr Pixmap -> Ptr CInt -> Ptr CInt -> IO CInt
 
 -- XCreateBitmapFromData omitted (awkward looking type)
 -- XReadBitmapFileData omitted (awkward looking type)
