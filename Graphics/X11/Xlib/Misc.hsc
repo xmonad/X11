@@ -185,7 +185,7 @@ import Graphics.X11.Xlib.Atom
 import Graphics.X11.Xlib.Event
 import Graphics.X11.Xlib.Font
 
-import Foreign
+import Foreign (Storable, Ptr, alloca, peek, throwIfNull, with, withArrayLen, allocaBytes, pokeByteOff, withArray, FunPtr, nullPtr, Word32, peekArray)
 import Foreign.C
 
 import System.IO.Unsafe
