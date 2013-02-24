@@ -14,6 +14,8 @@
 
 module Graphics.X11.Xlib.Atom(
         internAtom,
+        getAtomName,
+        getAtomNames,
 
         pRIMARY,
         sECONDARY,
@@ -87,9 +89,13 @@ module Graphics.X11.Xlib.Atom(
 
         ) where
 
+import Control.Monad ( void )
+
 import Graphics.X11.Types
 import Graphics.X11.Xlib.Types
 
+import Foreign hiding ( void )
+import Foreign.C.Types
 import Foreign.C.String
 
 #include "HsXlib.h"
@@ -108,9 +114,40 @@ internAtom display atom_name only_if_exists =
 foreign import ccall unsafe "XInternAtom"
         xInternAtom :: Display -> CString -> Bool -> IO Atom
 
--- XInternAtoms omitted
--- XGetAtomName omitted
--- XGetAtomNames omitted
+-- jrk, 22.11.2012: getAtomName{,s}
+
+getAtomName :: Display -> Atom -> IO (Maybe String)
+getAtomName dpy atom = do
+    p <- cXGetAtomName dpy atom
+    if p == nullPtr
+        then return Nothing
+        else do
+            res <- peekCString p
+            _ <- cXFree p
+            return $ Just res
+
+foreign import ccall "XGetAtomName"
+    cXGetAtomName :: Display -> Atom -> IO (Ptr CChar)
+
+getAtomNames :: Display -> [Atom] -> IO [String]
+getAtomNames dpy atoms = withPool $ \pool -> do
+    atomsp <- (pooledMallocArray pool $ length atoms) :: IO (Ptr Atom)
+    ccharp <- (pooledMallocArray pool $ length atoms) :: IO (Ptr (Ptr CChar))
+
+    pokeArray atomsp atoms
+    void $ cXGetAtomNames dpy atomsp (fromIntegral $ length atoms :: CInt) ccharp
+
+    res <- peekArray (length atoms) ccharp >>= mapM peekCString
+    peekArray (length atoms) ccharp >>= mapM_ cXFree
+
+    return res
+
+foreign import ccall "XGetAtomNames"
+    cXGetAtomNames :: Display -> Ptr Atom -> CInt -> Ptr (Ptr CChar) -> IO Status
+
+foreign import ccall "XFree"
+    cXFree :: Ptr a -> IO CInt
+
 -- XConvertSelection omitted
 -- XListProperties omitted
 -- XChangeProperty omitted
