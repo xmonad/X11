@@ -75,7 +75,6 @@ module Graphics.X11.Xlib.Misc(
 
         -- * Visuals
         visualIDFromVisual,
-        emptyVisualInfo,
         VisualInfoMask,
         visualNoMask,
         visualIDMask,
@@ -189,6 +188,7 @@ import Graphics.X11.Xlib.Font
 import Foreign (Storable, Ptr, alloca, peek, throwIfNull, with, withArrayLen, allocaBytes, pokeByteOff, withArray, FunPtr, nullPtr, Word32, peekArray)
 import Foreign.C
 
+import Data.Default
 import System.IO.Unsafe
 
 #if __GLASGOW_HASKELL__
@@ -697,9 +697,8 @@ foreign import ccall unsafe "HsXlib.h XWarpPointer"
 foreign import ccall unsafe "HsXlib.h XVisualIDFromVisual"
         visualIDFromVisual :: Visual -> IO VisualID
 
--- | An empty 'VisualInfo' structure
-emptyVisualInfo :: VisualInfo
-emptyVisualInfo = VisualInfo {
+instance Default VisualInfo where
+    def = VisualInfo {
         visualInfo_visual = Visual nullPtr,
         visualInfo_visualID = 0,
         visualInfo_screen = 0,
