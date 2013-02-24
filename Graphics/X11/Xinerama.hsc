@@ -29,6 +29,7 @@ import Foreign
 import Foreign.C.Types
 import Graphics.X11.Xlib
 import Graphics.X11.Xlib.Extras (WindowAttributes(..), getWindowAttributes)
+import Graphics.X11.Xlib.Internal
 import Control.Monad
 
 -- | Representation of the XineramaScreenInfo struct
@@ -67,9 +68,6 @@ getScreenInfo dpy = do
 -- We have Xinerama, so the library will actually work
 compiledWithXinerama :: Bool
 compiledWithXinerama = True
-
--- for XFree() (already included from Xinerama.h, but I don't know if I can count on that.)
-#include <X11/Xlib.h>
 
 #include <X11/extensions/Xinerama.h>
 
@@ -113,7 +111,7 @@ xineramaQueryScreens dpy =
                             then return Nothing
                             else do nscreens <- peek intp
                                     screens <- peekArray (fromIntegral nscreens) p
-                                    _ <- cXFree p
+                                    _ <- xFree p
                                     return (Just screens)
 
 foreign import ccall "XineramaQueryExtension"
@@ -124,9 +122,6 @@ foreign import ccall "XineramaQueryVersion"
 
 foreign import ccall "XineramaQueryScreens"
   cXineramaQueryScreens :: Display -> Ptr CInt -> IO (Ptr XineramaScreenInfo)
-
-foreign import ccall "XFree"
-  cXFree :: Ptr a -> IO CInt
 
 wrapPtr2 :: (Storable a, Storable b) => (Ptr a -> Ptr b -> IO c) -> (c -> a -> b -> d) -> IO d
 wrapPtr2 cfun f =

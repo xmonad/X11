@@ -52,6 +52,8 @@ library
       Graphics.X11.ExtraTypes.Sun
       Graphics.X11.ExtraTypes.XF86,
       Graphics.X11.ExtraTypes.XorgDefault
+  other-modules:
+      Graphics.X11.Xlib.Internal
   c-sources:
       cbits/fdset.c,
       cbits/auxiliaries.c,

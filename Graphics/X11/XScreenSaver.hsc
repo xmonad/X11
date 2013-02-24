@@ -45,6 +45,7 @@ import Graphics.X11.Xlib.Types
 import Foreign
 import Foreign.C.Types
 import Graphics.X11.Xlib
+import Graphics.X11.Xlib.Internal
 
 import Control.Monad
 
@@ -239,7 +240,7 @@ xScreenSaverQueryInfo dpy = do
     s <- cXScreenSaverQueryInfo dpy (defaultRootWindow dpy) p
     if s == 0 then return Nothing else do
     xssi <- peek p
-    _ <- cXFree p
+    _ <- xFree p
     return (Just xssi)
 
 -- | xScreenSaverSelectInput asks that events related to the screen saver be
@@ -424,9 +425,6 @@ foreign import ccall "XScreenSaverGetRegistered"
 
 foreign import ccall "XScreenSaverSuspend"
     cXScreenSaverSuspend :: Display -> Bool -> IO ()
-
-foreign import ccall "XFree"
-    cXFree :: Ptr a -> IO CInt
 
 #else
 module Graphics.X11.XScreenSaver where

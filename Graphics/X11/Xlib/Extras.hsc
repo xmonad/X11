@@ -20,6 +20,7 @@ import Graphics.X11.Xrandr
 import Graphics.X11.XScreenSaver
 #endif
 import Graphics.X11.Xlib
+import Graphics.X11.Xlib.Internal
 import Graphics.X11.Xlib.Types
 import Foreign (Storable, Ptr, peek, poke, peekElemOff, pokeElemOff, peekByteOff, pokeByteOff, peekArray, throwIfNull, nullPtr, sizeOf, alignment, alloca, with, throwIf, Word8, Word16, #{type unsigned long}, Int32, plusPtr, castPtr, withArrayLen, setBit, testBit, allocaBytes, FunPtr)
 import Foreign.C.Types
@@ -913,9 +914,6 @@ configureWindow :: Display -> Window -> CULong -> WindowChanges -> IO ()
 configureWindow d w m c = do
     _ <- with c (xConfigureWindow d w m)
     return ()
-
-foreign import ccall unsafe "XlibExtras.h XFree"
-    xFree :: Ptr a -> IO CInt
 
 foreign import ccall unsafe "XlibExtras.h XQueryTree"
     xQueryTree :: Display -> Window -> Ptr Window -> Ptr Window -> Ptr (Ptr Window) -> Ptr CInt -> IO Status

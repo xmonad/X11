@@ -92,6 +92,7 @@ module Graphics.X11.Xlib.Atom(
 import Control.Monad ( void )
 
 import Graphics.X11.Types
+import Graphics.X11.Xlib.Internal
 import Graphics.X11.Xlib.Types
 
 import Foreign hiding ( void )
@@ -123,7 +124,7 @@ getAtomName dpy atom = do
         then return Nothing
         else do
             res <- peekCString p
-            _ <- cXFree p
+            _ <- xFree p
             return $ Just res
 
 foreign import ccall "XGetAtomName"
@@ -138,15 +139,12 @@ getAtomNames dpy atoms = withPool $ \pool -> do
     void $ cXGetAtomNames dpy atomsp (fromIntegral $ length atoms :: CInt) ccharp
 
     res <- peekArray (length atoms) ccharp >>= mapM peekCString
-    peekArray (length atoms) ccharp >>= mapM_ cXFree
+    peekArray (length atoms) ccharp >>= mapM_ xFree
 
     return res
 
 foreign import ccall "XGetAtomNames"
     cXGetAtomNames :: Display -> Ptr Atom -> CInt -> Ptr (Ptr CChar) -> IO Status
-
-foreign import ccall "XFree"
-    cXFree :: Ptr a -> IO CInt
 
 -- XConvertSelection omitted
 -- XListProperties omitted

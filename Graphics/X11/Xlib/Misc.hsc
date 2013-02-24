@@ -184,6 +184,7 @@ import Graphics.X11.Xlib.Types
 import Graphics.X11.Xlib.Atom
 import Graphics.X11.Xlib.Event
 import Graphics.X11.Xlib.Font
+import Graphics.X11.Xlib.Internal
 
 import Foreign (Storable, Ptr, alloca, peek, throwIfNull, with, withArrayLen, allocaBytes, pokeByteOff, withArray, FunPtr, nullPtr, Word32, peekArray)
 import Foreign.C
@@ -291,9 +292,6 @@ foreign import ccall unsafe "HsXlib.h XUngrabServer"
         ungrabServer :: Display -> IO ()
 
 -- XChangeActivePointerGrab omitted
-
--- | interface to the X11 library function @XFree()@.
-foreign import ccall unsafe "HsXlib.h XFree" xFree :: Ptr a -> IO ()
 
 -- XFreeStringList omitted
 
@@ -1258,7 +1256,7 @@ fetchBuffer display buffer =
                 xFetchBuffer display nbytes_return buffer
         nbytes <- peek nbytes_return
         bytes <- peekCStringLen (c_bytes, (fromIntegral nbytes))
-        xFree c_bytes
+        _ <- xFree c_bytes
         return bytes
 foreign import ccall unsafe "HsXlib.h XFetchBuffer"
         xFetchBuffer :: Display -> Ptr CInt -> CInt -> IO CString
@@ -1271,7 +1269,7 @@ fetchBytes display =
                 xFetchBytes display nbytes_return
         nbytes <- peek nbytes_return
         bytes <- peekCStringLen (c_bytes, (fromIntegral nbytes))
-        xFree c_bytes
+        _ <- xFree c_bytes
         return bytes
 foreign import ccall unsafe "HsXlib.h XFetchBytes"
         xFetchBytes :: Display -> Ptr CInt -> IO CString

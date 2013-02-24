@@ -62,6 +62,7 @@ import Foreign.C.String
 import Control.Monad
 
 import Graphics.X11.Xlib.Event
+import Graphics.X11.Xlib.Internal
 import Graphics.X11.Xlib.Types
 import Graphics.X11.Types
 
@@ -382,7 +383,7 @@ xrrConfigSizes config =
                                     sizes <- if nsizes == 0
                                                 then return Nothing
                                                 else peekArray (fromIntegral nsizes) p >>= return . Just
-                                    _ <- cXFree p
+                                    _ <- xFree p
                                     return sizes
 foreign import ccall "XRRConfigSizes"
   cXRRConfigSizes :: XRRScreenConfiguration -> Ptr CInt -> IO (Ptr XRRScreenSize)
@@ -397,7 +398,7 @@ xrrConfigRates config size_index =
                                     rates <- if nrates == 0
                                                 then return Nothing
                                                 else peekArray (fromIntegral nrates) p >>= return . Just
-                                    _ <- cXFree p
+                                    _ <- xFree p
                                     return rates
 foreign import ccall "XRRConfigRates"
   cXRRConfigRates :: XRRScreenConfiguration -> CInt -> Ptr CInt -> IO (Ptr CShort)
@@ -450,7 +451,7 @@ xrrSizes dpy screen =
                                     sizes <- if nsizes == 0
                                                 then return Nothing
                                                 else peekArray (fromIntegral nsizes) p >>= return . Just
-                                    _ <- cXFree p
+                                    _ <- xFree p
                                     return sizes
 foreign import ccall "XRRSizes"
   cXRRSizes :: Display -> CInt -> Ptr CInt -> IO (Ptr XRRScreenSize)
@@ -465,7 +466,7 @@ xrrRates dpy screen size_index =
                                     rates <- if nrates == 0
                                                 then return Nothing
                                                 else peekArray (fromIntegral nrates) p >>= return . Just
-                                    _ <- cXFree p
+                                    _ <- xFree p
                                     return rates
 foreign import ccall "XRRRates"
   cXRRRates :: Display -> CInt -> CInt -> Ptr CInt -> IO (Ptr CShort)
@@ -576,14 +577,11 @@ xrrListOutputProperties dpy rro = withPool $ \pool -> do
         else do
             nprop <- peek intp
             res <- fmap Just $ peekCArray nprop p
-            _ <- cXFree p
+            _ <- xFree p
             return res
 
 foreign import ccall "XRRListOutputProperties"
     cXRRListOutputProperties :: Display -> RROutput -> Ptr CInt -> IO (Ptr Atom)
-
-foreign import ccall "XFree"
-  cXFree :: Ptr a -> IO CInt
 
 wrapPtr2 :: (Storable a, Storable b) => (Ptr a -> Ptr b -> IO c) -> (c -> a -> b -> d) -> IO d
 wrapPtr2 cfun f =
