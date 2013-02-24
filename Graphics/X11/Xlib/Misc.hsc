@@ -859,13 +859,13 @@ readBitmapFile display d filename =
         m_y_hot | y_hot == -1 = Nothing
                 | otherwise  = Just y_hot
     case rv of
-        0 -> return $ Right (fromIntegral width, fromIntegral height, bitmap, m_x_hot, m_y_hot)
+        0 -> return $ Right (width, height, bitmap, m_x_hot, m_y_hot)
         1 -> return $ Left "readBitmapFile: BitmapOpenFailed"
         2 -> return $ Left "readBitmapFile: BitmapFileInvalid"
         3 -> return $ Left "readBitmapFile: BitmapNoMemory"
         _ -> return $ Left "readBitmapFile: BitmapUnknownError"
 foreign import ccall unsafe "X11/Xlib.h XReadBitmapFile"
-  xReadBitmapFile :: Display -> Drawable -> CString -> Ptr CInt -> Ptr CInt
+  xReadBitmapFile :: Display -> Drawable -> CString -> Ptr Dimension -> Ptr Dimension
                      -> Ptr Pixmap -> Ptr CInt -> Ptr CInt -> IO CInt
 
 -- XCreateBitmapFromData omitted (awkward looking type)
