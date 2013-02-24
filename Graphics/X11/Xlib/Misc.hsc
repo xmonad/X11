@@ -73,6 +73,24 @@ module Graphics.X11.Xlib.Misc(
         getPointerControl,
         warpPointer,
 
+        -- * Visuals
+        visualIDFromVisual,
+        emptyVisualInfo,
+        VisualInfoMask,
+        visualNoMask,
+        visualIDMask,
+        visualScreenMask,
+        visualDepthMask,
+        visualClassMask,
+        visualRedMaskMask,
+        visualGreenMaskMask,
+        visualBlueMaskMask,
+        visualColormapSizeMask,
+        visualBitsPerRGBMask,
+        visualAllMask,
+        getVisualInfo,
+        matchVisualInfo,
+
         -- * Threads
         initThreads,
         lockDisplay,
@@ -167,7 +185,7 @@ import Graphics.X11.Xlib.Atom
 import Graphics.X11.Xlib.Event
 import Graphics.X11.Xlib.Font
 
-import Foreign (Storable, Ptr, alloca, peek, throwIfNull, with, withArrayLen, allocaBytes, pokeByteOff, withArray, FunPtr, nullPtr, Word32)
+import Foreign
 import Foreign.C
 
 import System.IO.Unsafe
@@ -675,12 +693,72 @@ foreign import ccall unsafe "HsXlib.h XWarpPointer"
 ----------------------------------------------------------------
 
 -- | see @XVisualIDFromVisual()@
---foreign import ccall unsafe "HsXlib.h XVisualIDFromVisual"
---    visualIDFromVisual :: Visual -> IO VisualID
+foreign import ccall unsafe "HsXlib.h XVisualIDFromVisual"
+        visualIDFromVisual :: Visual -> IO VisualID
 
--- XGetVisualInfo omitted
--- XMatchVisualInfo omitted
+-- | An empty 'VisualInfo' structure
+emptyVisualInfo :: VisualInfo
+emptyVisualInfo = VisualInfo {
+        visualInfo_visual = Visual nullPtr,
+        visualInfo_visualID = 0,
+        visualInfo_screen = 0,
+        visualInfo_depth = 0,
+        visualInfo_class = 0,
+        visualInfo_redMask = 0,
+        visualInfo_greenMask = 0,
+        visualInfo_blueMask = 0,
+        visualInfo_colormapSize = 0,
+        visualInfo_bitsPerRGB = 0
+        }
 
+type VisualInfoMask = CLong
+#{enum VisualInfoMask,
+ , visualNoMask = VisualNoMask
+ , visualIDMask = VisualIDMask
+ , visualScreenMask = VisualScreenMask
+ , visualDepthMask = VisualDepthMask
+ , visualClassMask = VisualClassMask
+ , visualRedMaskMask = VisualRedMaskMask
+ , visualGreenMaskMask = VisualGreenMaskMask
+ , visualBlueMaskMask = VisualBlueMaskMask
+ , visualColormapSizeMask = VisualColormapSizeMask
+ , visualBitsPerRGBMask = VisualBitsPerRGBMask
+ , visualAllMask = VisualAllMask
+ }
+
+-- | interface to the X11 library function @XGetVisualInfo()@
+getVisualInfo :: Display -> VisualInfoMask -> VisualInfo -> IO [VisualInfo]
+getVisualInfo dpy mask template =
+        alloca $ \nItemsPtr ->
+        with template $ \templatePtr -> do
+        itemsPtr <- xGetVisualInfo dpy mask templatePtr nItemsPtr
+        if itemsPtr == nullPtr
+                then return []
+                else do
+                        nItems <- peek nItemsPtr
+                        items <- peekArray (fromIntegral nItems) itemsPtr
+                        _ <- xFree itemsPtr
+                        return items
+
+foreign import ccall unsafe "XGetVisualInfo"
+        xGetVisualInfo :: Display -> VisualInfoMask -> Ptr VisualInfo ->
+                Ptr CInt -> IO (Ptr VisualInfo)
+
+-- | interface to the X11 library function @XMatchVisualInfo()@
+matchVisualInfo
+        :: Display -> ScreenNumber -> CInt -> CInt -> IO (Maybe VisualInfo)
+matchVisualInfo dpy screen depth class_ =
+        alloca $ \infoPtr -> do
+        status <- xMatchVisualInfo dpy screen depth class_ infoPtr
+        if status == 0
+                then return Nothing
+                else do
+                        info <- peek infoPtr
+                        return $ Just info
+
+foreign import ccall unsafe "XMatchVisualInfo"
+        xMatchVisualInfo :: Display -> ScreenNumber -> CInt -> CInt ->
+                Ptr VisualInfo -> IO Status
 
 ----------------------------------------------------------------
 -- Threads
