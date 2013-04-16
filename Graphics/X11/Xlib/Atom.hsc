@@ -89,8 +89,6 @@ module Graphics.X11.Xlib.Atom(
 
         ) where
 
-import Control.Monad ( void )
-
 import Graphics.X11.Types
 import Graphics.X11.Xlib.Internal
 import Graphics.X11.Xlib.Types
@@ -136,7 +134,7 @@ getAtomNames dpy atoms = withPool $ \pool -> do
     ccharp <- (pooledMallocArray pool $ length atoms) :: IO (Ptr (Ptr CChar))
 
     pokeArray atomsp atoms
-    void $ cXGetAtomNames dpy atomsp (fromIntegral $ length atoms :: CInt) ccharp
+    _ <- cXGetAtomNames dpy atomsp (fromIntegral $ length atoms :: CInt) ccharp
 
     res <- peekArray (length atoms) ccharp >>= mapM peekCString
     peekArray (length atoms) ccharp >>= mapM_ xFree
