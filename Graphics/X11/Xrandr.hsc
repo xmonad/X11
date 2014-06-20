@@ -23,6 +23,7 @@ module Graphics.X11.Xrandr (
   XRRScreenResources(..),
   XRROutputInfo(..),
   XRRCrtcInfo(..),
+  XRRPropertyInfo(..),
   compiledWithXrandr,
   Rotation,
   Reflection,
@@ -53,7 +54,12 @@ module Graphics.X11.Xrandr (
   xrrGetScreenResourcesCurrent,
   xrrSetOutputPrimary,
   xrrGetOutputPrimary,
-  xrrListOutputProperties
+  xrrListOutputProperties,
+  xrrQueryOutputProperty,
+  xrrConfigureOutputProperty,
+  xrrChangeOutputProperty,
+  xrrGetOutputProperty,
+  xrrDeleteOutputProperty
   ) where
 
 import Foreign
@@ -131,6 +137,14 @@ data XRRCrtcInfo = XRRCrtcInfo
     , xrr_ci_outputs      :: [RROutput]
     , xrr_ci_rotations    :: !Rotation
     , xrr_ci_possible     :: [RROutput]
+    } deriving (Eq, Show)
+
+-- | Representation of the XRRPropertyInfo struct
+data XRRPropertyInfo = XRRPropertyInfo
+    { xrr_pi_pending      :: !Bool
+    , xrr_pi_range        :: !Bool
+    , xrr_pi_immutable    :: !Bool
+    , xrr_pi_values       :: [CLong]
     } deriving (Eq, Show)
 
 -- We have Xrandr, so the library will actually work
@@ -315,6 +329,27 @@ instance Storable XRRCrtcInfo where
         `ap` ( #{peek XRRCrtcInfo, rotations } p )
         `ap` peekCArrayIO (#{peek XRRCrtcInfo, npossible } p)
                           (#{peek XRRCrtcInfo, possible  } p)
+
+
+instance Storable XRRPropertyInfo where
+    sizeOf _ = #{size XRRPropertyInfo}
+    -- FIXME: Is this right?
+    alignment _ = alignment (undefined :: CInt)
+
+    poke p xrr_pi = do
+        #{poke XRRPropertyInfo, pending    } p $ xrr_pi_pending   xrr_pi
+        #{poke XRRPropertyInfo, range      } p $ xrr_pi_range     xrr_pi
+        #{poke XRRPropertyInfo, immutable  } p $ xrr_pi_immutable xrr_pi
+        -- see comment in Storable XRRScreenResources about dynamic resource allocation
+        #{poke XRRPropertyInfo, num_values } p ( 0 :: CInt )
+        #{poke XRRPropertyInfo, values     } p ( nullPtr :: Ptr CLong )
+
+    peek p = return XRRPropertyInfo
+        `ap` ( #{peek XRRPropertyInfo, pending   } p )
+        `ap` ( #{peek XRRPropertyInfo, range     } p )
+        `ap` ( #{peek XRRPropertyInfo, immutable } p )
+        `ap` peekCArrayIO ( #{peek XRRPropertyInfo, num_values} p)
+                          ( #{peek XRRPropertyInfo, values} p)
 
 
 xrrQueryExtension :: Display -> IO (Maybe (CInt, CInt))
@@ -582,6 +617,83 @@ xrrListOutputProperties dpy rro = withPool $ \pool -> do
 
 foreign import ccall "XRRListOutputProperties"
     cXRRListOutputProperties :: Display -> RROutput -> Ptr CInt -> IO (Ptr Atom)
+
+xrrQueryOutputProperty :: Display -> RROutput -> Atom -> IO (Maybe XRRPropertyInfo)
+xrrQueryOutputProperty dpy rro prop = do
+    p <- cXRRQueryOutputProperty dpy rro prop
+    if p == nullPtr
+        then return Nothing
+        else do
+            res <- peek p
+            _ <- xFree p
+            return $ Just res
+
+foreign import ccall "XRRQueryOutputProperty"
+    cXRRQueryOutputProperty :: Display -> RROutput -> Atom -> IO (Ptr XRRPropertyInfo)
+
+xrrConfigureOutputProperty :: Display -> RROutput -> Atom -> Bool -> Bool -> [CLong] -> IO ()
+xrrConfigureOutputProperty dpy rro prop pend range xs = withArrayLen xs $
+    cXRRConfigureOutputProperty dpy rro prop pend range . fromIntegral
+
+foreign import ccall "XRRConfigureOutputProperty"
+    cXRRConfigureOutputProperty :: Display -> RROutput -> Atom -> Bool -> Bool -> CInt ->  Ptr CLong -> IO ()
+
+xrrChangeOutputProperty :: Display -> RROutput -> Atom -> Atom -> CInt -> CInt -> [Word32] -> IO ()
+xrrChangeOutputProperty dpy rro prop typ format mode xs = withPool $ \pool -> do
+    ptr <- case format of
+        8 ->  pooledNewArray pool (map fromIntegral xs :: [Word8])
+        16 -> castPtr `fmap` pooledNewArray pool (map fromIntegral xs :: [Word16])
+        32 -> castPtr `fmap` pooledNewArray pool xs
+        _  -> error "invalid format"
+
+    cXRRChangeOutputProperty dpy rro prop typ format mode ptr (fromIntegral $ length xs)
+
+foreign import ccall "XRRChangeOutputProperty"
+    cXRRChangeOutputProperty :: Display -> RROutput -> Atom -> Atom -> CInt -> CInt -> Ptr Word8 -> CInt -> IO ()
+
+-- | @xrrGetOutputProperty display output property offset length delete pending propertyType@
+-- | returns @Maybe (actualType, format, bytesAfter, data)@.
+xrrGetOutputProperty ::
+    Display -> RROutput -> Atom -> CLong -> CLong -> Bool -> Bool -> Atom ->
+    IO (Maybe (Atom, Int, CULong, [Word32]))
+xrrGetOutputProperty dpy rro prop offset len delete preferPending reqType = withPool $ \pool -> do
+    actualTypep <- pooledMalloc pool
+    actualFormatp <- pooledMalloc pool
+    nItemsp <- pooledMalloc pool
+    bytesAfterp <- pooledMalloc pool
+    datapp <- pooledMalloc pool
+    status <- cXRRGetOutputProperty dpy rro prop offset len
+        delete preferPending reqType
+        actualTypep actualFormatp nItemsp bytesAfterp datapp
+
+    if status /= 0
+        then return Nothing
+        else do
+          format <- fmap fromIntegral (peek actualFormatp)
+          nitems <- fmap fromIntegral (peek nItemsp)
+          ptr <- peek datapp
+
+          dat <- case format of
+            0 -> return []
+            8 -> fmap (map fromIntegral) $ peekArray nitems ptr
+            16 -> fmap (map fromIntegral) $ peekArray nitems (castPtr ptr :: Ptr Word16)
+            32 -> peekArray nitems (castPtr ptr :: Ptr Word32)
+            _  -> error $ "impossible happened: prop format is not in 0,8,16,32 (" ++ show format ++ ")"
+
+          _ <- xFree ptr
+
+          typ <- peek actualTypep
+          bytesAfter <- peek bytesAfterp
+          return $ Just (typ, format, bytesAfter, dat)
+
+foreign import ccall "XRRGetOutputProperty"
+    cXRRGetOutputProperty :: Display -> RROutput -> Atom -> CLong -> CLong -> Bool -> Bool
+      -> Atom -> Ptr Atom -> Ptr CInt -> Ptr CULong -> Ptr CULong -> Ptr (Ptr Word8) -> IO CInt
+
+xrrDeleteOutputProperty :: Display -> RROutput -> Atom -> IO ()
+xrrDeleteOutputProperty = cXRRDeleteOutputProperty
+foreign import ccall "XRRDeleteOutputProperty"
+    cXRRDeleteOutputProperty :: Display -> RROutput -> Atom -> IO ()
 
 wrapPtr2 :: (Storable a, Storable b) => (Ptr a -> Ptr b -> IO c) -> (c -> a -> b -> d) -> IO d
 wrapPtr2 cfun f =
