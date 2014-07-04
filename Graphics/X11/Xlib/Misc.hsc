@@ -268,11 +268,11 @@ foreign import ccall unsafe "HsXlib.h XUngrabPointer"
 
 -- | interface to the X11 library function @XGrabKey()@.
 foreign import ccall unsafe "HsXlib.h XGrabKey"
-        grabKey        :: Display -> KeyCode -> ButtonMask -> Window -> Bool -> GrabMode -> GrabMode -> IO ()
+        grabKey        :: Display -> KeyCode -> KeyMask -> Window -> Bool -> GrabMode -> GrabMode -> IO ()
 
 -- | interface to the X11 library function @XUngrabKey()@.
 foreign import ccall unsafe "HsXlib.h XUngrabKey"
-        ungrabKey      :: Display -> KeyCode -> ButtonMask -> Window -> IO ()
+        ungrabKey      :: Display -> KeyCode -> KeyMask -> Window -> IO ()
 
 -- | interface to the X11 library function @XGrabKeyboard()@.
 foreign import ccall unsafe "HsXlib.h XGrabKeyboard"
