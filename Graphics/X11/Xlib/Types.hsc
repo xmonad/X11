@@ -35,6 +35,8 @@ import Foreign.Storable( Storable(..) )
 import Data.Data
 #endif
 
+import Data.Default
+
 #include "HsXlib.h"
 
 ----------------------------------------------------------------
@@ -107,6 +109,20 @@ data VisualInfo = VisualInfo {
 #else
         deriving (Eq, Show)
 #endif
+
+instance Default VisualInfo where
+    def = VisualInfo {
+        visualInfo_visual = Visual nullPtr,
+        visualInfo_visualID = 0,
+        visualInfo_screen = 0,
+        visualInfo_depth = 0,
+        visualInfo_class = 0,
+        visualInfo_redMask = 0,
+        visualInfo_greenMask = 0,
+        visualInfo_blueMask = 0,
+        visualInfo_colormapSize = 0,
+        visualInfo_bitsPerRGB = 0
+        }
 
 instance Storable VisualInfo where
         sizeOf _ = #size XVisualInfo

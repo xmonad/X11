@@ -189,7 +189,6 @@ import Graphics.X11.Xlib.Internal
 import Foreign (Storable, Ptr, alloca, peek, throwIfNull, with, withArrayLen, allocaBytes, pokeByteOff, withArray, FunPtr, nullPtr, Word32, peekArray)
 import Foreign.C
 
-import Data.Default
 import System.IO.Unsafe
 
 #if __GLASGOW_HASKELL__
@@ -694,20 +693,6 @@ foreign import ccall unsafe "HsXlib.h XWarpPointer"
 -- | see @XVisualIDFromVisual()@
 foreign import ccall unsafe "HsXlib.h XVisualIDFromVisual"
         visualIDFromVisual :: Visual -> IO VisualID
-
-instance Default VisualInfo where
-    def = VisualInfo {
-        visualInfo_visual = Visual nullPtr,
-        visualInfo_visualID = 0,
-        visualInfo_screen = 0,
-        visualInfo_depth = 0,
-        visualInfo_class = 0,
-        visualInfo_redMask = 0,
-        visualInfo_greenMask = 0,
-        visualInfo_blueMask = 0,
-        visualInfo_colormapSize = 0,
-        visualInfo_bitsPerRGB = 0
-        }
 
 type VisualInfoMask = CLong
 #{enum VisualInfoMask,
