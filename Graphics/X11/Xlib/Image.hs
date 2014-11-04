@@ -17,6 +17,9 @@ module Graphics.X11.Xlib.Image(
         createImage,
         putImage,
         destroyImage,
+        getImage,
+        xGetPixel,
+        getPixel
         ) where
 
 import Graphics.X11.Types
@@ -25,6 +28,8 @@ import Graphics.X11.Xlib.Types
 import Foreign
 -- import Foreign.C
 import Foreign.C.Types
+
+import System.IO.Unsafe
 
 ----------------------------------------------------------------
 -- Image
@@ -36,7 +41,7 @@ createImage display vis depth format offset dat width height bitmap_pad bytes_pe
     image <- throwIfNull "createImage" (xCreateImage display vis depth format offset dat width height bitmap_pad bytes_per_line)
     return (Image image)
 foreign import ccall unsafe "HsXlib.h XCreateImage"
-    xCreateImage :: Display -> Visual -> CInt -> ImageFormat -> CInt -> 
+    xCreateImage :: Display -> Visual -> CInt -> ImageFormat -> CInt ->
         Ptr CChar -> Dimension -> Dimension -> CInt -> CInt -> IO (Ptr Image)
 
 -- | interface to the X11 library function @XPutImage()@.
@@ -48,13 +53,25 @@ foreign import ccall unsafe "HsXlib.h XPutImage"
 foreign import ccall unsafe "HsXlib.h XDestroyImage"
     destroyImage :: Image -> IO ()
 
+-- | interface to the X11 library function @XGetImage()@.
+getImage :: Display -> Drawable -> CInt -> CInt -> CUInt -> CUInt -> CULong -> ImageFormat -> IO Image
+getImage display d x y width height plane_mask format = do
+    image <- throwIfNull "getImage" (xGetImage display d x y width height plane_mask format)
+    return (Image image)
+
+foreign import ccall unsafe "HsXlib.h XGetImage"
+    xGetImage :: Display -> Drawable -> CInt -> CInt -> CUInt -> CUInt -> CULong -> ImageFormat -> IO (Ptr Image)
+
+foreign import ccall unsafe "HsXlib.h XGetPixel"
+    xGetPixel :: Image -> CInt -> CInt -> IO CULong
+
+-- | interface to the X11 library function @XGetPixel()@.
+getPixel :: Image -> CInt -> CInt -> CULong
+getPixel i x y = unsafePerformIO (xGetPixel i x y)
+
 {- don't need XInitImage since Haskell users probably won't be setting
 members of the XImage structure themselves -}
 -- XInitImage omitted
 
-{- these two functions are for fetching image data from a drawable
-back into an image struct. i'm not exactly sure when they would be
-used -}
--- XGetImage omitted
 -- XGetSubImage omitted
 
