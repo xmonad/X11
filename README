@@ -1,4 +1,4 @@
-To build this package using Cabal directly from darcs, you must run
+To build this package using Cabal directly from git, you must run
 "autoreconf" before the usual Cabal build steps (configure/build/install).
 autoreconf is included in the GNU autoconf tools.  There is no need to run
 the "configure" script: the "setup configure" step will do this for you.
@@ -16,7 +16,7 @@ configure-option:
 
     runhaskell Setup.hs configure --prefix=$HOME --configure-option="--without-xinerama"
 
-However, if you are building from darcs, X11 uses autoconf, so you need
+However, if you are building from git, X11 uses autoconf, so you need
 to have autoconf installed and run autoconf/autoheader before building:
 
     autoconf
