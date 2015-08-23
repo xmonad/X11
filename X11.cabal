@@ -22,6 +22,7 @@ extra-tmp-files:
     include/X11_extras_config.h
 Cabal-Version: >= 1.2
 build-type:         Configure
+tested-with: GHC==7.11.*, GHC==7.10.1, GHC==7.8.4, GHC==7.6.3, GHC==7.4.2, GHC==7.2.2, GHC==7.0.4
 
 library
   exposed-modules:
