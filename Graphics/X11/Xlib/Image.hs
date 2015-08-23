@@ -25,11 +25,10 @@ module Graphics.X11.Xlib.Image(
 import Graphics.X11.Types
 import Graphics.X11.Xlib.Types
 
-import Foreign
--- import Foreign.C
+import Foreign (Ptr, throwIfNull)
 import Foreign.C.Types
 
-import System.IO.Unsafe
+import System.IO.Unsafe (unsafePerformIO)
 
 ----------------------------------------------------------------
 -- Image
