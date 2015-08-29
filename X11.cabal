@@ -4,7 +4,8 @@ license:            BSD3
 license-file:       LICENSE
 copyright:          Alastair Reid, 1999-2003, libraries@haskell.org 2003-2007, Don Stewart 2007-2009, Spencer Janssen 2007-2009, Daniel Wagner 2009-2011.
 maintainer:         Daniel Wagner <daniel@wagner-home.com>
-homepage:           https://github.com/haskell-pkg-janitors/X11
+homepage:           https://github.com/xmonad/X11
+bug-reports:        https://github.com/xmonad/X11/issues
 category:           Graphics
 synopsis:           A binding to the X11 graphics library
 description:        A Haskell binding to the X11 graphics library.

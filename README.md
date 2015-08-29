@@ -1,4 +1,4 @@
-# Haskell binding to the X11 graphics library [![Hackage](https://img.shields.io/hackage/v/X11.svg?style=flat)](https://hackage.haskell.org/package/X11) [![Build Status](https://img.shields.io/travis/haskell-pkg-janitors/X11.svg?style=flat)](https://travis-ci.org/haskell-pkg-janitors/X11)
+# Haskell binding to the X11 graphics library [![Hackage](https://img.shields.io/hackage/v/X11.svg?style=flat)](https://hackage.haskell.org/package/X11) [![Build Status](https://img.shields.io/travis/xmonad/X11.svg?style=flat)](https://travis-ci.org/xmonad/X11)
 
 To build this package using Cabal directly from Git, you must run
 `autoreconf` before the usual Cabal build steps (configure/build/install).
