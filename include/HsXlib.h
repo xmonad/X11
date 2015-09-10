@@ -18,7 +18,9 @@
 #include <X11/Xatom.h>
 #include <X11/Xutil.h>
 
+#ifdef HAVE_X11_EXTENSIONS_XRANDR_H
 #include <X11/extensions/Xrandr.h>
+#endif
 
 #ifdef HAVE_X11_EXTENSIONS_SCRNSAVER_H
 #include <X11/extensions/scrnsaver.h>
