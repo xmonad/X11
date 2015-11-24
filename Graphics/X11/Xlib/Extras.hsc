@@ -978,7 +978,7 @@ foreign import ccall unsafe "XlibExtras.h XGetWindowAttributes"
 
 getWindowAttributes :: Display -> Window -> IO WindowAttributes
 getWindowAttributes d w = alloca $ \p -> do
-    _ <- throwIf (0==) (const "getWindowAttributes") $ xGetWindowAttributes d w p
+    _ <- throwIfZero "getWindowAttributes" $ xGetWindowAttributes d w p
     peek p
 
 -- | interface to the X11 library function @XChangeWindowAttributes()@.
