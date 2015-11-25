@@ -937,6 +937,8 @@ queryTree d w =
 -- TODO: this data type is incomplete wrt. the C struct
 data WindowAttributes = WindowAttributes
             { wa_x, wa_y, wa_width, wa_height, wa_border_width :: CInt
+            , wa_colormap :: Colormap
+            , wa_map_installed :: Bool
             , wa_map_state :: CInt
             , wa_override_redirect :: Bool
             }
@@ -959,6 +961,8 @@ instance Storable WindowAttributes where
                 `ap` (#{peek XWindowAttributes, width            } p)
                 `ap` (#{peek XWindowAttributes, height           } p)
                 `ap` (#{peek XWindowAttributes, border_width     } p)
+                `ap` (#{peek XWindowAttributes, colormap         } p)
+                `ap` (#{peek XWindowAttributes, map_installed    } p)
                 `ap` (#{peek XWindowAttributes, map_state        } p)
                 `ap` (#{peek XWindowAttributes, override_redirect} p)
     poke p wa = do
@@ -967,6 +971,8 @@ instance Storable WindowAttributes where
         #{poke XWindowAttributes, width            } p $ wa_width wa
         #{poke XWindowAttributes, height           } p $ wa_height wa
         #{poke XWindowAttributes, border_width     } p $ wa_border_width wa
+        #{poke XWindowAttributes, colormap         } p $ wa_colormap wa
+        #{poke XWindowAttributes, map_installed    } p $ wa_map_installed wa
         #{poke XWindowAttributes, map_state        } p $ wa_map_state wa
         #{poke XWindowAttributes, override_redirect} p $ wa_override_redirect wa
 
@@ -975,7 +981,7 @@ foreign import ccall unsafe "XlibExtras.h XGetWindowAttributes"
 
 getWindowAttributes :: Display -> Window -> IO WindowAttributes
 getWindowAttributes d w = alloca $ \p -> do
-    _ <- xGetWindowAttributes d w p
+    _ <- throwIfZero "getWindowAttributes" $ xGetWindowAttributes d w p
     peek p
 
 -- | interface to the X11 library function @XChangeWindowAttributes()@.
