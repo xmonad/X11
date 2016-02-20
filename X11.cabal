@@ -68,3 +68,4 @@ library
   build-depends: base >= 3 && < 5, data-default
   ghc-options:        -funbox-strict-fields -Wall -fno-warn-unused-binds
   ghc-prof-options:   -prof -auto-all
+  pkgconfig-depends: xkbcommon, xcursor, xcmiscproto, xft, xrandr, xineramaproto, xextproto, x11, xf86miscproto, xinerama, xext, xproto
