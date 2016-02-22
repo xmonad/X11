@@ -688,6 +688,146 @@ module Graphics.X11.ExtraTypes.XF86
 #else
          -- Skipping xF86XK_Music because your X doesn't define it
 #endif
+#ifdef XF86XK_Battery
+         xF86XK_Battery,             --  Display battery information
+#else
+         -- Skipping XF86XK_Battery because your X doesn't define it
+#endif
+#ifdef XF86XK_Bluetooth
+         xF86XK_Bluetooth,           --  Enable/disable Bluetooth
+#else
+         -- Skipping XF86XK_Bluetooth because your X doesn't define it
+#endif
+#ifdef XF86XK_WLAN
+         xF86XK_WLAN,                --  Enable/disable WLAN
+#else
+         -- Skipping XF86XK_WLAN because your X doesn't define it
+#endif
+#ifdef XF86XK_UWB
+         xF86XK_UWB,                 --  Enable/disable UWB
+#else
+         -- Skipping XF86XK_UWB because your X doesn't define it
+#endif
+#ifdef XF86XK_AudioForward,
+         xF86XK_AudioForward,        --  Fast-forward audio track
+#else
+         -- Skipping XF86XK_AudioForward because your X doesn't define it
+#endif
+#ifdef XF86XK_AudioRepeat
+         xF86XK_AudioRepeat,         --  Toggle repeat mode
+#else
+         -- Skipping XF86XK_AudioRepeat because your X doesn't define it
+#endif
+#ifdef XF86XK_AudioRandomPlay
+         xF86XK_AudioRandomPlay,     --  Toggle shuffle mode
+#else
+         -- Skipping XF86XK_AudioRandomPlay because your X doesn't define it
+#endif
+#ifdef XF86XK_Subtitle
+         xF86XK_Subtitle,            --  Cycle through subtitle
+#else
+         -- Skipping XF86XK_Subtitle because your X doesn't define it
+#endif
+#ifdef XF86XK_AudioCycleTrack
+         xF86XK_AudioCycleTrack,     --  Cycle through audio tracks
+#else
+         -- Skipping XF86XK_AudioCycleTrack because your X doesn't define it
+#endif
+#ifdef XF86XK_CycleAngle
+         xF86XK_CycleAngle,          --  Cycle through angles
+#else
+         -- Skipping XF86XK_CycleAngle because your X doesn't define it
+#endif
+#ifdef XF86XK_FrameBack
+         xF86XK_FrameBack,           --  Video: go one frame back
+#else
+         -- Skipping XF86XK_FrameBack because your X doesn't define it
+#endif
+#ifdef XF86XK_FrameForward
+         xF86XK_FrameForward,        --  Video: go one frame forward
+#else
+         -- Skipping XF86XK_FrameForward because your X doesn't define it
+#endif
+#ifdef XF86XK_Time
+         xF86XK_Time,                --  Display, or shows an entry for time seeking
+#else
+         -- Skipping XF86XK_Time because your X doesn't define it
+#endif
+#ifdef XF86XK_Select
+         xF86XK_Select,              --  Select button on joypads and remotes
+#else
+         -- Skipping XF86XK_Select because your X doesn't define it
+#endif
+#ifdef XF86XK_View
+         xF86XK_View,                --  Show a view options/properties
+#else
+         -- Skipping XF86XK_View because your X doesn't define it
+#endif
+#ifdef XF86XK_TopMenu
+         xF86XK_TopMenu,             --  Go to a top-level menu in a video
+#else
+         -- Skipping XF86XK_TopMenu because your X doesn't define it
+#endif
+#ifdef XF86XK_Red
+         xF86XK_Red,                 --  Red button
+#else
+         -- Skipping XF86XK_Red because your X doesn't define it
+#endif
+#ifdef XF86XK_Green
+         xF86XK_Green,               --  Green button
+#else
+         -- Skipping XF86XK_Green because your X doesn't define it
+#endif
+#ifdef XF86XK_Yellow
+         xF86XK_Yellow,              --  Yellow button
+#else
+         -- Skipping XF86XK_Yellow because your X doesn't define it
+#endif
+#ifdef XF86XK_Blue
+         xF86XK_Blue,                --  Blue button
+#else
+         -- Skipping XF86XK_Blue because your X doesn't define it
+#endif
+#ifdef XF86XK_Suspend
+         xF86XK_Suspend,             --  Sleep to RAM
+#else
+         -- Skipping XF86XK_Suspend because your X doesn't define it
+#endif
+#ifdef XF86XK_Hibernate
+         xF86XK_Hibernate,           --  Sleep to disk
+#else
+         -- Skipping XF86XK_Hibernate because your X doesn't define it
+#endif
+#ifdef XF86XK_TouchpadToggle
+         xF86XK_TouchpadToggle,      --  Toggle between touchpad/trackstick
+#else
+         -- Skipping XF86XK_TouchpadToggle because your X doesn't define it
+#endif
+#ifdef XF86XK_TouchpadOn
+         xF86XK_TouchpadOn,          --  The touchpad got switched on
+#else
+         -- Skipping XF86XK_TouchpadOn because your X doesn't define it
+#endif
+#ifdef XF86XK_TouchpadOff
+         xF86XK_TouchpadOff,         --  The touchpad got switched off
+#else
+         -- Skipping XF86XK_TouchpadOff because your X doesn't define it
+#endif
+#ifdef XF86XK_AudioMicMute
+         xF86XK_AudioMicMute,        --  Mute the Mic from the system
+#else
+         -- Skipping XF86XK_AudioMicMute because your X doesn't define it
+#endif
+#ifdef XF86XK_LogWindowTree
+         xF86XK_LogWindowTree,       --  Print window tree to log
+#else
+         -- Skipping XF86XK_LogWindowTree because your X doesn't define it
+#endif
+#ifdef XF86XK_LogGrabInfo
+         xF86XK_LogGrabInfo,         --  Print all active grabs to log
+#else
+         -- Skipping XF86XK_LogGrabInfo because your X doesn't define it
+#endif
 #ifdef XF86XK_Switch_VT_1
          xF86XK_Switch_VT_1,
 #else
@@ -1305,6 +1445,118 @@ xF86XK_Pictures             = #const XF86XK_Pictures
 #ifdef XF86XK_Music
 xF86XK_Music                :: KeySym
 xF86XK_Music                = #const XF86XK_Music
+#endif
+#ifdef XF86XK_Battery
+xF86XK_Battery              :: KeySym
+xF86XK_Battery              = #const XF86XK_Battery
+#endif
+#ifdef XF86XK_Bluetooth
+xF86XK_Bluetooth            :: KeySym
+xF86XK_Bluetooth            = #const XF86XK_Bluetooth
+#endif
+#ifdef XF86XK_WLAN
+xF86XK_WLAN                 :: KeySym
+xF86XK_WLAN                 = #const XF86XK_WLAN
+#endif
+#ifdef XF86XK_UWB
+xF86XK_UWB                  :: KeySym
+xF86XK_UWB                  = #const XF86XK_UWB
+#endif
+#ifdef XF86XK_AudioForward
+xF86XK_AudioForward         :: KeySym
+xF86XK_AudioForward         = #const XF86XK_AudioForward
+#endif
+#ifdef XF86XK_AudioRepeat
+xF86XK_AudioRepeat          :: KeySym
+xF86XK_AudioRepeat          = #const XF86XK_AudioRepeat
+#endif
+#ifdef XF86XK_AudioRandomPlay
+xF86XK_AudioRandomPlay      :: KeySym
+xF86XK_AudioRandomPlay      = #const XF86XK_AudioRandomPlay
+#endif
+#ifdef XF86XK_Subtitle
+xF86XK_Subtitle             :: KeySym
+xF86XK_Subtitle             = #const XF86XK_Subtitle
+#endif
+#ifdef XF86XK_AudioCycleTrack
+xF86XK_AudioCycleTrack      :: KeySym
+xF86XK_AudioCycleTrack      = #const XF86XK_AudioCycleTrack
+#endif
+#ifdef XF86XK_CycleAngle
+xF86XK_CycleAngle           :: KeySym
+xF86XK_CycleAngle           = #const XF86XK_CycleAngle
+#endif
+#ifdef XF86XK_FrameBack
+xF86XK_FrameBack            :: KeySym
+xF86XK_FrameBack            = #const XF86XK_FrameBack
+#endif
+#ifdef XF86XK_FrameForward
+xF86XK_FrameForward         :: KeySym
+xF86XK_FrameForward         = #const XF86XK_FrameForward
+#endif
+#ifdef XF86XK_Time
+xF86XK_Time                 :: KeySym
+xF86XK_Time                 = #const XF86XK_Time
+#endif
+#ifdef XF86XK_Select
+xF86XK_Select               :: KeySym
+xF86XK_Select               = #const XF86XK_Select
+#endif
+#ifdef XF86XK_View
+xF86XK_View                 :: KeySym
+xF86XK_View                 = #const XF86XK_View
+#endif
+#ifdef XF86XK_TopMenu
+xF86XK_TopMenu              :: KeySym
+xF86XK_TopMenu              = #const XF86XK_TopMenu
+#endif
+#ifdef XF86XK_Red
+xF86XK_Red                  :: KeySym
+xF86XK_Red                  = #const XF86XK_Red
+#endif
+#ifdef XF86XK_Green
+xF86XK_Green                :: KeySym
+xF86XK_Green                = #const XF86XK_Green
+#endif
+#ifdef XF86XK_Yellow
+xF86XK_Yellow               :: KeySym
+xF86XK_Yellow               = #const XF86XK_Yellow
+#endif
+#ifdef XF86XK_Blue
+xF86XK_Blue                 :: KeySym
+xF86XK_Blue                 = #const XF86XK_Blue
+#endif
+#ifdef XF86XK_Suspend
+xF86XK_Suspend              :: KeySym
+xF86XK_Suspend              = #const XF86XK_Suspend
+#endif
+#ifdef XF86XK_Hibernate
+xF86XK_Hibernate            :: KeySym
+xF86XK_Hibernate            = #const XF86XK_Hibernate
+#endif
+#ifdef XF86XK_TouchpadToggle
+xF86XK_TouchpadToggle       :: KeySym
+xF86XK_TouchpadToggle       = #const XF86XK_TouchpadToggle
+#endif
+#ifdef XF86XK_TouchpadOn
+xF86XK_TouchpadOn           :: KeySym
+xF86XK_TouchpadOn           = #const XF86XK_TouchpadOn
+#endif
+#ifdef XF86XK_TouchpadOff
+xF86XK_TouchpadOff          :: KeySym
+xF86XK_TouchpadOff          = #const XF86XK_TouchpadOff
+#endif
+#ifdef XF86XK_AudioMicMute
+xF86XK_AudioMicMute         :: KeySym
+xF86XK_AudioMicMute         = #const XF86XK_AudioMicMute
+#endif
+#ifdef XF86XK_LogWindowTree
+xF86XK_LogWindowTree        :: KeySym
+xF86XK_LogWindowTree        = #const XF86XK_LogWindowTree
+#endif
+#ifdef XF86XK_LogGrabInfo
+xF86XK_LogGrabInfo          :: KeySym
+xF86XK_LogGrabInfo          = #const XF86XK_LogGrabInfo
 #endif
 #ifdef XF86XK_Switch_VT_1
 xF86XK_Switch_VT_1          :: KeySym
