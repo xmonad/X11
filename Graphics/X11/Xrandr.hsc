@@ -20,6 +20,7 @@
 module Graphics.X11.Xrandr (
   XRRScreenSize(..),
   XRRModeInfo(..),
+  XRRMonitorInfo(..),
   XRRScreenResources(..),
   XRROutputInfo(..),
   XRRCrtcInfo(..),
@@ -31,6 +32,7 @@ module Graphics.X11.Xrandr (
   XRRScreenConfiguration,
   xrrQueryExtension,
   xrrQueryVersion,
+  xrrGetMonitors,
   xrrGetScreenInfo,
   xrrFreeScreenConfigInfo,
   xrrSetScreenConfig,
@@ -100,6 +102,20 @@ data XRRModeInfo = XRRModeInfo
     , xrr_mi_name       :: !String
     , xrr_mi_modeFlags  :: !XRRModeFlags
     } deriving (Eq, Show)
+
+-- | Representation of the XRRMonitorInfo struct
+data XRRMonitorInfo = XRRMonitorInfo
+   { xrr_moninf_name      :: !Atom
+   , xrr_moninf_primary   :: !Bool
+   , xrr_moninf_automatic :: !Bool
+   , xrr_moninf_x         :: !CInt
+   , xrr_moninf_y         :: !CInt
+   , xrr_moninf_width     :: !CInt
+   , xrr_moninf_height    :: !CInt
+   , xrr_moninf_mwidth    :: !CInt
+   , xrr_moninf_mheight   :: !CInt
+   , xrr_moninf_outputs   :: [RROutput]
+   } deriving (Eq, Show)
 
 -- | Representation of the XRRScreenResources struct
 data XRRScreenResources = XRRScreenResources
@@ -214,6 +230,38 @@ instance Storable XRRModeInfo where
         `ap` peekCStringLenIO (#{peek XRRModeInfo, nameLength } p)
                               (#{peek XRRModeInfo, name       } p)
         `ap` ( #{peek XRRModeInfo, modeFlags  } p )
+
+instance Storable XRRMonitorInfo where
+    sizeOf _ = #{size XRRMonitorInfo}
+    -- FIXME: Is this right?
+    alignment _ = alignment (undefined :: CInt)
+
+    poke p xrr_moninf = do
+        #{poke XRRMonitorInfo, name      } p $ xrr_moninf_name      xrr_moninf
+        #{poke XRRMonitorInfo, primary   } p $ xrr_moninf_primary   xrr_moninf
+        #{poke XRRMonitorInfo, automatic } p $ xrr_moninf_automatic xrr_moninf
+        #{poke XRRMonitorInfo, x         } p $ xrr_moninf_x         xrr_moninf
+        #{poke XRRMonitorInfo, y         } p $ xrr_moninf_y         xrr_moninf
+        #{poke XRRMonitorInfo, width     } p $ xrr_moninf_width     xrr_moninf
+        #{poke XRRMonitorInfo, height    } p $ xrr_moninf_height    xrr_moninf
+        #{poke XRRMonitorInfo, mwidth    } p $ xrr_moninf_mwidth    xrr_moninf
+        #{poke XRRMonitorInfo, mheight   } p $ xrr_moninf_mheight   xrr_moninf
+        -- see comment in Storable XRRScreenResources about dynamic resource allocation
+        #{poke XRRMonitorInfo, noutput } p ( 0 :: CInt )
+        #{poke XRRMonitorInfo, outputs } p ( nullPtr :: Ptr RROutput )
+
+    peek p = return XRRMonitorInfo
+        `ap` ( #{peek XRRMonitorInfo, name      } p )
+        `ap` ( #{peek XRRMonitorInfo, primary   } p )
+        `ap` ( #{peek XRRMonitorInfo, automatic } p )
+        `ap` ( #{peek XRRMonitorInfo, x         } p )
+        `ap` ( #{peek XRRMonitorInfo, y         } p )
+        `ap` ( #{peek XRRMonitorInfo, width     } p )
+        `ap` ( #{peek XRRMonitorInfo, height    } p )
+        `ap` ( #{peek XRRMonitorInfo, mwidth    } p )
+        `ap` ( #{peek XRRMonitorInfo, mheight   } p )
+        `ap` peekCArrayIO (#{peek XRRMonitorInfo, noutput } p)
+                          (#{peek XRRMonitorInfo, outputs } p)
 
 
 instance Storable XRRScreenResources where
@@ -365,6 +413,20 @@ xrrQueryVersion dpy = wrapPtr2 (cXRRQueryVersion dpy) go
         go True major minor = Just (fromIntegral major, fromIntegral minor)
 foreign import ccall "XRRQueryVersion"
   cXRRQueryVersion :: Display -> Ptr CInt -> Ptr CInt -> IO Bool
+
+xrrGetMonitors :: Display -> Drawable -> Bool -> IO (Maybe [XRRMonitorInfo])
+xrrGetMonitors dpy draw get_active = do
+  withPool $ \pool -> do intp <- pooledMalloc pool
+                         p <- cXRRGetMonitors dpy draw get_active intp
+                         if p == nullPtr
+                            then return Nothing
+                            else do nmonitors <- peek intp
+                                    monitors <- if nmonitors == 0
+                                                   then return Nothing
+                                                   else peekArray (fromIntegral nmonitors) p >>= return . Just
+                                    return monitors
+foreign import ccall "XRRGetMonitors"
+  cXRRGetMonitors :: Display -> Drawable -> Bool -> Ptr CInt -> IO (Ptr XRRMonitorInfo)
 
 xrrGetScreenInfo :: Display -> Drawable -> IO (Maybe XRRScreenConfiguration)
 xrrGetScreenInfo dpy draw = do
