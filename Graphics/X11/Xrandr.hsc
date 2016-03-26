@@ -418,7 +418,6 @@ xrrConfigSizes config =
                                     sizes <- if nsizes == 0
                                                 then return Nothing
                                                 else peekArray (fromIntegral nsizes) p >>= return . Just
-                                    _ <- xFree p
                                     return sizes
 foreign import ccall "XRRConfigSizes"
   cXRRConfigSizes :: XRRScreenConfiguration -> Ptr CInt -> IO (Ptr XRRScreenSize)
@@ -433,7 +432,6 @@ xrrConfigRates config size_index =
                                     rates <- if nrates == 0
                                                 then return Nothing
                                                 else peekArray (fromIntegral nrates) p >>= return . Just
-                                    _ <- xFree p
                                     return rates
 foreign import ccall "XRRConfigRates"
   cXRRConfigRates :: XRRScreenConfiguration -> CInt -> Ptr CInt -> IO (Ptr CShort)
@@ -486,7 +484,6 @@ xrrSizes dpy screen =
                                     sizes <- if nsizes == 0
                                                 then return Nothing
                                                 else peekArray (fromIntegral nsizes) p >>= return . Just
-                                    _ <- xFree p
                                     return sizes
 foreign import ccall "XRRSizes"
   cXRRSizes :: Display -> CInt -> Ptr CInt -> IO (Ptr XRRScreenSize)
@@ -501,7 +498,6 @@ xrrRates dpy screen size_index =
                                     rates <- if nrates == 0
                                                 then return Nothing
                                                 else peekArray (fromIntegral nrates) p >>= return . Just
-                                    _ <- xFree p
                                     return rates
 foreign import ccall "XRRRates"
   cXRRRates :: Display -> CInt -> CInt -> Ptr CInt -> IO (Ptr CShort)
