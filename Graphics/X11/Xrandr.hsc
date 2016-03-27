@@ -676,7 +676,9 @@ xrrGetOutputProperty dpy rro prop offset len delete preferPending reqType = with
             32 -> peekArray nitems (castPtr ptr :: Ptr Word32)
             _  -> error $ "impossible happened: prop format is not in 0,8,16,32 (" ++ show format ++ ")"
 
-          _ <- xFree ptr
+          _ <- if format /= 0
+                  then xFree ptr
+                  else return 0
 
           typ <- peek actualTypep
           bytesAfter <- peek bytesAfterp
