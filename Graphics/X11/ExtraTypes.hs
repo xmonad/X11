@@ -13,16 +13,16 @@
 -----------------------------------------------------------------------------
 
 module Graphics.X11.ExtraTypes
-	(
-	  -- * Types
-	  module Graphics.X11.ExtraTypes.AP,
-	  module Graphics.X11.ExtraTypes.DEC,
-	  module Graphics.X11.ExtraTypes.HP,
-	  module Graphics.X11.ExtraTypes.Sun,
-	  module Graphics.X11.ExtraTypes.XF86,
-	  module Graphics.X11.ExtraTypes.XorgDefault,
+        (
+          -- * Types
+          module Graphics.X11.ExtraTypes.AP,
+          module Graphics.X11.ExtraTypes.DEC,
+          module Graphics.X11.ExtraTypes.HP,
+          module Graphics.X11.ExtraTypes.Sun,
+          module Graphics.X11.ExtraTypes.XF86,
+          module Graphics.X11.ExtraTypes.XorgDefault,
           
-	) where
+        ) where
 
 import Graphics.X11.ExtraTypes.AP
 import Graphics.X11.ExtraTypes.DEC
