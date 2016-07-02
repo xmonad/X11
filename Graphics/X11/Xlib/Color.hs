@@ -35,7 +35,6 @@ import Graphics.X11.Xlib.Types
 
 import Foreign
 import Foreign.C
-import Foreign.C.Types
 
 ----------------------------------------------------------------
 -- Color and Colormaps
