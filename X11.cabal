@@ -68,3 +68,5 @@ library
   build-depends: base >= 3 && < 5, data-default
   ghc-options:        -funbox-strict-fields -Wall -fno-warn-unused-binds
   ghc-prof-options:   -prof -auto-all
+  if impl(ghc >= 7.10)
+    ghc-options: -fno-warn-tabs
