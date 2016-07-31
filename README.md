@@ -27,3 +27,7 @@ to have `autoconf` installed and run `autoconf`/`autoheader` before building:
 or
 
     autoreconf
+
+You will need development versions of at least the X11, xrandr, and Xinerama
+libraries installed for the build to succeed; having the development version of
+the XScreenSaver library will enable some optional bindings.
