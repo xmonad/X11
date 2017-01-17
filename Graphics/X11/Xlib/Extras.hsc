@@ -191,6 +191,15 @@ data Event
         , ev_property              :: !Atom
         , ev_time                  :: !Time
         }
+    | SelectionClear
+        { ev_event_type            :: !EventType
+        , ev_serial                :: !CULong
+        , ev_send_event            :: !Bool
+        , ev_event_display         :: Display
+        , ev_window                :: !Window
+        , ev_selection             :: !Atom
+        , ev_time                  :: !Time
+        }
     | PropertyEvent
         { ev_event_type            :: !EventType
         , ev_serial                :: !CULong
@@ -640,6 +649,22 @@ getEvent p = do
                         , ev_time          = time
                         }
 
+          -------------------------
+          -- SelectionClearEvent:
+          -------------------------
+          | type_ == selectionClear -> do
+            window <- #{peek XSelectionClearEvent, window    } p
+            atom   <- #{peek XSelectionClearEvent, selection } p
+            time   <- #{peek XSelectionClearEvent, time      } p
+            return $ SelectionClear
+                        { ev_event_type    = type_
+                        , ev_serial        = serial
+                        , ev_send_event    = send_event
+                        , ev_event_display = display
+                        , ev_window        = window
+                        , ev_selection     = atom
+                        , ev_time          = time
+                        }
           -------------------------
           -- PropertyEvent
           -------------------------
