@@ -902,7 +902,7 @@ instance Storable WindowChanges where
         #{poke XWindowChanges, border_width} p $ wc_border_width wc
         #{poke XWindowChanges, sibling     } p $ wc_sibling wc
         #{poke XWindowChanges, stack_mode  } p $ wc_stack_mode wc
-        
+
     peek p = return WindowChanges
                 `ap` (#{peek XWindowChanges, x} p)
                 `ap` (#{peek XWindowChanges, y} p)
@@ -968,7 +968,7 @@ data WindowAttributes = WindowAttributes
             , wa_override_redirect :: Bool
             }
 
--- 
+--
 -- possible map_states'
 --
 waIsUnmapped, waIsUnviewable, waIsViewable :: CInt
@@ -1287,7 +1287,7 @@ setKeyEvent p win root subwin state keycode sameScreen = do
 
 ------------------------------------------------------------------------
 -- XErrorEvents
--- 
+--
 -- I'm too lazy to write the binding
 --
 
@@ -1321,6 +1321,9 @@ anyPropertyType = #{const AnyPropertyType}
 
 foreign import ccall unsafe "XlibExtras.h XChangeProperty"
     xChangeProperty :: Display -> Window -> Atom -> Atom -> CInt -> CInt -> Ptr CUChar -> CInt -> IO Status
+
+foreign import ccall unsafe "XlibExtras.h XDeleteProperty"
+    xDeleteProperty :: Display -> Window -> Atom -> IO Status
 
 foreign import ccall unsafe "XlibExtras.h XGetWindowProperty"
     xGetWindowProperty :: Display -> Window -> Atom -> CLong -> CLong -> Bool -> Atom -> Ptr Atom -> Ptr CInt -> Ptr CULong -> Ptr CULong -> Ptr (Ptr CUChar) -> IO Status
@@ -1388,6 +1391,11 @@ propModeReplace, propModePrepend, propModeAppend :: CInt
 propModeReplace = #{const PropModeReplace}
 propModePrepend = #{const PropModePrepend}
 propModeAppend = #{const PropModeAppend}
+
+deleteProperty :: Display -> Window -> Atom -> IO ()
+deleteProperty dpy w prop = do
+    _ <- xDeleteProperty dpy w prop
+    return ()
 
 -- Windows
 
