@@ -708,7 +708,7 @@ module Graphics.X11.ExtraTypes.XF86
 #else
          -- Skipping XF86XK_UWB because your X doesn't define it
 #endif
-#ifdef XF86XK_AudioForward,
+#ifdef XF86XK_AudioForward
          xF86XK_AudioForward,        --  Fast-forward audio track
 #else
          -- Skipping XF86XK_AudioForward because your X doesn't define it
