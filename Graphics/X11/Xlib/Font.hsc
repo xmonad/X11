@@ -20,7 +20,7 @@ module Graphics.X11.Xlib.Font(
         fontFromGC,
         loadQueryFont,
         freeFont,
-	FontStruct,
+        FontStruct,
         fontFromFontStruct,
         ascentFromFontStruct,
         descentFromFontStruct,
@@ -55,9 +55,9 @@ type Glyph = Word16
 -- | pointer to an X11 @XFontStruct@ structure
 newtype FontStruct = FontStruct (Ptr FontStruct)
 #if __GLASGOW_HASKELL__
-	deriving (Eq, Ord, Show, Typeable, Data)
+        deriving (Eq, Ord, Show, Typeable, Data)
 #else
-	deriving (Eq, Ord, Show)
+        deriving (Eq, Ord, Show)
 #endif
 
 -- Disnae exist: %fun LoadFont       :: Display -> String -> IO Font
@@ -70,7 +70,7 @@ newtype FontStruct = FontStruct (Ptr FontStruct)
 
 -- | interface to the X11 library function @XQueryFont()@.
 foreign import ccall unsafe "HsXlib.h XQueryFont"
-	queryFont     :: Display -> Font -> IO FontStruct
+        queryFont     :: Display -> Font -> IO FontStruct
 
 -- Note that this _WILL NOT WORK_ unless you have explicitly set the font.
 -- I'm slowly but surely coming to the conclusion that Xlib is a pile of
@@ -79,40 +79,40 @@ foreign import ccall unsafe "HsXlib.h XQueryFont"
 -- | interface to the X11 library function @XGetGCValues()@.
 fontFromGC :: Display -> GC -> IO Font
 fontFromGC display gc =
-	allocaBytes #{size XGCValues} $ \ values -> do
-	throwIfZero "fontFromGC" $
-		xGetGCValues display gc #{const GCFont} values
-	#{peek XGCValues,font} values
+        allocaBytes #{size XGCValues} $ \ values -> do
+        throwIfZero "fontFromGC" $
+                xGetGCValues display gc #{const GCFont} values
+        #{peek XGCValues,font} values
 foreign import ccall unsafe "HsXlib.h XGetGCValues"
-	xGetGCValues :: Display -> GC -> ValueMask -> Ptr GCValues -> IO CInt
+        xGetGCValues :: Display -> GC -> ValueMask -> Ptr GCValues -> IO CInt
 
 type ValueMask = #{type unsigned long}
 
 -- | interface to the X11 library function @XLoadQueryFont()@.
 loadQueryFont :: Display -> String -> IO FontStruct
 loadQueryFont display name =
-	withCString name $ \ c_name -> do
-	fs <- throwIfNull "loadQueryFont" $ xLoadQueryFont display c_name
-	return (FontStruct fs)
+        withCString name $ \ c_name -> do
+        fs <- throwIfNull "loadQueryFont" $ xLoadQueryFont display c_name
+        return (FontStruct fs)
 foreign import ccall unsafe "HsXlib.h XLoadQueryFont"
-	xLoadQueryFont :: Display -> CString -> IO (Ptr FontStruct)
+        xLoadQueryFont :: Display -> CString -> IO (Ptr FontStruct)
 
 -- | interface to the X11 library function @XFreeFont()@.
 foreign import ccall unsafe "HsXlib.h XFreeFont"
-	freeFont      :: Display -> FontStruct -> IO ()
+        freeFont      :: Display -> FontStruct -> IO ()
 -- %fun XSetFontPath  :: Display -> ListString  -> IO () using XSetFontPath(arg1,arg2,arg2_size)
 
 fontFromFontStruct :: FontStruct -> Font
 fontFromFontStruct (FontStruct fs) = unsafePerformIO $
-	#{peek XFontStruct,fid} fs
+        #{peek XFontStruct,fid} fs
 
 ascentFromFontStruct :: FontStruct -> Int32
 ascentFromFontStruct (FontStruct fs) = unsafePerformIO $
-	#{peek XFontStruct,ascent} fs
+        #{peek XFontStruct,ascent} fs
 
 descentFromFontStruct :: FontStruct -> Int32
 descentFromFontStruct (FontStruct fs) = unsafePerformIO $
-	#{peek XFontStruct,descent} fs
+        #{peek XFontStruct,descent} fs
 
 -- %prim XGetFontPath :: Display -> IO ListString
 --Int r_size;
@@ -135,58 +135,58 @@ descentFromFontStruct (FontStruct fs) = unsafePerformIO $
 
 -- We marshall this across right away because it's usually one-off info
 type CharStruct =
-	( CInt            -- lbearing (origin to left edge of raster)
-	, CInt            -- rbearing (origin to right edge of raster)
-	, CInt            -- width    (advance to next char's origin)
-	, CInt            -- ascent   (baseline to top edge of raster)
-	, CInt            -- descent  (baseline to bottom edge of raster)
-	-- attributes omitted
-	)
+        ( CInt            -- lbearing (origin to left edge of raster)
+        , CInt            -- rbearing (origin to right edge of raster)
+        , CInt            -- width    (advance to next char's origin)
+        , CInt            -- ascent   (baseline to top edge of raster)
+        , CInt            -- descent  (baseline to bottom edge of raster)
+        -- attributes omitted
+        )
 
 peekCharStruct :: Ptr CharStruct -> IO CharStruct
 peekCharStruct p = do
-	lbearing <- #{peek XCharStruct,lbearing} p
-	rbearing <- #{peek XCharStruct,rbearing} p
-	width    <- #{peek XCharStruct,width} p
-	ascent   <- #{peek XCharStruct,ascent} p
-	descent  <- #{peek XCharStruct,descent} p
-	return (fromIntegral (lbearing::CShort),
-		fromIntegral (rbearing::CShort),
-		fromIntegral (width::CShort),
-		fromIntegral (ascent::CShort),
-		fromIntegral (descent::CShort))
+        lbearing <- #{peek XCharStruct,lbearing} p
+        rbearing <- #{peek XCharStruct,rbearing} p
+        width    <- #{peek XCharStruct,width} p
+        ascent   <- #{peek XCharStruct,ascent} p
+        descent  <- #{peek XCharStruct,descent} p
+        return (fromIntegral (lbearing::CShort),
+                fromIntegral (rbearing::CShort),
+                fromIntegral (width::CShort),
+                fromIntegral (ascent::CShort),
+                fromIntegral (descent::CShort))
 
 -- No need to put this in the IO monad - this info is essentially constant
 
 -- | interface to the X11 library function @XTextExtents()@.
 textExtents :: FontStruct -> String -> (FontDirection, Int32, Int32, CharStruct)
 textExtents font_struct string = unsafePerformIO $
-	withCStringLen string $ \ (c_string, nchars) ->
-	alloca $ \ direction_return ->
-	alloca $ \ font_ascent_return ->
-	alloca $ \ font_descent_return ->
-	allocaBytes #{size XCharStruct} $ \ overall_return -> do
-	_ <- xTextExtents font_struct c_string (fromIntegral nchars) direction_return
-		font_ascent_return font_descent_return overall_return
-	direction <- peek direction_return
-	ascent <- peek font_ascent_return
-	descent <- peek font_descent_return
-	cs <- peekCharStruct overall_return
-	return (direction, ascent, descent, cs)
+        withCStringLen string $ \ (c_string, nchars) ->
+        alloca $ \ direction_return ->
+        alloca $ \ font_ascent_return ->
+        alloca $ \ font_descent_return ->
+        allocaBytes #{size XCharStruct} $ \ overall_return -> do
+        _ <- xTextExtents font_struct c_string (fromIntegral nchars) direction_return
+                font_ascent_return font_descent_return overall_return
+        direction <- peek direction_return
+        ascent <- peek font_ascent_return
+        descent <- peek font_descent_return
+        cs <- peekCharStruct overall_return
+        return (direction, ascent, descent, cs)
 foreign import ccall unsafe "HsXlib.h XTextExtents"
-	xTextExtents :: FontStruct -> CString -> CInt ->
-		Ptr FontDirection -> Ptr Int32 -> Ptr Int32 ->
-		Ptr CharStruct -> IO CInt
+        xTextExtents :: FontStruct -> CString -> CInt ->
+                Ptr FontDirection -> Ptr Int32 -> Ptr Int32 ->
+                Ptr CharStruct -> IO CInt
 
 -- No need to put ths in the IO monad - this info is essentially constant
 
 -- | interface to the X11 library function @XTextWidth()@.
 textWidth :: FontStruct -> String -> Int32
 textWidth font_struct string = unsafePerformIO $
-	withCStringLen string $ \ (c_string, len) ->
-	xTextWidth font_struct c_string (fromIntegral len)
+        withCStringLen string $ \ (c_string, len) ->
+        xTextWidth font_struct c_string (fromIntegral len)
 foreign import ccall unsafe "HsXlib.h XTextWidth"
-	xTextWidth :: FontStruct -> CString -> CInt -> IO Int32
+        xTextWidth :: FontStruct -> CString -> CInt -> IO Int32
 
 -- XTextExtents16 omitted
 -- XTextWidth16 omitted
