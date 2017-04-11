@@ -2,7 +2,7 @@
 -----------------------------------------------------------------------------
 -- |
 -- Module      : Graphics.X11.Xlib.Extras
--- Copyright   : 2007 (c) Spencer Janssen
+-- Copyright   : 2007 (c) Spencer Janssen, 2015 Evgeny Kurnevsky
 -- License     : BSD3-style (see LICENSE)
 -- Stability   : experimental
 --
@@ -1008,6 +1008,13 @@ getWindowAttributes :: Display -> Window -> IO WindowAttributes
 getWindowAttributes d w = alloca $ \p -> do
     _ <- throwIfZero "getWindowAttributes" $ xGetWindowAttributes d w p
     peek p
+
+tryGetWindowAttributes :: Display -> Window -> IO (Maybe WindowAttributes)
+tryGetWindowAttributes d w = alloca $ \p -> do
+    status <- xGetWindowAttributes d w p
+    if status /= 0
+        then fmap Just $ peek p
+        else return Nothing
 
 -- | interface to the X11 library function @XChangeWindowAttributes()@.
 foreign import ccall unsafe "XlibExtras.h XChangeWindowAttributes"
