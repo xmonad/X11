@@ -67,6 +67,8 @@ library
   extensions:         ForeignFunctionInterface, CPP
   extra-libraries:    "X11", "Xrandr", "Xext"
   include-dirs:       include
+  if os(openbsd)
+    extra-lib-dirs: /usr/X11R6/lib
   includes:           HsXlib.h, HsAllKeysyms.h
   install-includes:   HsXlib.h, XlibExtras.h, HsAllKeysyms.h
   build-depends: base >= 4 && < 5, data-default
