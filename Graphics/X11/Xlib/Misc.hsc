@@ -753,7 +753,7 @@ foreign import ccall unsafe "HsXlib.h XInitThreads"
 foreign import ccall unsafe "HsXlib.h XLockDisplay"
         lockDisplay :: Display -> IO ()
 
-foreign import ccall unsafe "HsXlib.h XLockDisplay"
+foreign import ccall unsafe "HsXlib.h XUnlockDisplay"
         unlockDisplay :: Display -> IO ()
 
 ----------------------------------------------------------------
