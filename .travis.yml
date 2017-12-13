@@ -27,6 +27,8 @@ matrix:
       addons: {apt: {packages: [cabal-install-1.24,ghc-8.0.1], sources: [hvr-ghc]}}
 
 before_install:
+ - sudo apt-get -qq update
+ - sudo apt-get install -y libxrandr-dev
  - unset CC
  - export PATH=/opt/ghc/$GHCVER/bin:/opt/cabal/$CABALVER/bin:$PATH
 
