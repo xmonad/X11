@@ -15,10 +15,6 @@
 -- Interface to XScreenSaver API
 --
 
-#include <HsX11Config.h>
-
-#ifdef HAVE_X11_EXTENSIONS_SCRNSAVER_H
-
 module Graphics.X11.XScreenSaver (
     getXIdleTime,
     XScreenSaverState(..),
@@ -106,9 +102,11 @@ getXIdleTime :: Display -> IO Int
 getXIdleTime dpy =
     maybe 0 (fromIntegral . xssi_idle) `fmap` xScreenSaverQueryInfo dpy
 
--- We have XScreenSaver, so the library will actually work
+-- | We have XScreenSaver, so the library will actually work
 compiledWithXScreenSaver :: Bool
 compiledWithXScreenSaver = True
+{-# DEPRECATED compiledWithXScreenSaver "X11 now always compiles with XScreenSaver support" #-}
+
 
 -- for XFree() (already included from scrnsaver.h, but I don't know if I can
 -- count on that.)
@@ -425,10 +423,3 @@ foreign import ccall "XScreenSaverGetRegistered"
 
 foreign import ccall "XScreenSaverSuspend"
     cXScreenSaverSuspend :: Display -> Bool -> IO ()
-
-#else
-module Graphics.X11.XScreenSaver where
-
-compiledWithXScreenSaver :: Bool
-compiledWithXScreenSaver = False
-#endif

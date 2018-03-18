@@ -19,9 +19,7 @@ module Graphics.X11.Xlib.Extras (
 import Data.Maybe
 import Data.Typeable ( Typeable )
 import Graphics.X11.Xrandr
-#ifdef HAVE_X11_EXTENSIONS_SCRNSAVER_H
 import Graphics.X11.XScreenSaver
-#endif
 import Graphics.X11.Xlib
 import Graphics.X11.Xlib.Internal
 import Graphics.X11.Xlib.Types
@@ -297,7 +295,6 @@ data Event
         , ev_timestamp             :: !Time
         , ev_rr_state              :: !CInt
         }
-#ifdef HAVE_X11_EXTENSIONS_SCRNSAVER_H
     | ScreenSaverNotifyEvent
         { ev_event_type            :: !EventType
         , ev_serial                :: !CULong
@@ -310,7 +307,6 @@ data Event
         , ev_forced                :: !Bool
         , ev_time                  :: !Time
         }
-#endif
     deriving ( Show, Typeable )
 
 eventTable :: [(EventType, String)]
@@ -349,9 +345,7 @@ eventTable =
     , (clientMessage        , "ClientMessage")
     , (mappingNotify        , "MappingNotify")
     , (lASTEvent            , "LASTEvent")
-#ifdef HAVE_X11_EXTENSIONS_SCRNSAVER_H
     , (screenSaverNotify    , "ScreenSaverNotify")
-#endif
     ]
 
 eventName :: Event -> String
@@ -852,7 +846,6 @@ getEvent p = do
                                 , ev_subtype       = subtype
                                 }
 
-#ifdef HAVE_X11_EXTENSIONS_SCRNSAVER_H
           -----------------
           -- ScreenSaverNotifyEvent:
           -----------------
@@ -864,7 +857,6 @@ getEvent p = do
                 `ap` (#{peek XScreenSaverNotifyEvent, kind       } p )
                 `ap` (#{peek XScreenSaverNotifyEvent, forced     } p )
                 `ap` (#{peek XScreenSaverNotifyEvent, time       } p )
-#endif
 
           -- We don't handle this event specifically, so return the generic
           -- AnyEvent.
