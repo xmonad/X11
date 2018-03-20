@@ -944,7 +944,7 @@ queryTree d w =
     alloca $ \parent_return ->
     alloca $ \children_return ->
     alloca $ \nchildren_return -> do
-        _ <- xQueryTree d w root_return parent_return children_return nchildren_return
+        _ <- throwIfZero "queryTree" $ xQueryTree d w root_return parent_return children_return nchildren_return
         p <- peek children_return
         n <- fmap fromIntegral $ peek nchildren_return
         ws <- peekArray n p
