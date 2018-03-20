@@ -10,6 +10,9 @@
 -- Stability : provisional
 -- Portability: portable
 --
+-- Note that most functions in this module are only exported if
+-- the libXScrnSaver library was available at the time of compilation.
+--
 --------------------------------------------------------------------
 --
 -- Interface to XScreenSaver API
