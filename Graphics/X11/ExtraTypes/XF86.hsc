@@ -19,6 +19,7 @@
 -- Presumably XFree86/X.org has copyright on the header but it's not
 -- explicit in the file.
 
+#include "HsAllKeysyms.h"
 
 module Graphics.X11.ExtraTypes.XF86
         (
@@ -911,8 +912,6 @@ module Graphics.X11.ExtraTypes.XF86
         ) where
 
 import Graphics.X11.Types
-
-#include "HsAllKeysyms.h"
 
 #ifdef XF86XK_ModeLock
 xF86XK_ModeLock             :: KeySym
