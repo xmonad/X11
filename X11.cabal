@@ -23,7 +23,7 @@ extra-tmp-files:
     include/X11_extras_config.h
 Cabal-Version: >= 1.6
 build-type:         Configure
-tested-with: GHC==7.6.3, GHC==7.8.4, GHC==7.10.3, GHC==8.0.2, GHC==8.2.2, GHC==8.4.3, GHC==8.6.1
+tested-with: GHC==7.6.3, GHC==7.8.4, GHC==7.10.3, GHC==8.0.2, GHC==8.2.2, GHC==8.4.3, GHC==8.6.5, GHC==8.8.1
 
 source-repository head
   type:     git
