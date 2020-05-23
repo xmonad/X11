@@ -135,5 +135,8 @@ fi
 
 AC_SUBST([EXTRA_LIBRARIES])
 
+X_LIBRARIES="$x_libraries"
+AC_SUBST([X_LIBRARIES])
+
 AC_CONFIG_FILES([config.mk X11.buildinfo])
 AC_OUTPUT
