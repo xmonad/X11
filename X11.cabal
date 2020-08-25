@@ -1,5 +1,5 @@
 name:               X11
-version:            1.9.1
+version:            1.9.2
 synopsis:           A binding to the X11 graphics library
 description:        A Haskell binding to the X11 graphics library. The binding is a direct
                     translation of the C binding; for documentation of these calls, refer
