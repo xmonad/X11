@@ -32,50 +32,51 @@ extra-source-files: configure.ac
                     include/XlibExtras.h
                     include/X11_extras_config.h.in
                     include/HsAllKeysyms.h
-cabal-version:      >= 1.6
+cabal-version:      >= 1.10
 
 source-repository head
   type:     git
   location: https://github.com/xmonad/X11
 
 library
-  exposed-modules:  Graphics.X11
-                    Graphics.X11.ExtraTypes
-                    Graphics.X11.ExtraTypes.AP
-                    Graphics.X11.ExtraTypes.DEC
-                    Graphics.X11.ExtraTypes.HP
-                    Graphics.X11.ExtraTypes.Sun
-                    Graphics.X11.ExtraTypes.XF86
-                    Graphics.X11.ExtraTypes.XorgDefault
-                    Graphics.X11.Types
-                    Graphics.X11.XScreenSaver
-                    Graphics.X11.Xinerama
-                    Graphics.X11.Xlib
-                    Graphics.X11.Xlib.Atom
-                    Graphics.X11.Xlib.Color
-                    Graphics.X11.Xlib.Context
-                    Graphics.X11.Xlib.Cursor
-                    Graphics.X11.Xlib.Display
-                    Graphics.X11.Xlib.Event
-                    Graphics.X11.Xlib.Extras
-                    Graphics.X11.Xlib.Font
-                    Graphics.X11.Xlib.Image
-                    Graphics.X11.Xlib.Misc
-                    Graphics.X11.Xlib.Region
-                    Graphics.X11.Xlib.Screen
-                    Graphics.X11.Xlib.Types
-                    Graphics.X11.Xlib.Window
-                    Graphics.X11.Xrandr
-  other-modules:    Graphics.X11.Xlib.Internal
-  build-depends:    base == 4.*, data-default
-  extensions:       CPP
-                    ForeignFunctionInterface
-  extra-libraries:  X11, Xrandr, Xext
-  c-sources:        cbits/fdset.c, cbits/auxiliaries.c, cbits/XUtils.c
-  includes:         HsXlib.h, HsAllKeysyms.h
-  install-includes: HsXlib.h, XlibExtras.h, HsAllKeysyms.h
-  include-dirs:     include
-  ghc-options:      -funbox-strict-fields -Wall -fno-warn-unused-binds
+  exposed-modules:    Graphics.X11
+                      Graphics.X11.ExtraTypes
+                      Graphics.X11.ExtraTypes.AP
+                      Graphics.X11.ExtraTypes.DEC
+                      Graphics.X11.ExtraTypes.HP
+                      Graphics.X11.ExtraTypes.Sun
+                      Graphics.X11.ExtraTypes.XF86
+                      Graphics.X11.ExtraTypes.XorgDefault
+                      Graphics.X11.Types
+                      Graphics.X11.XScreenSaver
+                      Graphics.X11.Xinerama
+                      Graphics.X11.Xlib
+                      Graphics.X11.Xlib.Atom
+                      Graphics.X11.Xlib.Color
+                      Graphics.X11.Xlib.Context
+                      Graphics.X11.Xlib.Cursor
+                      Graphics.X11.Xlib.Display
+                      Graphics.X11.Xlib.Event
+                      Graphics.X11.Xlib.Extras
+                      Graphics.X11.Xlib.Font
+                      Graphics.X11.Xlib.Image
+                      Graphics.X11.Xlib.Misc
+                      Graphics.X11.Xlib.Region
+                      Graphics.X11.Xlib.Screen
+                      Graphics.X11.Xlib.Types
+                      Graphics.X11.Xlib.Window
+                      Graphics.X11.Xrandr
+  other-modules:      Graphics.X11.Xlib.Internal
+  build-depends:      base == 4.*, data-default
+  default-language:   Haskell98
+  default-extensions: CPP
+                      ForeignFunctionInterface
+  extra-libraries:    X11, Xrandr, Xext
+  c-sources:          cbits/fdset.c, cbits/auxiliaries.c, cbits/XUtils.c
+  includes:           HsXlib.h, HsAllKeysyms.h
+  install-includes:   HsXlib.h, XlibExtras.h, HsAllKeysyms.h
+  include-dirs:       include
+  ghc-options:        -funbox-strict-fields -Wall -fno-warn-unused-binds
 
   if impl(ghc >= 7.10)
     ghc-options: -fno-warn-tabs
