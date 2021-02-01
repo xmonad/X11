@@ -460,10 +460,10 @@ xrrSelectInput dpy window mask = cXRRSelectInput dpy window (fromIntegral mask)
 foreign import ccall "XRRSelectInput"
   cXRRSelectInput :: Display -> Window -> CInt -> IO ()
 
-xrrUpdateConfiguration :: XEvent -> IO CInt
+xrrUpdateConfiguration :: XEventPtr -> IO CInt
 xrrUpdateConfiguration = cXRRUpdateConfiguration
 foreign import ccall "XRRUpdateConfiguration"
-  cXRRUpdateConfiguration :: XEvent -> IO CInt
+  cXRRUpdateConfiguration :: XEventPtr -> IO CInt
 
 xrrRotations :: Display -> CInt -> IO (Rotation, Rotation)
 xrrRotations dpy screen =

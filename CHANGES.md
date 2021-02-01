@@ -1,5 +1,9 @@
 # Change Log / Release Notes
 
+## unknown
+
+  * Fixed type of `xrrUpdateConfiguration`
+
 ## 1.9.2 (2020-08-25)
 
   * Make sure that X11 search paths determined by autoconf are actually passed
