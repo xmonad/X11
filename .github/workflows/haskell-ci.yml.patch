@@ -1,0 +1,12 @@
+--- .github/workflows/haskell-ci.yml.orig	2021-03-26 18:44:32.973245389 +0000
++++ .github/workflows/haskell-ci.yml	2021-03-26 18:44:57.905583624 +0000
+@@ -113,6 +113,9 @@
+         uses: actions/checkout@v2
+         with:
+           path: source
++      - name: autoreconf
++        run: |
++          autoreconf -i $GITHUB_WORKSPACE/source
+       - name: initial cabal.project for sdist
+         run: |
+           touch cabal.project

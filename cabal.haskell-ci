@@ -1,1 +1,2 @@
 apt: libx11-dev libxext-dev libxrandr-dev libxss-dev
+github-patches: .github/workflows/haskell-ci.yml.patch
