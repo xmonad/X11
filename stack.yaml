@@ -1,0 +1,12 @@
+resolver: lts-16.31
+
+packages:
+- ./
+
+nix:
+  packages:
+    - pkg-config
+    - xorg.libX11
+    - xorg.libXScrnSaver
+    - xorg.libXext
+    - xorg.libXrandr
