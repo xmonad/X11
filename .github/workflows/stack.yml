@@ -44,4 +44,4 @@ jobs:
       - name: Build and test
         run: |
           set -ex
-          stack test --fast --no-terminal --resolver=${{ matrix.resolver }}
+          stack test --fast --no-terminal --resolver=${{ matrix.resolver }} --flag=X11:pedantic

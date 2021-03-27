@@ -37,6 +37,11 @@ source-repository head
   type:     git
   location: https://github.com/xmonad/X11
 
+flag pedantic
+  description:        Be pedantic (-Werror and the like)
+  default:            False
+  manual:             True
+
 library
   exposed-modules:    Graphics.X11
                       Graphics.X11.ExtraTypes
@@ -79,3 +84,6 @@ library
 
   if impl(ghc >= 7.10)
     ghc-options: -fno-warn-tabs
+
+  if flag(pedantic)
+    ghc-options:      -Werror

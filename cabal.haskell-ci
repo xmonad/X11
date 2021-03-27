@@ -1,2 +1,6 @@
 apt: libx11-dev libxext-dev libxinerama-dev libxrandr-dev libxss-dev
 github-patches: .github/workflows/haskell-ci.yml.patch
+
+raw-project
+  package X11
+    flags: +pedantic

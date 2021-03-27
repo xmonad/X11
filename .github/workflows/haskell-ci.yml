@@ -139,6 +139,8 @@ jobs:
           echo "package X11" >> cabal.project
           echo "    ghc-options: -Werror=missing-methods" >> cabal.project
           cat >> cabal.project <<EOF
+          package X11
+            flags: +pedantic
           EOF
           $HCPKG list --simple-output --names-only | perl -ne 'for (split /\s+/) { print "constraints: $_ installed\n" unless /^(X11)$/; }' >> cabal.project.local
           cat cabal.project
