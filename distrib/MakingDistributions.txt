@@ -1,7 +1,0 @@
-cd /tmp
-cvs -d:ext:reid@cvs.haskell.org:/home/cvs/root checkout HSX11
-(cd HSX11/fptools; autoconf)
-mv HSX11 HSX11-1.00
-tar zcf HSX11-1.00.tar.gz HSX11-1.00
-scp HSX11-1.00.tar.gz reid@haskell.org:/home/haskell/packages/downloads
-
