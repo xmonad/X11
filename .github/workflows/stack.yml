@@ -27,6 +27,7 @@ jobs:
           sudo apt install -y \
             libx11-dev \
             libxext-dev \
+            libxinerama-dev \
             libxrandr-dev \
             libxss-dev \
             #

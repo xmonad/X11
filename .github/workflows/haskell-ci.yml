@@ -44,7 +44,7 @@ jobs:
           apt-get install -y --no-install-recommends gnupg ca-certificates dirmngr curl git software-properties-common
           apt-add-repository -y 'ppa:hvr/ghc'
           apt-get update
-          apt-get install -y $CC cabal-install-3.4 libx11-dev libxext-dev libxrandr-dev libxss-dev
+          apt-get install -y $CC cabal-install-3.4 libx11-dev libxext-dev libxinerama-dev libxrandr-dev libxss-dev
         env:
           CC: ${{ matrix.compiler }}
       - name: Set PATH and environment variables
