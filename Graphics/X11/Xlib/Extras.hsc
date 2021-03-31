@@ -23,7 +23,7 @@ import Graphics.X11.XScreenSaver
 import Graphics.X11.Xlib
 import Graphics.X11.Xlib.Internal
 import Graphics.X11.Xlib.Types
-import Foreign (Storable, Ptr, peek, poke, peekElemOff, pokeElemOff, peekByteOff, pokeByteOff, peekArray, throwIfNull, nullPtr, sizeOf, alignment, alloca, with, throwIf, Word8, Word16, #{type unsigned long}, Int32, plusPtr, castPtr, withArrayLen, setBit, testBit, allocaBytes, FunPtr)
+import Foreign (Storable, Ptr, peek, poke, pokeArray, peekElemOff, peekByteOff, pokeByteOff, peekArray, throwIfNull, nullPtr, sizeOf, alignment, alloca, with, throwIf, Word8, Word16, #{type unsigned long}, Int32, plusPtr, castPtr, withArrayLen, setBit, testBit, allocaBytes, FunPtr)
 import Foreign.C.Types
 import Foreign.C.String
 import Control.Monad
@@ -1223,14 +1223,22 @@ setSelectionNotify p requestor selection target property time = do
 -- Should have a Storable instance for XEvent/Event?
 setClientMessageEvent :: XEventPtr -> Window -> Atom -> CInt -> Atom -> Time -> IO ()
 setClientMessageEvent p window message_type format l_0_ l_1_ = do
+    setClientMessageEvent' p window message_type format [fromIntegral l_0_, fromIntegral l_1_]
+
+-- slightly less hacky way to set up an XClientMessageEvent
+setClientMessageEvent' :: XEventPtr -> Window -> Atom -> CInt -> [CInt] -> IO ()
+setClientMessageEvent' p window message_type format dat = do
     #{poke XClientMessageEvent, window}         p window
     #{poke XClientMessageEvent, message_type}   p message_type
     #{poke XClientMessageEvent, format}         p format
-    let datap = #{ptr XClientMessageEvent, data} p :: Ptr CLong
-    poke        datap   (fromIntegral l_0_) -- does this work?
-    pokeElemOff datap 1 (fromIntegral l_1_)
-
-    return ()
+    case format of
+        8  -> do let datap = #{ptr XClientMessageEvent, data} p :: Ptr Word8
+                 pokeArray datap $ take 20 $ map fromIntegral dat ++ repeat 0
+        16 -> do let datap = #{ptr XClientMessageEvent, data} p :: Ptr Word16
+                 pokeArray datap $ take 10 $ map fromIntegral dat ++ repeat 0
+        32 -> do let datap = #{ptr XClientMessageEvent, data} p :: Ptr CLong
+                 pokeArray datap $ take 5  $ map fromIntegral dat ++ repeat 0
+        _  -> error "X11.Extras.setClientMessageEvent': illegal format"
 
 setConfigureEvent :: XEventPtr -> Window -> Window -> CInt -> CInt -> CInt -> CInt -> CInt -> Window -> Bool -> IO ()
 setConfigureEvent p ev win x y w h bw abv org = do
