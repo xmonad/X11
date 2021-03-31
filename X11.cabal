@@ -71,7 +71,7 @@ library
                       Graphics.X11.Xlib.Window
                       Graphics.X11.Xrandr
   other-modules:      Graphics.X11.Xlib.Internal
-  build-depends:      base == 4.*, data-default
+  build-depends:      base == 4.*, data-default-class == 0.1.*
   default-language:   Haskell98
   default-extensions: CPP
                       ForeignFunctionInterface

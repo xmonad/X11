@@ -35,7 +35,7 @@ import Foreign.Storable( Storable(..) )
 import Data.Data
 #endif
 
-import Data.Default
+import Data.Default.Class
 
 #include "HsXlib.h"
 
