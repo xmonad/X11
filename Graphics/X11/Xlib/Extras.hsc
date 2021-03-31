@@ -768,7 +768,7 @@ getEvent p = do
             type_ == rrEventBase + rrNotify -> do
             window   <- #{peek XRRNotifyEvent, window  } p
             subtype  <- #{peek XRRNotifyEvent, subtype } p
-            let subtype_ = fromIntegral subtype_
+            let subtype_ = fromIntegral subtype
             case () of
                 _ | subtype_ == rrNotifyCrtcChange -> do
                     crtc           <- #{peek XRRCrtcChangeNotifyEvent, crtc     } p

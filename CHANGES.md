@@ -4,6 +4,10 @@
 
   * Added `setClientMessageEvent'` (#71)
 
+  * Fixed type of `xrrUpdateConfiguration` (#72)
+
+  * Fixed bottom when deserializing XRRNotifyEvent in `getEvent` (#72)
+
 ## 1.9.2 (2020-08-25)
 
   * Make sure that X11 search paths determined by autoconf are actually passed
