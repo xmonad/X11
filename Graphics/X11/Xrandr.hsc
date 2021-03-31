@@ -742,18 +742,22 @@ foreign import ccall "XRRDeleteOutputProperty"
     cXRRDeleteOutputProperty :: Display -> RROutput -> Atom -> IO ()
 
 xrrGetMonitors :: Display -> Drawable -> Bool -> IO (Maybe [XRRMonitorInfo])
-xrrGetMonitors dpy draw get_active = do
-  withPool $ \pool -> do intp <- pooledMalloc pool
-                         p <- cXRRGetMonitors dpy draw get_active intp
-                         if p == nullPtr
-                            then return Nothing
-                            else do nmonitors <- peek intp
-                                    monitors <- if nmonitors == 0
-                                                   then return Nothing
-                                                   else peekArray (fromIntegral nmonitors) p >>= return . Just
-                                    return monitors
+xrrGetMonitors dpy draw get_active = withPool $ \pool -> do
+    intp <- pooledMalloc pool
+    p <- cXRRGetMonitors dpy draw get_active intp
+    if p == nullPtr
+        then return Nothing
+        else do
+            nmonitors <- peek intp
+            res <- fmap Just $ peekCArray nmonitors p
+            cXRRFreeMonitors p
+            return res
+
 foreign import ccall "XRRGetMonitors"
-  cXRRGetMonitors :: Display -> Drawable -> Bool -> Ptr CInt -> IO (Ptr XRRMonitorInfo)
+    cXRRGetMonitors :: Display -> Drawable -> Bool -> Ptr CInt -> IO (Ptr XRRMonitorInfo)
+
+foreign import ccall "XRRFreeMonitors"
+    cXRRFreeMonitors :: Ptr XRRMonitorInfo -> IO ()
 
 wrapPtr2 :: (Storable a, Storable b) => (Ptr a -> Ptr b -> IO c) -> (c -> a -> b -> d) -> IO d
 wrapPtr2 cfun f =
