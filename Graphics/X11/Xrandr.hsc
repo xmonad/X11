@@ -20,11 +20,11 @@
 module Graphics.X11.Xrandr (
   XRRScreenSize(..),
   XRRModeInfo(..),
-  XRRMonitorInfo(..),
   XRRScreenResources(..),
   XRROutputInfo(..),
   XRRCrtcInfo(..),
   XRRPropertyInfo(..),
+  XRRMonitorInfo(..),
   compiledWithXrandr,
   Rotation,
   Reflection,
@@ -32,7 +32,6 @@ module Graphics.X11.Xrandr (
   XRRScreenConfiguration,
   xrrQueryExtension,
   xrrQueryVersion,
-  xrrGetMonitors,
   xrrGetScreenInfo,
   xrrFreeScreenConfigInfo,
   xrrSetScreenConfig,
@@ -61,7 +60,8 @@ module Graphics.X11.Xrandr (
   xrrConfigureOutputProperty,
   xrrChangeOutputProperty,
   xrrGetOutputProperty,
-  xrrDeleteOutputProperty
+  xrrDeleteOutputProperty,
+  xrrGetMonitors,
   ) where
 
 import Foreign
@@ -102,20 +102,6 @@ data XRRModeInfo = XRRModeInfo
     , xrr_mi_name       :: !String
     , xrr_mi_modeFlags  :: !XRRModeFlags
     } deriving (Eq, Show)
-
--- | Representation of the XRRMonitorInfo struct
-data XRRMonitorInfo = XRRMonitorInfo
-   { xrr_moninf_name      :: !Atom
-   , xrr_moninf_primary   :: !Bool
-   , xrr_moninf_automatic :: !Bool
-   , xrr_moninf_x         :: !CInt
-   , xrr_moninf_y         :: !CInt
-   , xrr_moninf_width     :: !CInt
-   , xrr_moninf_height    :: !CInt
-   , xrr_moninf_mwidth    :: !CInt
-   , xrr_moninf_mheight   :: !CInt
-   , xrr_moninf_outputs   :: [RROutput]
-   } deriving (Eq, Show)
 
 -- | Representation of the XRRScreenResources struct
 data XRRScreenResources = XRRScreenResources
@@ -162,6 +148,20 @@ data XRRPropertyInfo = XRRPropertyInfo
     , xrr_pi_immutable    :: !Bool
     , xrr_pi_values       :: [CLong]
     } deriving (Eq, Show)
+
+-- | Representation of the XRRMonitorInfo struct
+data XRRMonitorInfo = XRRMonitorInfo
+   { xrr_moninf_name      :: !Atom
+   , xrr_moninf_primary   :: !Bool
+   , xrr_moninf_automatic :: !Bool
+   , xrr_moninf_x         :: !CInt
+   , xrr_moninf_y         :: !CInt
+   , xrr_moninf_width     :: !CInt
+   , xrr_moninf_height    :: !CInt
+   , xrr_moninf_mwidth    :: !CInt
+   , xrr_moninf_mheight   :: !CInt
+   , xrr_moninf_outputs   :: [RROutput]
+   } deriving (Eq, Show)
 
 -- We have Xrandr, so the library will actually work
 compiledWithXrandr :: Bool
@@ -413,20 +413,6 @@ xrrQueryVersion dpy = wrapPtr2 (cXRRQueryVersion dpy) go
         go True major minor = Just (fromIntegral major, fromIntegral minor)
 foreign import ccall "XRRQueryVersion"
   cXRRQueryVersion :: Display -> Ptr CInt -> Ptr CInt -> IO Bool
-
-xrrGetMonitors :: Display -> Drawable -> Bool -> IO (Maybe [XRRMonitorInfo])
-xrrGetMonitors dpy draw get_active = do
-  withPool $ \pool -> do intp <- pooledMalloc pool
-                         p <- cXRRGetMonitors dpy draw get_active intp
-                         if p == nullPtr
-                            then return Nothing
-                            else do nmonitors <- peek intp
-                                    monitors <- if nmonitors == 0
-                                                   then return Nothing
-                                                   else peekArray (fromIntegral nmonitors) p >>= return . Just
-                                    return monitors
-foreign import ccall "XRRGetMonitors"
-  cXRRGetMonitors :: Display -> Drawable -> Bool -> Ptr CInt -> IO (Ptr XRRMonitorInfo)
 
 xrrGetScreenInfo :: Display -> Drawable -> IO (Maybe XRRScreenConfiguration)
 xrrGetScreenInfo dpy draw = do
@@ -754,6 +740,20 @@ xrrDeleteOutputProperty :: Display -> RROutput -> Atom -> IO ()
 xrrDeleteOutputProperty = cXRRDeleteOutputProperty
 foreign import ccall "XRRDeleteOutputProperty"
     cXRRDeleteOutputProperty :: Display -> RROutput -> Atom -> IO ()
+
+xrrGetMonitors :: Display -> Drawable -> Bool -> IO (Maybe [XRRMonitorInfo])
+xrrGetMonitors dpy draw get_active = do
+  withPool $ \pool -> do intp <- pooledMalloc pool
+                         p <- cXRRGetMonitors dpy draw get_active intp
+                         if p == nullPtr
+                            then return Nothing
+                            else do nmonitors <- peek intp
+                                    monitors <- if nmonitors == 0
+                                                   then return Nothing
+                                                   else peekArray (fromIntegral nmonitors) p >>= return . Just
+                                    return monitors
+foreign import ccall "XRRGetMonitors"
+  cXRRGetMonitors :: Display -> Drawable -> Bool -> Ptr CInt -> IO (Ptr XRRMonitorInfo)
 
 wrapPtr2 :: (Storable a, Storable b) => (Ptr a -> Ptr b -> IO c) -> (c -> a -> b -> d) -> IO d
 wrapPtr2 cfun f =
