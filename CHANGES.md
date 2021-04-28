@@ -10,6 +10,8 @@
 
   * Added `xrrGetMonitors` and `XRRMonitorInfo` (#42)
 
+  * Added `setClassHint` (#76)
+
 ## 1.9.2 (2020-08-25)
 
   * Make sure that X11 search paths determined by autoconf are actually passed
