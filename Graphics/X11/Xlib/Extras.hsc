@@ -1515,6 +1515,18 @@ getClassHint d w =  allocaBytes (#{size XClassHint}) $ \ p -> do
 foreign import ccall unsafe "XlibExtras.h XGetClassHint"
     xGetClassHint :: Display -> Window -> Ptr ClassHint -> IO Status
 
+-- | Set the @WM_CLASS@ property for the given window.
+setClassHint :: Display -> Window -> ClassHint -> IO ()
+setClassHint dpy win (ClassHint name cl) =
+    allocaBytes (#{size XClassHint}) $ \ptr -> do
+        withCString name $ \c_name -> withCString cl $ \c_cl -> do
+            #{poke XClassHint, res_name } ptr c_name
+            #{poke XClassHint, res_class} ptr c_cl
+            xSetClassHint dpy win ptr
+
+foreign import ccall unsafe "XlibExtras.h XSetClassHint"
+    xSetClassHint :: Display -> Window -> Ptr ClassHint -> IO ()
+
 ------------------------------------------------------------------------
 -- WM Hints
 
