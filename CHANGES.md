@@ -12,6 +12,8 @@
 
   * Added `setClassHint` (#76)
 
+  * Added a few missing event mask fields to `WindowAttributes` (#77)
+
 ## 1.9.2 (2020-08-25)
 
   * Make sure that X11 search paths determined by autoconf are actually passed

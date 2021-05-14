@@ -957,6 +957,9 @@ data WindowAttributes = WindowAttributes
             , wa_colormap :: Colormap
             , wa_map_installed :: Bool
             , wa_map_state :: CInt
+            , wa_all_event_masks :: EventMask
+            , wa_your_event_mask :: EventMask
+            , wa_do_not_propagate_mask :: EventMask
             , wa_override_redirect :: Bool
             }
 
@@ -981,6 +984,9 @@ instance Storable WindowAttributes where
                 `ap` (#{peek XWindowAttributes, colormap         } p)
                 `ap` (#{peek XWindowAttributes, map_installed    } p)
                 `ap` (#{peek XWindowAttributes, map_state        } p)
+                `ap` (#{peek XWindowAttributes, all_event_masks  } p)
+                `ap` (#{peek XWindowAttributes, your_event_mask  } p)
+                `ap` (#{peek XWindowAttributes, do_not_propagate_mask } p)
                 `ap` (#{peek XWindowAttributes, override_redirect} p)
     poke p wa = do
         #{poke XWindowAttributes, x                } p $ wa_x wa
@@ -991,6 +997,9 @@ instance Storable WindowAttributes where
         #{poke XWindowAttributes, colormap         } p $ wa_colormap wa
         #{poke XWindowAttributes, map_installed    } p $ wa_map_installed wa
         #{poke XWindowAttributes, map_state        } p $ wa_map_state wa
+        #{poke XWindowAttributes, all_event_masks  } p $ wa_all_event_masks wa
+        #{poke XWindowAttributes, your_event_mask  } p $ wa_your_event_mask wa
+        #{poke XWindowAttributes, do_not_propagate_mask } p $ wa_do_not_propagate_mask wa
         #{poke XWindowAttributes, override_redirect} p $ wa_override_redirect wa
 
 foreign import ccall unsafe "XlibExtras.h XGetWindowAttributes"
