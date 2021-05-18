@@ -28,6 +28,6 @@ or
 
     autoreconf
 
-You will need development versions of at least the X11, xrandr, and Xinerama
+You will need development versions of at least the X11, xrandr, and XScreenSaver
 libraries installed for the build to succeed; having the development version of
-the XScreenSaver library will enable some optional bindings.
+the Xinerama library will enable some optional bindings.
