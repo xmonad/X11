@@ -24,7 +24,7 @@
 /* Xutil.h overrides some functions with macros.
  * In recent versions of X this can be turned off with
  *
- *	#define XUTIL_DEFINE_FUNCTIONS
+ *     #define XUTIL_DEFINE_FUNCTIONS
  *
  * before the #include, but this doesn't work with older versions.
  * As a workaround, we undef the macros here.  Note that this is only

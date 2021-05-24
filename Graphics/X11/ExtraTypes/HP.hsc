@@ -1,5 +1,5 @@
 -----------------------------------------------------------------------------
--- 
+--
 -- Module      :  Graphics.X11.ExtraTypes.HP
 -- Copyright   :  (c) Open Group 1987,1998, DEC 1987
 -- License     :  X11 (see below) due to X headers

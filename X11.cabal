@@ -82,8 +82,5 @@ library
   include-dirs:       include
   ghc-options:        -funbox-strict-fields -Wall -fno-warn-unused-binds
 
-  if impl(ghc >= 7.10)
-    ghc-options: -fno-warn-tabs
-
   if flag(pedantic)
     ghc-options:      -Werror

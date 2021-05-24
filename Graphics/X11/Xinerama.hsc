@@ -104,10 +104,10 @@ xineramaQueryVersion dpy = wrapPtr2 (cXineramaQueryVersion dpy) go
         go True major minor = Just (fromIntegral major, fromIntegral minor)
 
 xineramaQueryScreens :: Display -> IO (Maybe [XineramaScreenInfo])
-xineramaQueryScreens dpy = 
+xineramaQueryScreens dpy =
   withPool $ \pool -> do intp <- pooledMalloc pool
                          p <- cXineramaQueryScreens dpy intp
-                         if p == nullPtr 
+                         if p == nullPtr
                             then return Nothing
                             else do nscreens <- peek intp
                                     screens <- peekArray (fromIntegral nscreens) p

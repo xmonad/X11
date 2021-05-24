@@ -3,7 +3,7 @@
 -- Module      :  Graphics.X11
 -- Copyright   :  (c) Alastair Reid, 1999-2003
 -- License     :  BSD-style (see the file libraries/base/LICENSE)
--- 
+--
 -- Maintainer  :  libraries@haskell.org
 -- Stability   :  provisional
 -- Portability :  portable
@@ -12,11 +12,11 @@
 --
 -----------------------------------------------------------------------------
 
-module Graphics.X11 
+module Graphics.X11
         ( module Graphics.X11.Xlib
         ) where
 
-import Graphics.X11.Xlib 
+import Graphics.X11.Xlib
 
 ----------------------------------------------------------------
 -- End

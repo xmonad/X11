@@ -3,7 +3,7 @@
 -- Module      :  Graphics.X11.Xlib
 -- Copyright   :  (c) Alastair Reid, 1999-2003
 -- License     :  BSD-style (see the file libraries/base/LICENSE)
--- 
+--
 -- Maintainer  :  libraries@haskell.org
 -- Stability   :  provisional
 -- Portability :  portable
@@ -19,18 +19,18 @@
 --
 -----------------------------------------------------------------------------
 
-module Graphics.X11.Xlib 
-	( -- * Conventions
-	  -- $conventions
+module Graphics.X11.Xlib
+        ( -- * Conventions
+          -- $conventions
 
-	  -- * Types
-	  module Graphics.X11.Types,
+          -- * Types
+          module Graphics.X11.Types,
           -- module Graphics.X11.Xlib.Types,
-	  Display(..), Screen, Visual, GC, SetWindowAttributes, VisualInfo(..),
-	  Point(..), Rectangle(..), Arc(..), Segment(..), Color(..),
-	  Pixel, Position, Dimension, Angle, ScreenNumber, Buffer,
+          Display(..), Screen, Visual, GC, SetWindowAttributes, VisualInfo(..),
+          Point(..), Rectangle(..), Arc(..), Segment(..), Color(..),
+          Pixel, Position, Dimension, Angle, ScreenNumber, Buffer,
 
-	  -- * X11 library functions
+          -- * X11 library functions
           module Graphics.X11.Xlib.Event,
           module Graphics.X11.Xlib.Display,
           module Graphics.X11.Xlib.Screen,
@@ -43,8 +43,8 @@ module Graphics.X11.Xlib
           module Graphics.X11.Xlib.Region,
           module Graphics.X11.Xlib.Image,
           module Graphics.X11.Xlib.Misc,
-          
-	) where
+
+        ) where
 
 import Graphics.X11.Types
 import Graphics.X11.Xlib.Types

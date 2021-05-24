@@ -23,7 +23,7 @@
 
   <!-- Table of contents -->
   <toc></toc>
-  
+
   <chapter id="introduction">
     <title>Introduction</title>
 
@@ -67,7 +67,7 @@
 
             <para>In addition, we chose to take advantage of Haskell's
             module system to allow us to drop common prefixes
-            (<literal>X</literal>, <literal>XA_</literal>, etc.) 
+            (<literal>X</literal>, <literal>XA_</literal>, etc.)
             attached to X11 identifiers.  For example, we translate
             some C functions, constants and types as follows:</para>
 
@@ -175,7 +175,7 @@
                     <entry><function>Arc</function></entry>
                     <entry><function>(Position,Position,Dimension,Dimension,Int,Int)</function></entry>
                   </row>
-                  
+
                   <row>
                     <entry><function>XColor</function></entry>
                     <entry><function>Color</function></entry>
@@ -222,7 +222,7 @@ lookupColor
 openDisplay
 parseColor
 queryBestCursor
-queryBestSize 
+queryBestSize
 queryBestStipple
 queryBestTile
 rotateBuffers
@@ -270,11 +270,11 @@ XDrawPoints(Display *display,
       <para>is given the Haskell type:</para>
 
 <programlisting>
-drawPoints :: Display 
-           -> Drawable 
-           -> GC 
-           -> [Point] 
-           -> CoordinateMode 
+drawPoints :: Display
+           -> Drawable
+           -> GC
+           -> [Point]
+           -> CoordinateMode
            -> IO ()
 </programlisting>
 

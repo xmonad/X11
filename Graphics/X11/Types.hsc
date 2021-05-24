@@ -58,7 +58,7 @@ module Graphics.X11.Types
         xK_Delete,
         xK_Multi_key,
 
-	-- SunOS does not define these.
+        -- SunOS does not define these.
 #ifdef XK_Codeinput
         xK_Codeinput,
 #endif

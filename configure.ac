@@ -9,7 +9,7 @@ else
 # Safety check: Ensure that we are in the correct source directory.
 AC_CONFIG_SRCDIR([include/HsXlib.h])
 
-AC_CONFIG_HEADERS([include/HsX11Config.h include/X11_extras_config.h]) 
+AC_CONFIG_HEADERS([include/HsX11Config.h include/X11_extras_config.h])
 
 # Check for X11 include paths and libraries
 AC_PATH_XTRA
