@@ -80,7 +80,7 @@ library
   includes:           HsXlib.h, HsAllKeysyms.h
   install-includes:   HsXlib.h, XlibExtras.h, HsAllKeysyms.h
   include-dirs:       include
-  ghc-options:        -funbox-strict-fields -Wall -fno-warn-unused-binds
+  ghc-options:        -funbox-strict-fields -Wall -Wno-unused-binds
 
   if flag(pedantic)
     ghc-options:      -Werror
