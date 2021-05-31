@@ -22,7 +22,9 @@ extra-tmp-files:    config.log
                     X11.buildinfo
                     include/HsX11Config.h
                     include/X11_extras_config.h
-extra-source-files: configure.ac
+extra-source-files: CHANGES.md
+                    README.md
+                    configure.ac
                     configure
                     config.mk.in
                     X11.buildinfo.in
