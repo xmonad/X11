@@ -1,6 +1,6 @@
 # Change Log / Release Notes
 
-## unknown
+## 1.10 (2021-05-31)
 
   * Added `setClientMessageEvent'` (#71)
 
