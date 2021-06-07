@@ -1,3 +1,5 @@
+workaround for https://github.com/haskell-CI/haskell-ci/issues/502
+
 --- .github/workflows/haskell-ci.yml.orig	2021-03-26 18:44:32.973245389 +0000
 +++ .github/workflows/haskell-ci.yml	2021-03-26 18:44:57.905583624 +0000
 @@ -113,6 +113,9 @@

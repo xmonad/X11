@@ -1,3 +1,20 @@
+Piggy-back on the haskell-ci workflow for automatic releases to Hackage.
+
+This extends the workflow with two additional triggers:
+
+ * When a release is created on GitHub, a candidate release is uploaded to
+   Hackage and docs are submitted for it as Hackage can't build them itself
+   (https://github.com/haskell/hackage-server/issues/925).
+
+ * To make a final release, the workflow can be triggered manually by entering
+   the correct version number matching the version in the cabal file. This is
+   here because promoting the candidate on Hackage discards the uploaded docs
+   (https://github.com/haskell/hackage-server/issues/70).
+
+The automation uses a special Hackage user: https://hackage.haskell.org/user/xmonad
+and each repo (X11, xmonad, xmonad-contrib) has its own HACKAGE_API_KEY token
+set in GitHub repository secrets.
+
 --- .github/workflows/haskell-ci.yml.orig
 +++ .github/workflows/haskell-ci.yml
 @@ -14,8 +14,17 @@
