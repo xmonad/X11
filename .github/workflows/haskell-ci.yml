@@ -19,6 +19,12 @@ on:
   release:
     types:
       - published
+  workflow_dispatch:
+    inputs:
+      version:
+        # releases to Hackage are final and cannot be reverted, thus require
+        # manual entry of version as a poor man's mistake avoidance
+        description: version (must match version in cabal file)
 jobs:
   linux:
     name: Haskell-CI - Linux - ${{ matrix.compiler }}
@@ -190,7 +196,7 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           path: ${{ github.workspace }}/haddock/*-docs.tar.gz
-      - name: hackage upload
+      - name: hackage upload (candidate)
         if: matrix.upload && github.event_name == 'release'
         run: |
           set -ex
@@ -209,3 +215,22 @@ jobs:
             --header "Content-Encoding: gzip" \
             --data-binary @$GITHUB_WORKSPACE/haddock/${{ github.event.repository.name }}-${{ github.event.release.tag_name }}-docs.tar.gz \
             https://hackage.haskell.org/package/${{ github.event.repository.name }}-${{ github.event.release.tag_name }}/candidate/docs
+      - name: hackage upload (release)
+        if: matrix.upload && github.event_name == 'workflow_dispatch'
+        run: |
+          set -ex
+          curl \
+            --silent --show-error --fail \
+            --header "Accept: text/plain" \
+            --header "Authorization: X-ApiKey ${{ secrets.HACKAGE_API_KEY }}" \
+            --form package=@$GITHUB_WORKSPACE/sdist/${{ github.event.repository.name }}-${{ github.event.inputs.version }}.tar.gz \
+            https://hackage.haskell.org/packages/
+          curl \
+            --silent --show-error --fail \
+            -X PUT \
+            --header "Accept: text/plain" \
+            --header "Authorization: X-ApiKey ${{ secrets.HACKAGE_API_KEY }}" \
+            --header "Content-Type: application/x-tar" \
+            --header "Content-Encoding: gzip" \
+            --data-binary @$GITHUB_WORKSPACE/haddock/${{ github.event.repository.name }}-${{ github.event.inputs.version }}-docs.tar.gz \
+            https://hackage.haskell.org/package/${{ github.event.repository.name }}-${{ github.event.inputs.version }}/docs
