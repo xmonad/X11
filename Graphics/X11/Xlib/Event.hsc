@@ -494,7 +494,7 @@ foreign import ccall unsafe "HsXlib.h XSendEvent"
                 XEventPtr -> IO Status
 
 -- | interface to the X11 library function @XWindowEvent()@.
-foreign import ccall unsafe "HsXlib.h XWindowEvent"
+foreign import ccall safe "HsXlib.h XWindowEvent"
         windowEvent :: Display -> Window -> EventMask -> XEventPtr -> IO ()
 
 -- | interface to the X11 library function @XCheckWindowEvent()@.
@@ -503,7 +503,7 @@ foreign import ccall unsafe "HsXlib.h XCheckWindowEvent"
                 XEventPtr -> IO Bool
 
 -- | interface to the X11 library function @XMaskEvent()@.
-foreign import ccall unsafe "HsXlib.h XMaskEvent"
+foreign import ccall safe "HsXlib.h XMaskEvent"
         maskEvent :: Display -> EventMask -> XEventPtr -> IO ()
 
 -- | interface to the X11 library function @XCheckMaskEvent()@.
@@ -524,7 +524,7 @@ foreign import ccall unsafe "HsXlib.h XPutBackEvent"
         putBackEvent :: Display -> XEventPtr -> IO ()
 
 -- | interface to the X11 library function @XPeekEvent()@.
-foreign import ccall unsafe "HsXlib.h XPeekEvent"
+foreign import ccall safe "HsXlib.h XPeekEvent"
         peekEvent :: Display -> XEventPtr -> IO ()
 
 -- XFilterEvent omitted (can't find documentation)
