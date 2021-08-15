@@ -1,5 +1,9 @@
 # Change Log / Release Notes
 
+## 1.10.1 (2021-08-15)
+
+  * Fixed possible high CPU usage of some blocking calls with the threaded RTS (#78)
+
 ## 1.10 (2021-05-31)
 
   * Added `setClientMessageEvent'` (#71)
