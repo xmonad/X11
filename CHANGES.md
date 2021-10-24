@@ -1,5 +1,9 @@
 # Change Log / Release Notes
 
+## 1.10.2 (2021-10-24)
+
+  * Restored compatibility with GHC 7.10 (and possibly even older) (#80)
+
 ## 1.10.1 (2021-08-15)
 
   * Fixed possible high CPU usage of some blocking calls with the threaded RTS (#78)
