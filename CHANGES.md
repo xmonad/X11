@@ -1,5 +1,7 @@
 # Change Log / Release Notes
 
+## unknown
+
 ## 1.10.2 (2021-10-24)
 
   * Restored compatibility with GHC 7.10 (and possibly even older) (#80)
