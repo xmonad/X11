@@ -220,6 +220,15 @@ data Event
         , ev_height                :: !CInt
         , ev_count                 :: !CInt
         }
+    | FocusChangeEvent
+        { ev_event_type            :: !EventType
+        , ev_serial                :: !CULong
+        , ev_send_event            :: !Bool
+        , ev_event_display         :: Display
+        , ev_window                :: !Window
+        , ev_mode                  :: !NotifyMode
+        , ev_detail                :: !NotifyDetail
+        }
     | ClientMessageEvent
         { ev_event_type            :: !EventType
         , ev_serial                :: !CULong
@@ -699,6 +708,23 @@ getEvent p = do
                         , ev_width         = width
                         , ev_height        = height
                         , ev_count         = count
+                        }
+
+          -------------------------
+          -- FocusChangeEvent
+          -------------------------
+          | type_ == focusIn || type_ == focusOut -> do
+            window <- #{peek XFocusChangeEvent, window } p
+            mode   <- #{peek XFocusChangeEvent, mode   } p
+            detail <- #{peek XFocusChangeEvent, detail } p
+            return $ FocusChangeEvent
+                        { ev_event_type    = type_
+                        , ev_serial        = serial
+                        , ev_send_event    = send_event
+                        , ev_event_display = display
+                        , ev_window        = window
+                        , ev_mode          = mode
+                        , ev_detail        = detail
                         }
 
           -------------------------
