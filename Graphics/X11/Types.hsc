@@ -647,6 +647,10 @@ module Graphics.X11.Types
         cWDontPropagate,
         cWColormap,
         cWCursor,
+        cWX,
+        cWY,
+        cWWidth,
+        cWHeight,
 
         -- ** Close down modes
         CloseDownMode,
@@ -1536,6 +1540,10 @@ type AttributeMask      = Mask
  , cWDontPropagate      = CWDontPropagate
  , cWColormap           = CWColormap
  , cWCursor             = CWCursor
+ , cWX                  = CWX
+ , cWY                  = CWY
+ , cWWidth              = CWWidth
+ , cWHeight             = CWHeight
  }
 
 -- Used in ChangeCloseDownMode
