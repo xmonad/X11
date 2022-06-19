@@ -2,6 +2,10 @@
 
 ## unknown
 
+  * Added `cWX`, `cWY`, `cWWidth`, `cWHeight` constants (`AttributeMask`) (#82)
+
+  * Added `FocusChangeEvent` to `data Event` (#81)
+
 ## 1.10.2 (2021-10-24)
 
   * Restored compatibility with GHC 7.10 (and possibly even older) (#80)
