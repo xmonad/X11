@@ -1528,7 +1528,7 @@ getWMNormalHints d w
             0 -> return (SizeHints Nothing Nothing Nothing Nothing Nothing Nothing)
             _ -> peek sh
 
-foreign import ccall unsafe "XlibExtras.h XAllocSizeHints"
+foreign import ccall "XlibExtras.h XAllocSizeHints"
     xAllocSizeHints :: IO (Ptr SizeHints)
 
 foreign import ccall unsafe "XlibExtras.h XSetWMNormalHints"
