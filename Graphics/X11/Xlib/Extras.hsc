@@ -1528,6 +1528,19 @@ getWMNormalHints d w
             0 -> return (SizeHints Nothing Nothing Nothing Nothing Nothing Nothing)
             _ -> peek sh
 
+foreign import ccall "XlibExtras.h XAllocSizeHints"
+    xAllocSizeHints :: IO (Ptr SizeHints)
+
+foreign import ccall unsafe "XlibExtras.h XSetWMNormalHints"
+    xSetWMNormalHints :: Display -> Window -> Ptr SizeHints -> IO ()
+
+setWMNormalHints :: Display -> Window -> SizeHints -> IO ()
+setWMNormalHints dpy win hints = do
+    ptr_hints <- throwIfNull "xAllocSizeHints" xAllocSizeHints
+    poke ptr_hints hints
+    xSetWMNormalHints dpy win ptr_hints
+    _ <- xFree ptr_hints
+    return ()
 
 data ClassHint = ClassHint
                         { resName  :: String
