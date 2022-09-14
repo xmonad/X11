@@ -1,5 +1,7 @@
 # Change Log / Release Notes
 
+## _unreleased_
+
 ## 1.10.3 (2022-09-14)
 
   * Added `cWX`, `cWY`, `cWWidth`, `cWHeight` constants (`AttributeMask`) (#82)
