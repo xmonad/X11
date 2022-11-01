@@ -12,3 +12,6 @@ github-patches:
 raw-project
   package X11
     flags: +pedantic
+
+-- avoid --haddock-all which overwrites *-docs.tar.gz with tests docs
+haddock-components: libs
