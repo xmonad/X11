@@ -1,5 +1,5 @@
 name:               X11
-version:            1.10.3.9
+version:            1.10.3.99
 synopsis:           A binding to the X11 graphics library
 description:        A Haskell binding to the X11 graphics library. The binding is a direct
                     translation of the C binding; for documentation of these calls, refer
@@ -10,7 +10,7 @@ license-file:       LICENSE
 copyright:          Alastair Reid, 1999-2003, libraries@haskell.org 2003-2007,
                     Don Stewart 2007-2009, Spencer Janssen 2007-2009, Daniel Wagner 2009-2011.
 maintainer:         Daniel Wagner <daniel@wagner-home.com>
-tested-with:        GHC == 7.10.3 || == 8.0.2 || == 8.2.2 || == 8.4.4 || == 8.6.5 || == 8.8.4 || == 8.10.7 || == 9.0.2 || == 9.2.5 || == 9.4.3
+tested-with:        GHC == 7.10.3 || == 8.0.2 || == 8.2.2 || == 8.4.4 || == 8.6.5 || == 8.8.4 || == 8.10.7 || == 9.0.2 || == 9.2.5 || == 9.4.3 || == 9.6.2
 category:           Graphics
 homepage:           https://github.com/xmonad/X11
 bug-reports:        https://github.com/xmonad/X11/issues
@@ -73,7 +73,7 @@ library
                       Graphics.X11.Xlib.Window
                       Graphics.X11.Xrandr
   other-modules:      Graphics.X11.Xlib.Internal
-  build-depends:      base == 4.*, data-default-class == 0.1.*
+  build-depends:      base == 4.*, data-default-class == 0.1.*, utf8-string
   default-language:   Haskell98
   default-extensions: CPP
                       ForeignFunctionInterface

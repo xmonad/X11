@@ -27,6 +27,7 @@ import Foreign (Storable, Ptr, peek, poke, pokeArray, peekElemOff, peekByteOff, 
 import Foreign.C.Types
 import Foreign.C.String
 import Control.Monad
+import Codec.Binary.UTF8.String
 
 import System.IO.Unsafe
 
@@ -1095,6 +1096,23 @@ wcTextPropertyToTextList d prop =
 
 foreign import ccall unsafe "XlibExtras.h XwcFreeStringList"
     wcFreeStringList :: Ptr CWString -> IO ()
+
+foreign import ccall unsafe "XlibExtras.h Xutf8TextPropertyToTextList"
+    xutf8TextPropertyToTextList :: Display -> Ptr TextProperty -> Ptr (Ptr CString) -> Ptr CInt -> IO CInt
+
+utf8TextPropertyToTextList :: Display -> TextProperty -> IO [String]
+utf8TextPropertyToTextList d prop =
+    alloca    $ \listp  ->
+    alloca    $ \countp ->
+    with prop $ \propp  -> do
+        _ <- throwIf (success>) (const "utf8TextPropertyToTextList") $
+            xutf8TextPropertyToTextList d propp listp countp
+        count <- peek countp
+        list  <- peek listp
+        texts <- flip mapM [0..fromIntegral count - 1] $ \i ->
+                     peekElemOff list i >>= fmap decodeString . peekCAString
+        _ <- xFree list
+        return texts
 
 newtype FontSet = FontSet (Ptr FontSet)
     deriving (Eq, Ord, Show)
