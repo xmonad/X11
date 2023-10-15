@@ -24,6 +24,8 @@ module Graphics.X11.Xlib.Font(
         fontFromFontStruct,
         ascentFromFontStruct,
         descentFromFontStruct,
+        minBoundsFromFontStruct,
+        maxBoundsFromFontStruct,
         CharStruct,
         textExtents,
         textWidth,
@@ -35,7 +37,7 @@ module Graphics.X11.Xlib.Font(
 import Graphics.X11.Types
 import Graphics.X11.Xlib.Types
 
-import Foreign (Ptr, Int32, alloca, allocaBytes, peekByteOff, Word16, #{type unsigned long}, peek, throwIfNull)
+import Foreign (Ptr, Int32, alloca, allocaBytes, peekByteOff, Word16, #{type unsigned long}, peek, plusPtr, throwIfNull)
 import Foreign.C
 
 import System.IO.Unsafe
@@ -113,6 +115,14 @@ ascentFromFontStruct (FontStruct fs) = unsafePerformIO $
 descentFromFontStruct :: FontStruct -> Int32
 descentFromFontStruct (FontStruct fs) = unsafePerformIO $
         #{peek XFontStruct,descent} fs
+
+minBoundsFromFontStruct :: FontStruct -> CharStruct
+minBoundsFromFontStruct (FontStruct fs) = unsafePerformIO $
+        peekCharStruct $ #{ptr XFontStruct,min_bounds} fs
+
+maxBoundsFromFontStruct :: FontStruct -> CharStruct
+maxBoundsFromFontStruct (FontStruct fs) = unsafePerformIO $
+        peekCharStruct $ #{ptr XFontStruct,max_bounds} fs
 
 -- %prim XGetFontPath :: Display -> IO ListString
 --Int r_size;
