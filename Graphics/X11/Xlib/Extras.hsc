@@ -1788,6 +1788,6 @@ getModifierMapping d = do
     pks <- #{peek XModifierKeymap, modifiermap} p :: IO (Ptr KeyCode)
     ks <- peekArray (m * 8) pks
     _ <- xFreeModifiermap p
-    return . zip masks . map fst . tail . iterate (splitAt m . snd) $ ([], ks)
+    return . zip masks . map fst . drop 1 . iterate (splitAt m . snd) $ ([], ks)
  where
     masks = [shiftMapIndex .. mod5MapIndex]
