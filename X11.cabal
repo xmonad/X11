@@ -10,7 +10,7 @@ license-file:       LICENSE
 copyright:          Alastair Reid, 1999-2003, libraries@haskell.org 2003-2007,
                     Don Stewart 2007-2009, Spencer Janssen 2007-2009, Daniel Wagner 2009-2011.
 maintainer:         Daniel Wagner <daniel@wagner-home.com>
-tested-with:        GHC == 7.10.3 || == 8.0.2 || == 8.2.2 || == 8.4.4 || == 8.6.5 || == 8.8.4 || == 8.10.7 || == 9.0.2 || == 9.2.8 || == 9.4.7 || == 9.6.3 || == 9.8.1
+tested-with:        GHC == 7.10.3 || == 8.0.2 || == 8.2.2 || == 8.4.4 || == 8.6.5 || == 8.8.4 || == 8.10.7 || == 9.0.2 || == 9.2.8 || == 9.4.8 || == 9.6.3 || == 9.8.1
 category:           Graphics
 homepage:           https://github.com/xmonad/X11
 bug-reports:        https://github.com/xmonad/X11/issues
