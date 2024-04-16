@@ -71,6 +71,7 @@ import Data.Data
 #endif
 
 #include "HsXlib.h"
+#include <sys/time.h>
 
 {-# CFILES cbits/fdset.c #-}
 
@@ -398,7 +399,7 @@ get_ConfigureEvent p = peekXConfigureEvent (castPtr p)
 -- Returns True if timeout occurs.
 waitForEvent :: Display -> Word32 -> IO Bool
 waitForEvent display usecs =
-        with (TimeVal (usecs `div` 1000000) (usecs `mod` 1000000)) $ \ tv_ptr ->
+        with (TimeVal (fromIntegral usecs `div` 1000000) (fromIntegral usecs `mod` 1000000)) $ \ tv_ptr ->
         allocaBytes #{size fd_set} $ \ readfds ->
         allocaBytes #{size fd_set} $ \ nofds -> do
         let fd = connectionNumber display
@@ -429,7 +430,7 @@ gettimeofday_in_milliseconds =
         TimeVal sec usec <- peek tv_ptr
         return (toInteger sec * 1000 + toInteger usec `div` 1000)
 
-data TimeVal = TimeVal Word32 Word32
+data TimeVal = TimeVal CLong CLong
 
 instance Storable TimeVal where
         alignment _ = #{size int}
