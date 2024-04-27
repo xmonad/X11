@@ -397,7 +397,7 @@ get_ConfigureEvent p = peekXConfigureEvent (castPtr p)
 
 -- | Reads an event with a timeout (in microseconds).
 -- Returns True if timeout occurs.
-waitForEvent :: Display -> Word32 -> IO Bool
+waitForEvent :: Display -> Word64 -> IO Bool
 waitForEvent display usecs =
         with (TimeVal (fromIntegral usecs `div` 1000000) (fromIntegral usecs `mod` 1000000)) $ \ tv_ptr ->
         allocaBytes #{size fd_set} $ \ readfds ->
