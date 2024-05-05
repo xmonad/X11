@@ -4,6 +4,8 @@
 
   * Added `minBoundsFromFontStruct`, `maxBoundsFromFontStruct` (#88)
 
+  * Drop support for GHC 7.10, require at least GHC 8.0.
+
 ## 1.10.3 (2022-09-14)
 
   * Added `cWX`, `cWY`, `cWWidth`, `cWHeight` constants (`AttributeMask`) (#82)
