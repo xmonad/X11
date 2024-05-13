@@ -12,12 +12,16 @@ jobs:
       fail-fast: false
       matrix:
         include:
+          - resolver: lts-9   # GHC 8.0
+          - resolver: lts-11  # GHC 8.2
           - resolver: lts-12  # GHC 8.4
           - resolver: lts-14  # GHC 8.6
           - resolver: lts-16  # GHC 8.8
           - resolver: lts-18  # GHC 8.10
           - resolver: lts-19  # GHC 9.0
           - resolver: lts-20  # GHC 9.2
+          - resolver: lts-21  # GHC 9.4
+          - resolver: lts-22  # GHC 9.6
 
     steps:
       - name: Clone project
