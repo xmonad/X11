@@ -74,7 +74,7 @@ library
                       Graphics.X11.Xrandr
   other-modules:      Graphics.X11.Xlib.Internal
   build-depends:      base >= 4.9 && < 5
-                    , data-default-class == 0.1.*
+                    , data-default-class >= 0.1 && < 0.3
   default-language:   Haskell98
   default-extensions: CPP
                       ForeignFunctionInterface
