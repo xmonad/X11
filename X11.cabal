@@ -86,4 +86,4 @@ library
   ghc-options:        -funbox-strict-fields -Wall -Wno-unused-binds
 
   if flag(pedantic)
-    ghc-options:      -Werror
+    ghc-options:      -Werror -Wno-deriving-typeable
