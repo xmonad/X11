@@ -87,3 +87,5 @@ library
 
   if flag(pedantic)
     ghc-options:      -Werror -Wno-deriving-typeable
+    if impl(ghc >= 9.10)
+       ghc-options:   -Wno-incomplete-record-selectors
