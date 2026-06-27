@@ -23,7 +23,7 @@ import Graphics.X11.XScreenSaver
 import Graphics.X11.Xlib
 import Graphics.X11.Xlib.Internal
 import Graphics.X11.Xlib.Types
-import Foreign (Storable, Ptr, peek, poke, pokeArray, peekElemOff, peekByteOff, pokeByteOff, peekArray, throwIfNull, nullPtr, sizeOf, alignment, alloca, with, throwIf, Word8, Word16, #{type unsigned long}, Int32, plusPtr, castPtr, withArrayLen, setBit, testBit, allocaBytes, FunPtr)
+import Foreign (Storable, Ptr, peek, poke, pokeArray, peekElemOff, peekByteOff, pokeByteOff, peekArray, throwIfNull, nullPtr, sizeOf, alignment, alloca, with, throwIf, Word8, Word16, #{type unsigned long}, Int32, plusPtr, castPtr, withArrayLen, setBit, testBit, allocaBytes, FunPtr, ForeignPtr, newForeignPtr, withForeignPtr)
 import Foreign.C.Types
 import Foreign.C.String
 import Control.Monad
@@ -1363,8 +1363,8 @@ foreign import ccall unsafe "XlibExtras.h XDeleteProperty"
 foreign import ccall unsafe "XlibExtras.h XGetWindowProperty"
     xGetWindowProperty :: Display -> Window -> Atom -> CLong -> CLong -> Bool -> Atom -> Ptr Atom -> Ptr CInt -> Ptr CULong -> Ptr CULong -> Ptr (Ptr CUChar) -> IO Status
 
-rawGetWindowProperty :: Storable a => Int -> Display -> Atom -> Window -> IO (Maybe [a])
-rawGetWindowProperty bits d atom w =
+getWindowPropertyPtr :: Storable a => Int -> Display -> Atom -> Window -> IO (Maybe (ForeignPtr a, Int))
+getWindowPropertyPtr bits d atom w =
     alloca $ \actual_type_return ->
     alloca $ \actual_format_return ->
     alloca $ \nitems_return ->
@@ -1388,10 +1388,10 @@ rawGetWindowProperty bits d atom w =
     getprop prop_ptr nitems actual_format
         | actual_format == 0    = return Nothing -- Property not found
         | actual_format /= bits = xFree prop_ptr >> return Nothing
-        | otherwise = do
-            retval <- peekArray nitems (castPtr prop_ptr)
-            _ <- xFree prop_ptr
-            return $ Just retval
+        | otherwise = (\p -> Just (p, nitems)) <$> newForeignPtr xFreePtr (castPtr prop_ptr)
+
+rawGetWindowProperty :: Storable a => Int -> Display -> Atom -> Window -> IO (Maybe [a])
+rawGetWindowProperty bits d atom w = getWindowPropertyPtr bits d atom w >>= mapM (\(p,n) -> withForeignPtr p (peekArray n))
 
 getWindowProperty8 :: Display -> Atom -> Window -> IO (Maybe [CChar])
 getWindowProperty8 = rawGetWindowProperty 8
