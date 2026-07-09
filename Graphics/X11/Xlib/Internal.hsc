@@ -12,9 +12,10 @@
 --
 -----------------------------------------------------------------------------
 
-module Graphics.X11.Xlib.Internal (xFree) where
+module Graphics.X11.Xlib.Internal (xFree, xFreePtr) where
 
 import Foreign
 import Foreign.C.Types
 
 foreign import ccall unsafe "XFree" xFree :: Ptr a -> IO CInt
+foreign import ccall unsafe "&XFree" xFreePtr :: FinalizerPtr a
