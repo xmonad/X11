@@ -15,3 +15,6 @@ raw-project
 
 -- avoid --haddock-all which overwrites *-docs.tar.gz with tests docs
 haddock-components: libs
+
+-- Ubuntu 22.04 is the last one with libtinfo5, needed by GHC 8.2 and 8.0
+distribution: jammy
