@@ -6,11 +6,11 @@
 
   * Drop support for GHC 7.10, require at least GHC 8.0.
 
-  * No longer record the `LDFLAGS` used at configure time in the `ld-options`
-    of the installed package. They were applied to every package linking
-    against X11, leaking the build flags of the X11 package (e.g. distribution
-    hardening, LTO or `-Wl,-Bsymbolic-functions` flags) to all reverse
-    dependencies.
+  * No longer record the `CPPFLAGS` and `LDFLAGS` used at configure time in
+    the `cc-options` and `ld-options` of the installed package. They were
+    applied to every package depending on X11, leaking the build flags of
+    the X11 package (e.g. distribution hardening, LTO or
+    `-Wl,-Bsymbolic-functions` flags) to all reverse dependencies.
 
 ## 1.10.3 (2022-09-14)
 
