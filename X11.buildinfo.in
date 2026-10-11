@@ -2,7 +2,7 @@
 -- System-dependent values used by Distribution.Simple.defaultUserHooks
 --
 buildable: @BUILD_PACKAGE_BOOL@
-cc-options: @X_CFLAGS@ @CPPFLAGS@
-ld-options: @X_LIBS@ @LDFLAGS@
+cc-options: @X_CFLAGS@
+ld-options: @X_LIBS@
 extra-libraries: @EXTRA_LIBRARIES@
 extra-lib-dirs: @X_LIBRARIES@
